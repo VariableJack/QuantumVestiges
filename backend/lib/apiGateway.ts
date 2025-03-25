@@ -1,10 +1,13 @@
-import { Stack } from 'aws-cdk-lib'
+import { App, Stack } from 'aws-cdk-lib'
 
-class APIGatewayStack extends Stack {
-	constructor(scope, id, props) {
+import {
+    Props
+} from './shared/props'
+export class APIGatewayStack extends Stack {
+	constructor(scope: App, id: string, props: Props) {
 		super(scope, id, props);
 		const { stage } = props
 	}
 }
 
-module.exports = { APIGatewayStack }
+// module.exports = { APIGatewayStack }

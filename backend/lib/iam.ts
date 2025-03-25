@@ -1,18 +1,21 @@
-import { Stack } from 'aws-cdk-lib'
-import { iam } from 'aws-cdk-lib/aws_iam'
+import { App, Stack } from 'aws-cdk-lib'
+import { Role, ServicePrincipal, Policy, PolicyStatement } from 'aws-cdk-lib/aws-iam'
 
-class IamStack extends Stack {
-	public readonly lambdaExecutionRole
+import {
+    Props
+} from './shared/props'
+export class IamStack extends Stack {
+	public readonly lambdaExecutionRole: Role
 	
-	constructor(scope, id, props) {
+	constructor(scope: App, id: string, props: Props) {
 		super(scope, id, props);
 		const { stage } = props
 
-		lambdaExecutionRole = new iam.Role(this, `LambdaExecutionRole-${stage}`, {
-			assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+		this.lambdaExecutionRole = new Role(this, `LambdaExecutionRole-${stage}`, {
+			assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
 		})
-		lambdaExecutionRole.attachInlinePolicy(new iam.Policy(this, 'userpool-policy', {
-			statements: [new iam.PolicyStatement({
+		this.lambdaExecutionRole.attachInlinePolicy(new Policy(this, 'userpool-policy', {
+			statements: [new PolicyStatement({
 				actions: [
 					'dynamodb:Scan',
 					'dynamodb:GetItem',
@@ -28,4 +31,4 @@ class IamStack extends Stack {
 	}
 }
 
-module.exports = { IamStack }
+// module.exports = { IamStack }

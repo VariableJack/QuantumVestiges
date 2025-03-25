@@ -1,29 +1,41 @@
-import { Stack } from 'aws-cdk-lib'
-import { lambda } from 'aws-cdk-lib/aws-lambda'
-import { signer } from 'aws-cdk-lib/aws-signer'
+import { App, Stack } from 'aws-cdk-lib'
+import { Role } from 'aws-cdk-lib/aws-iam'
+import {
+    CodeSigningConfig,
+	Function,
+	Runtime,
+	Code,
+} from 'aws-cdk-lib/aws-lambda'
+import { SigningProfile, Platform } from 'aws-cdk-lib/aws-signer'
 
 import {
 	LAMBDA_FUNCTIONS
 } from './shared/constants'
 
-class LambdaStack extends Stack {
-	constructor(scope, id, props) {
+import {
+    Props
+} from './shared/props'
+interface LambdaProps extends Props {
+    lambdaExecutionRole: Role
+}
+export class LambdaStack extends Stack {
+	constructor(scope: App, id: string, props: LambdaProps) {
 		super(scope, id, props);
-		const signingProfile = new signer.SigningProfile(this, 'SigningProfile', {
-			platform: signer.Platform.AWS_LAMBDA_SHA384_ECDSA,
+		const signingProfile = new SigningProfile(this, 'SigningProfile', {
+			platform: Platform.AWS_LAMBDA_SHA384_ECDSA,
 		});
 
-		const codeSigningConfig = new lambda.CodeSigningConfig(this, 'CodeSigningConfig', {
+		const codeSigningConfig = new CodeSigningConfig(this, 'CodeSigningConfig', {
 			signingProfiles: [signingProfile],
 		});
 
 		const { stage, lambdaExecutionRole } = props
 		LAMBDA_FUNCTIONS.forEach((lambdaFunction) => {
-			const newFunction = new lambda.Function(this, ``, {
+			const newFunction = new Function(this, ``, {
 				codeSigningConfig,
-				runtime: lambda.Runtime.NODEJS_18_X,
+				runtime: Runtime.NODEJS_18_X,
 				handler: `${lambdaFunction.name}.handler`,
-				code: lambda.Code.fromAsset(`src/${lambdaFunction.method}`),
+				code: Code.fromAsset(`src/${lambdaFunction.method}`),
 				environment: { stage },
 				role: lambdaExecutionRole
 			})
@@ -31,4 +43,4 @@ class LambdaStack extends Stack {
 	}
 }
 
-module.exports = { LambdaStack }
+// module.exports = { LambdaStack }
