@@ -1,6 +1,8 @@
 import React from 'react';
 
-import { hostname, port } from '../shared/constants';
+import '../../styles/App.css';
+import Sidebar from '../../shared/components/Sidebar';
+import { hostname, port } from '../../shared/constants';
 
 const Home = () => {
     return (<div>

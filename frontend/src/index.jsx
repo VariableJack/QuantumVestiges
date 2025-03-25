@@ -12,16 +12,16 @@ import {
     menubarItems,
 } from './shared/constants'
 // Base pages
-import Home from './containers/Home';
-import ContactUs from './containers/ContactUs';
-import AboutUs from './containers/AboutUs';
-import NoPage from './containers/NoPage';
+import Home from './features/Home';
+import ContactUs from './features/ContactUs';
+import AboutUs from './features/AboutUs';
+import NoPage from './features/NoPage';
 
 // Support & Request pages
-import FeatureRequest from './containers/FeatureRequest';
-import GameRequest from './containers/GameRequest';
-import BugReport from './containers/BugReport';
-import SupportRequest from './containers/SupportRequest';
+import FeatureRequest from './features/FeatureRequest';
+import GameRequest from './features/GameRequest';
+import BugReport from './features/BugReport';
+import SupportRequest from './features/SupportRequest';
 
 // Game Pages
 

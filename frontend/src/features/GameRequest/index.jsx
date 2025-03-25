@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
 
-import '../styles/App.css';
-import Sidebar from '../shared/components/Sidebar';
+import '../../styles/App.css';
+import Sidebar from '../../shared/components/Sidebar';
 import {
 	hostname,
 	port,
 	MOCK_ITEMS_TO_DISPLAY,
-} from '../shared/constants';
+} from '../../shared/constants';
+import {
+	getUrl
+} from '../../shared/utils';
 
-const BugReport = () => {
+const GameRequest = () => {
 	const [inputs, setInputs] = useState(
 		{
 			title: '',
@@ -29,9 +32,9 @@ const BugReport = () => {
 		}
 	});
 	return (<div>
-		<h1 className='mb-n pb-n'>Bug Report page</h1>
+		<h1 className='mb-n pb-n'>Game Request page</h1>
 		<div className='d-i mr-xl'>
-			<h3>Submit a bug report</h3>
+			<h3>Submit a new game request</h3>
 			<div className='textarea-header'>Please enter a title <b><i>(*Required*)</i></b></div>
 			<textarea className={`medium-border title ${errors.title && 'error-text' || 'no-error-text'}`} placeholder={'Enter title here'} onChange={(event) =>
 				{
@@ -73,12 +76,12 @@ const BugReport = () => {
 					if (newErrors.title.length === 0 && newErrors.subject.length === 0) {
 						console.log('API call');
 					}
-				}}>Submit bug report</button>
+				}}>Submit game request</button>
 			</div>
 		
 		</div>
-		<Sidebar url={`${hostname}:${path}`} title={'Recent bug reports'} items={sidebarItems} />
+		<Sidebar url={`${hostname}:${path}`} title={'Recent game requests'} items={sidebarItems} />
 	</div>)
 };
 
-export default BugReport;
+export default GameRequest;
