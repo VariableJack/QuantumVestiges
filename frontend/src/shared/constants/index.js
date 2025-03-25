@@ -16,23 +16,10 @@ const menubarItems = [
             {
                 menubarHeader: 'About us',
                 path: '/about-us',
-            }
-        ]
-    },
-    {
-        title: 'Games',
-        elements: [
-            {
-                menubarHeader: 'Trading Card Game',
-                path: '/',
             },
             {
-                menubarHeader: 'RPGs',
-                path: '/contact-us',
-            },
-            {
-                menubarHeader: 'Others',
-                path: '/about-us',
+                menubarHeader: 'Login',
+                path: '/login',
             }
         ]
     },

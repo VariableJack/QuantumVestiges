@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import './index.css';
 
 window.onclick = function(event) {
@@ -41,6 +41,8 @@ const Dropdown = ({
 
 const Menubar = (props) => {
 	const { items, url } = props
+	console.log(items)
+
 	return (<div>
 	    {
 			items.map((item, index) => {
