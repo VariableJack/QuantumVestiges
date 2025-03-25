@@ -1,32 +1,35 @@
-import { App, Stack } from 'aws-cdk-lib'
+import { App, Stack, StackProps } from 'aws-cdk-lib'
 import { Role, ServicePrincipal, Policy, PolicyStatement } from 'aws-cdk-lib/aws-iam'
 
-import {
-    Props
-} from './shared/props'
+interface IamProps extends StackProps {
+    stage: string
+}
 export class IamStack extends Stack {
     public readonly lambdaExecutionRole: Role
-    
-    constructor(scope: App, id: string, props: Props) {
-        super(scope, id, props);
+
+    constructor(scope: App, id: string, props: IamProps) {
+        super(scope, id, props)
         const { stage } = props
 
         this.lambdaExecutionRole = new Role(this, `LambdaExecutionRole-${stage}`, {
             assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
         })
-        this.lambdaExecutionRole.attachInlinePolicy(new Policy(this, 'userpool-policy', {
-            statements: [new PolicyStatement({
-                actions: [
-                    'dynamodb:Scan',
-                    'dynamodb:GetItem',
-                    'dynamodb:PutItem',
-                    's3:ListBucket',
-                    's3:GetObject',
-                    's3:PutObject',
+        this.lambdaExecutionRole.attachInlinePolicy(
+            new Policy(this, 'userpool-policy', {
+                statements: [
+                    new PolicyStatement({
+                        actions: [
+                            'dynamodb:Scan',
+                            'dynamodb:GetItem',
+                            'dynamodb:PutItem',
+                            's3:ListBucket',
+                            's3:GetObject',
+                            's3:PutObject',
+                        ],
+                        resources: ['aws:arn:*:lambda'],
+                    }),
                 ],
-                resources: ['aws:arn:*:lambda'],
-            })],
-        }))
-        
+            }),
+        )
     }
 }

@@ -1,25 +1,5 @@
-const LAMBDA_FUNCTIONS: { name: string, method: string }[] = [
-    { name: 'franchises', method: 'get' },
-    { name: 'games', method: 'get' },
-]
+import { LambdaFunctionType, DynamoDbType } from './interfaces'
+const LAMBDA_FUNCTIONS: LambdaFunctionType[] = []
 
-const TABLES: any[] = [
-    {
-        tableName: 'franchises',
-        partitionKey: { name: 'franchise_id', type: dynamodb.AttributeType.NUMBER },
-    },
-    {
-        tableName: 'games',
-        partitionKey: { name: 'game_id', type: dynamodb.AttributeType.NUMBER },
-        localSecondaryIndexes: [
-            {
-                indexName: 'franchise_id',
-                sortKey: { name: 'franchise_id', type: dynamodb.AttributeType.NUMBER },
-            },
-        ],
-    },
-]
-export {
-    LAMBDA_FUNCTIONS,
-    TABLES,
-}
+const TABLES: DynamoDbType[] = []
+export { LAMBDA_FUNCTIONS, TABLES }

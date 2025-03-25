@@ -1,7 +1,20 @@
-import { StackProps } from 'aws-cdk-lib'
-
-interface Props extends StackProps {
-    stage: string,
+import { AttributeType } from 'aws-cdk-lib/aws-dynamodb'
+interface LambdaFunctionType {
+    name: string
+    method: string
+}
+interface KeyType {
+    name: string
+    type: AttributeType
+}
+interface LocalSecondaryIndexType {
+    indexName: string
+    sortKey: KeyType
+}
+interface DynamoDbType {
+    tableName: string
+    partitionKey: KeyType
+    localSecondaryIndexes: LocalSecondaryIndexType[]
 }
 
-export { Props }
+export { LambdaFunctionType, DynamoDbType }

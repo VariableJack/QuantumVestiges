@@ -1,26 +1,23 @@
-import { App, Stack } from 'aws-cdk-lib'
+import { App, Stack, StackProps } from 'aws-cdk-lib'
 import { TableV2 } from 'aws-cdk-lib/aws-dynamodb'
 
-import {
-    TABLES
-} from './shared/constants'
+import { TABLES } from './shared/constants'
 
-import {
-    Props
-} from './shared/props'
+interface DynamoDbProps extends StackProps {
+    stage: string
+}
 export class DynamoDbStack extends Stack {
-    constructor(scope: App, id: string, props: Props) {
-    super(scope, id, props);
-    const { stage } = props
+    constructor(scope: App, id: string, props: DynamoDbProps) {
+        super(scope, id, props)
+        const { stage } = props
 
-    TABLES.forEach((tableDef) => {
-      const table = new TableV2(this, `${tableDef.tableName}-${stage}`, {
-          ...tableDef,
-          deletionProtection: true,
-          contributorInsights: true,
-          pointInTimeRecovery: true,
-        });
-    })
-
-  }
+        TABLES.forEach(tableDef => {
+            const table = new TableV2(this, `${tableDef.tableName}-${stage}`, {
+                ...tableDef,
+                deletionProtection: true,
+                contributorInsights: true,
+                pointInTimeRecovery: true,
+            })
+        })
+    }
 }

@@ -9,11 +9,11 @@ import { IamStack } from '../lib/iam'
 const deploymentEnvironments: { stage: string }[] = [
     { stage: 'devo' },
     { stage: 'pre-prod' },
-    { stage: 'prod' }
+    { stage: 'prod' },
 ]
 
-const app = new App();
-deploymentEnvironments.forEach((deploymentEnvironment) => {
+const app = new App()
+deploymentEnvironments.forEach(deploymentEnvironment => {
     const { stage }: { stage: string } = deploymentEnvironment
     const iamStack = new IamStack(app, `IamStack-${stage}`, { stage })
 
