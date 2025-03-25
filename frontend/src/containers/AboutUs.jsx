@@ -1,9 +1,7 @@
 import React from 'react';
 
-import Menubar from '../shared/components/Menubar';
-
 const AboutUs = () => {
-	return (<div><Menubar />About us!</div>);
+	return (<div>About us!</div>);
 }
 
 export default AboutUs;

@@ -1,7 +1,10 @@
 import React from 'react';
-import './Menubar.css';
-import menubarItems from '../menubarItems';
-import { hostname, port } from '../constants'
+import './index.css';
+import {
+	menubarItems,
+	hostname,
+	port,
+} from '../../constants';
 
 window.onclick = function(event) {
 	if (!event.target.matches('.dropbtn')) {
@@ -30,13 +33,14 @@ const Dropdown = ({
 	elements,
 	index,
 }) => {
+	// 	return (<div>Menubar</div>);
 	return (<div className="dropdown">
 		<button onClick={() => { toggleShow(index) }} className='dropbtn'>{title}</button>
-		<div id={`dropdown${index}`} className='dropdown-content'>
+		<span id={`dropdown${index}`} className='dropdown-content'>
 		    {
 				elements.map((element) => <a href={`${hostname}:${port}${element.path}`}>{element.menubarHeader}</a>)
 			}
-		</div>
+		</span>
 	</div>);
 };
 
