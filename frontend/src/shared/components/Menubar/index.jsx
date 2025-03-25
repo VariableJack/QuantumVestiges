@@ -33,7 +33,6 @@ const Dropdown = ({
 	elements,
 	index,
 }) => {
-	// 	return (<div>Menubar</div>);
 	return (<div className="dropdown">
 		<button onClick={() => { toggleShow(index) }} className='dropbtn'>{title}</button>
 		<span id={`dropdown${index}`} className='dropdown-content'>
@@ -48,10 +47,7 @@ const Menubar = () => {
 	return (<div>
 	    {
 			menubarItems.map((item, index) => {
-				return (
-				<button>
-					<Dropdown title={item.title} elements={item.elements} index={index} />
-				</button>);
+				return (<Dropdown title={item.title} elements={item.elements} index={index} />);
 			})
 		}
 	</div>);

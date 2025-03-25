@@ -1,0 +1,21 @@
+.title {
+  width: 500px;
+  height: 50px;
+  text-align: top;
+}
+.subject {
+  width: 500px;
+  height: 500px;
+}
+.error-text {
+	border-color: #FF0000;
+}
+.no-error-text {
+	border-color: #000000;
+}
+.medium-border {
+	border-width: 3px;
+}
+.textarea-header {
+	margin-bottom: 8px;
+}

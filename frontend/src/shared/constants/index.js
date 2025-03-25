@@ -64,8 +64,17 @@ const menubarItems = [
     path: '/',
 },
 */
+
+const MOCK_ITEMS_TO_DISPLAY = [
+	{
+		title: 'Test',
+		id: 12345,
+		type: 'FEATURE_REQUEST',
+	},
+];
 export {
     hostname,
     port,
     menubarItems,
+	MOCK_ITEMS_TO_DISPLAY,
 }
