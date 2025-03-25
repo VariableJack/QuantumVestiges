@@ -12,7 +12,8 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test"
+    "test": "react-scripts test",
+    "clean": "del package-lock.json && rmdir /s node_modules"
   },
   "author": "VariableJack",
   "license": "ISC",

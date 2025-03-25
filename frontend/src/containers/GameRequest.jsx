@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 
-import '../App.css';
-import './index.css';
+import '../styles/App.css';
 import Sidebar from '../shared/components/Sidebar';
 import {
+	hostname,
+	port,
 	MOCK_ITEMS_TO_DISPLAY,
 } from '../shared/constants';
 
@@ -21,6 +22,12 @@ const GameRequest = () => {
 		}
 	);
 	
+	const sidebarItems = MOCK_ITEMS_TO_DISPLAY.map((item) => {
+		return {
+			...item,
+			subpath: getUrl(item.type)
+		}
+	});
 	return (<div>
 		<h1 className='mb-n pb-n'>Game Request page</h1>
 		<div className='d-i mr-xl'>
@@ -70,7 +77,7 @@ const GameRequest = () => {
 			</div>
 		
 		</div>
-		<Sidebar title={'Recent game ideas'} items={MOCK_ITEMS_TO_DISPLAY} />
+		<Sidebar url={`${hostname}:${path}`} title={'Recent game requests'} items={sidebarItems} />
 	</div>)
 };
 

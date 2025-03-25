@@ -5,6 +5,12 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 // Support components
 import Menubar from './shared/components/Menubar';
 
+// Constants
+import {
+    hostname,
+    port,
+    menubarItems,
+} from './shared/constants'
 // Base pages
 import Home from './containers/Home';
 import ContactUs from './containers/ContactUs';
@@ -23,7 +29,7 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
     <div>
         <div>
-            <Menubar />
+            <Menubar url={`${hostname}:${port}`} items={menubarItems}/>
         </div>
         <div>
             <React.StrictMode>

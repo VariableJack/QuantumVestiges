@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
 
-import '../App.css';
-import './index.css';
+import '../styles/App.css';
 import Sidebar from '../shared/components/Sidebar';
 import {
+	hostname,
+	port,
 	MOCK_ITEMS_TO_DISPLAY,
 } from '../shared/constants';
+import {
+	getUrl
+} from '../shared/utils';
 
 const SupportRequest = () => {
 	const [inputs, setInputs] = useState(
@@ -21,6 +25,12 @@ const SupportRequest = () => {
 		}
 	);
 	
+	const sidebarItems = MOCK_ITEMS_TO_DISPLAY.map((item) => {
+		return {
+			...item,
+			subpath: getUrl(item.type)
+		}
+	});
 	return (<div>
 		<h1 className='mb-n pb-n'>Support page</h1>
 		<div className='d-i mr-xl'>
@@ -70,7 +80,7 @@ const SupportRequest = () => {
 			</div>
 		
 		</div>
-		<Sidebar title={'Recent support tickets'} items={MOCK_ITEMS_TO_DISPLAY} />
+		<Sidebar url={`${hostname}:${path}`} title={'Recent support tickets'} items={sidebarItems} />
 	</div>)
 };
 

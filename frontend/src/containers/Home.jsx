@@ -2,8 +2,6 @@ import React from 'react';
 
 import { hostname, port } from '../shared/constants';
 
-import Menubar from '../shared/components/Menubar';
-
 const Home = () => {
     return (<div>
         <h1>Welcome to Gamer's Paradise!</h1>
