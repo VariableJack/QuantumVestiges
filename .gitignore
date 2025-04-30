@@ -7,3 +7,7 @@ backend/package-lock.json
 frontend/package-lock.json
 
 backend/cdk.out
+
+# Other env / secrets
+backend/.env
+frontend/.env

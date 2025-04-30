@@ -7,9 +7,8 @@
     "scripts": {
         "list": "cdk synth",
         "cdk": "cdk",
-        "prettier": "prettier --ignore-path .gitignore --write \"**/*.+(ts|tsx|json)\"",
-        "format": "prettier --ignore-path .gitignore --write \"**/*.+(ts|tsx|json)\"",
-        "clean": "rm -rf node_modules"
+		"deploy": "deploy.sh",
+        "format": "prettier --ignore-path .gitignore --write \"**/*.+(ts|tsx|json)\""
     },
     "devDependencies": {
         "@types/jest": "^29.5.14",
