@@ -5,6 +5,7 @@ import { APIGatewayStack } from './apiGateway'
 import { DynamoDbStack } from './dynamodb'
 import { LambdaStack } from './lambda'
 import { IamStack } from './iam'
+import { CloudWatchStack } from './cloudWatchStack'
 
 const deploymentEnvironments: {
     stage: string
@@ -23,16 +24,38 @@ deploymentEnvironments.forEach(deploymentEnvironment => {
     const { stage }: { stage: string } = deploymentEnvironment
     const iamStack = new IamStack(app, `IamStack-${stage}`, deploymentEnvironment)
 
-    const lambdaExecutionRole = iamStack.lambdaExecutionRole
-    const lambdaStack = new LambdaStack(app, `LambdaStack-${stage}`, {
-        ...deploymentEnvironment,
-        lambdaExecutionRole,
-    })
-
     const apiGatewayStack = new APIGatewayStack(
         app,
         `APIGatewayStack-${stage}`,
         deploymentEnvironment,
     )
     const dynamoDbStack = new DynamoDbStack(app, `DynamoDbStack-${stage}`, deploymentEnvironment)
+
+    const lambdaExecutionRole = iamStack.lambdaExecutionRole
+    const lambdaStack = new LambdaStack(app, `LambdaStack-${stage}`, {
+        ...deploymentEnvironment,
+        lambdaExecutionRole,
+    })
+    lambdaStack.addDependency(
+        iamStack,
+        'All Lambda functions depend on an associated Lambda IAM role existing',
+    )
+    lambdaStack.addDependency(
+        dynamoDbStack,
+        'Some Lambda functions depend on DynamoDB tables existing',
+    )
+
+    const cloudWatchStack = new CloudWatchStack(
+        app,
+        `CloudWatchStack-${stage}`,
+        deploymentEnvironment,
+    )
+    cloudWatchStack.addDependency(
+        lambdaStack,
+        'Alarming on Lambda functions depends on said functions existing',
+    )
+    cloudWatchStack.addDependency(
+        dynamoDbStack,
+        'Alarming on DynamoDB tables depends on said tables  existing',
+    )
 })

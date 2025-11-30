@@ -5,10 +5,6 @@ import { TABLES } from './shared/constants'
 
 interface DynamoDbProps extends StackProps {
     stage: string
-    env: {
-        account: string
-        region: string
-    }
 }
 export class DynamoDbStack extends Stack {
     constructor(scope: App, id: string, props: DynamoDbProps) {

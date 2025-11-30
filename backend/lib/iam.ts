@@ -3,10 +3,6 @@ import { Role, ServicePrincipal, Policy, PolicyStatement } from 'aws-cdk-lib/aws
 
 interface IamProps extends StackProps {
     stage: string
-    env: {
-        account: string
-        region: string
-    }
 }
 export class IamStack extends Stack {
     public readonly lambdaExecutionRole: Role
