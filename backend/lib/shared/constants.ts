@@ -1,10 +1,7 @@
 import { AttributeType } from 'aws-cdk-lib/aws-dynamodb'
 import { LambdaFunctionType, DynamoDbType } from './interfaces'
 
-const LAMBDA_FUNCTIONS: LambdaFunctionType[] = [
-    { name: 'franchises', method: 'get' },
-    { name: 'games', method: 'get' },
-]
+const LAMBDA_FUNCTIONS: LambdaFunctionType[] = [{ name: 'GetFranchises' }, { name: 'GetGames' }]
 
 const TABLES: DynamoDbType[] = [
     {

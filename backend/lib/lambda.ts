@@ -15,10 +15,10 @@ export class LambdaStack extends Stack {
         const { stage, lambdaExecutionRole } = props
         LAMBDA_FUNCTIONS.forEach(lambdaFunction => {
             const newFunction = new Function(this, `${lambdaFunction.name}-${stage}`, {
-                runtime: Runtime.NODEJS_18_X,
+                runtime: Runtime.NODEJS_22_X,
                 functionName: `${lambdaFunction.name}-${stage}`,
                 handler: `${lambdaFunction.name}.handler`,
-                code: Code.fromAsset(`src/${lambdaFunction.method}`),
+                code: Code.fromAsset(`src`),
                 environment: { stage },
                 role: lambdaExecutionRole,
             })
