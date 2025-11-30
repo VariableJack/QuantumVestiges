@@ -14,7 +14,8 @@ interface LocalSecondaryIndexType {
 interface DynamoDbType {
     tableName: string
     partitionKey: KeyType
-    localSecondaryIndexes: LocalSecondaryIndexType[]
+    sortKey?: KeyType
+    localSecondaryIndexes?: LocalSecondaryIndexType[]
 }
 
 export { LambdaFunctionType, DynamoDbType }
