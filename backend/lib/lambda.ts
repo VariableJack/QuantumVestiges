@@ -7,6 +7,10 @@ import { LAMBDA_FUNCTIONS } from './shared/constants'
 
 interface LambdaProps extends StackProps {
     stage: string
+    env: {
+        account: string
+        region: string
+    }
     lambdaExecutionRole: Role
 }
 export class LambdaStack extends Stack {
@@ -22,7 +26,7 @@ export class LambdaStack extends Stack {
 
         const { stage, lambdaExecutionRole } = props
         LAMBDA_FUNCTIONS.forEach(lambdaFunction => {
-            const newFunction = new Function(this, ``, {
+            const newFunction = new Function(this, `${lambdaFunction.name}-${stage}`, {
                 codeSigningConfig,
                 runtime: Runtime.NODEJS_18_X,
                 handler: `${lambdaFunction.name}.handler`,

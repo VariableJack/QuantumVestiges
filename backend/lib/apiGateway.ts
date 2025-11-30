@@ -4,6 +4,10 @@ import { LAMBDA_FUNCTIONS } from './shared/constants'
 
 interface APIGatewayProps extends StackProps {
     stage: string
+    env: {
+        account: string
+        region: string
+    }
 }
 export class APIGatewayStack extends Stack {
     constructor(scope: App, id: string, props: APIGatewayProps) {

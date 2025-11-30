@@ -3,6 +3,10 @@ import { Role, ServicePrincipal, Policy, PolicyStatement } from 'aws-cdk-lib/aws
 
 interface IamProps extends StackProps {
     stage: string
+    env: {
+        account: string
+        region: string
+    }
 }
 export class IamStack extends Stack {
     public readonly lambdaExecutionRole: Role
@@ -12,10 +16,11 @@ export class IamStack extends Stack {
         const { stage } = props
 
         this.lambdaExecutionRole = new Role(this, `LambdaExecutionRole-${stage}`, {
+            roleName: `LambdaExecutionRole-${stage}`,
             assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
         })
         this.lambdaExecutionRole.attachInlinePolicy(
-            new Policy(this, 'userpool-policy', {
+            new Policy(this, 'lambda-policy', {
                 statements: [
                     new PolicyStatement({
                         actions: [
@@ -26,7 +31,7 @@ export class IamStack extends Stack {
                             's3:GetObject',
                             's3:PutObject',
                         ],
-                        resources: ['aws:arn:*:lambda'],
+                        resources: ['*'],
                     }),
                 ],
             }),
