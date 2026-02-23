@@ -1,6 +1,8 @@
 import { AttributeType } from 'aws-cdk-lib/aws-dynamodb'
 interface LambdaFunctionType {
     name: string
+    methodType: string
+    apiPath: string
 }
 interface KeyType {
     name: string

@@ -13,11 +13,11 @@ export class LambdaStack extends Stack {
         super(scope, id, props)
 
         const { stage, lambdaExecutionRole } = props
-        LAMBDA_FUNCTIONS.forEach(lambdaFunction => {
-            const newFunction = new Function(this, `${lambdaFunction.name}-${stage}`, {
+        LAMBDA_FUNCTIONS.forEach(lambda => {
+            const newFunction = new Function(this, `${lambda.name}-${stage}`, {
                 runtime: Runtime.NODEJS_22_X,
-                functionName: `${lambdaFunction.name}-${stage}`,
-                handler: `${lambdaFunction.name}.handler`,
+                functionName: `${lambda.name}-${stage}`,
+                handler: `${lambda.name}.handler`,
                 code: Code.fromAsset(`src`),
                 environment: { stage },
                 role: lambdaExecutionRole,

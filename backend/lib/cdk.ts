@@ -23,15 +23,9 @@ const app = new App()
 deploymentEnvironments.forEach(deploymentEnvironment => {
     const { stage }: { stage: string } = deploymentEnvironment
     const iamStack = new IamStack(app, `IamStack-${stage}`, deploymentEnvironment)
-
-    const apiGatewayStack = new APIGatewayStack(
-        app,
-        `APIGatewayStack-${stage}`,
-        deploymentEnvironment,
-    )
     const dynamoDbStack = new DynamoDbStack(app, `DynamoDbStack-${stage}`, deploymentEnvironment)
 
-    const lambdaExecutionRole = iamStack.lambdaExecutionRole
+    const { lambdaExecutionRole } = iamStack
     const lambdaStack = new LambdaStack(app, `LambdaStack-${stage}`, {
         ...deploymentEnvironment,
         lambdaExecutionRole,
@@ -43,6 +37,16 @@ deploymentEnvironments.forEach(deploymentEnvironment => {
     lambdaStack.addDependency(
         dynamoDbStack,
         'Some Lambda functions depend on DynamoDB tables existing',
+    )
+
+    const apiGatewayStack = new APIGatewayStack(
+        app,
+        `APIGatewayStack-${stage}`,
+        deploymentEnvironment
+    )
+    apiGatewayStack.addDependency(
+        lambdaStack,
+        'API Gateway definitions depend on Lambda functions existing',
     )
 
     const cloudWatchStack = new CloudWatchStack(

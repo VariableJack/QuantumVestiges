@@ -12,5 +12,5 @@ export const handler = async (event) => {
         TableName: `games-${stage}`,
     });
 	const results = await docClient.send(command)
-    return results.Items;
+    return results.Items
 };
