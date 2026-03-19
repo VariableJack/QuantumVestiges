@@ -8,7 +8,7 @@ export const requestsEndpoints = gamerParadiseApiSlice.injectEndpoints({
       query: ({
         type,
         requester,
-	  }) => ({
+      }) => ({
           url: '/requests',
           param: {
               type,
@@ -21,13 +21,13 @@ export const requestsEndpoints = gamerParadiseApiSlice.injectEndpoints({
       query: ({
         type,
         requester,
-	  }) => ({
+      }) => ({
         url: '/requests',
         body,
           method: 'POST'
       }),
       invalidateTags: ['Request'],
-	})
+    })
   })
 })
 

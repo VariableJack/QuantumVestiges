@@ -46,7 +46,7 @@ const login = async (username: string, password: string) => {
     const dispatch = useDispatch();
     dispatch(clearError());
     try {
-	    const command = new InitiateAuthCommand({
+        const command = new InitiateAuthCommand({
             AuthFlow: 'USER_PASSWORD_AUTH',
             ClientId: config.clientId,
             AuthParameters: {
@@ -101,7 +101,7 @@ export {
     setError,
     clearError,
     login,
-	logout,
-	signup,
+    logout,
+    signup,
 }
 export default userViewSlice.reducer

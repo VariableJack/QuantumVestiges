@@ -12,7 +12,7 @@ import {
 } from '../../../shared/utils';
 
 import {
-	useGetRequestsQuery, useSubmitRequestMutation
+    useGetRequestsQuery, useSubmitRequestMutation
 } from '../api/requestsEndpoints';
 
 const SupportRequest = () => {

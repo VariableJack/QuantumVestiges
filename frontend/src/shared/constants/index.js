@@ -53,15 +53,15 @@ const menubarItems = [
 */
 
 const MOCK_ITEMS_TO_DISPLAY = [
-	{
-		title: 'Test',
-		id: 12345,
-		type: 'FEATURE_REQUEST',
-	},
+    {
+        title: 'Test',
+        id: 12345,
+        type: 'FEATURE_REQUEST',
+    },
 ];
 export {
     hostname,
     port,
     menubarItems,
-	MOCK_ITEMS_TO_DISPLAY,
+    MOCK_ITEMS_TO_DISPLAY,
 }

@@ -11,12 +11,12 @@ export const mediaEndpoints = gamerParadiseApiSlice.injectEndpoints({
     getGamesInFranchise: builder.query({
       query: ({
         franchise,
-	  }) => ({
+      }) => ({
           url: `/games?franchise=${franchise}`,
           method: 'GET',
       }),
-	})
+    })
   })
 })
 
-export const { useGetFranchisesQuery, useLazyGetFranchisesQuery, useGetGamesInFranchiseQuery } = mediaEndpoints
+export const { useGetFranchisesQuery, useLazyGetFranchisesQuery, useGetGamesInFranchiseQuery, useLazyGetGamesInFranchiseQuery } = mediaEndpoints
