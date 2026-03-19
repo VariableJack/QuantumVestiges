@@ -1,27 +1,28 @@
 # GamerParadise
 A custom portal to various utilities and calculators for various games, along with personally developed games
 
-## Setup -- this module is a WiP
+## Setup
 For the backend, you need to have at least one AWS account created and set up. As all of the backend stacks will running on services with a free tier, you shouldn't need to worry about the costs unless you experience significant traffic.
 Two different ways to set up your infrastructure are mentioned here:
 - Single AWS account that hosts everything, but the account needs to be set up to segregate between the infrastructure for your Development, Pre-Production, and Production environment
 - Multiple AWS accounts, one for each of your desired environments (Develkopment, Pre-Production, Production)
 
-For the purposes of this project and GitHub Repo, a single account will be set up, but all of the deployment scripts (`backend/deploy.sh` and `frontend/deploy.sh`) will be able to support multiple AWS accounts
-
 ### Setting up your Windows environment (**WINDOWS ONLY**)
 1. If your "Windows Subsystems for Linux" (WSL) is not already enabled, ensure it is, as all scripts have been designed to run in a Linux-like system.
 2. Restart your computer.
-3. Install any Linux distribution.
+3. Install any Linux distribution as you desire.
 
 ### Setting up your AWS account
 Once your account has been created, follow these steps to set it up for use:
 1. Visit the Identity and Access Management (IAM) console
-2. Create a new IAM Role with CloudFormation permissions - WIP
-3. Save the AWS Access Key ID and AWS Secret Access Key ID - these will be used in the next step
+2. Create a new IAM Role with CloudFormation permissions=
+3. Create an AWS Access Key, saving the AWS Access Key ID and AWS Secret Access Key ID - these will be used in the next step
 
-### Within your Linux or MacOS terminal
-1. Run the `aws configure` command. When prompted, enter the following information
+### Common
+1. Install a Git CLI for your OS
+2. Install NPM (Node Package Manager)
+3. Install a "global"
+2. Run the `aws configure` command. When prompted, enter the following information
  - AWS Access Key ID - saved from when you where setting up your IAM role
  - AWS Secret Access Key - saved from when you where setting up your IAM role
  - Region - this will be your desired region for all of your infrastructure

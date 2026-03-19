@@ -19,7 +19,7 @@ export class CloudWatchStack extends Stack {
                 namespace: 'AWS/Lambda',
                 metricName: 'Duration',
                 statistic: 'Average',
-                period: Duration.minutes(2),
+                period: Duration.minutes(5),
                 dimensionsMap: { functionName: `${name}-${stage}` },
             })
             latencyAlarms.push(
@@ -58,7 +58,7 @@ export class CloudWatchStack extends Stack {
                 namespace: 'AWS/DynamoDB',
                 metricName: 'SuccessfulRequestLatency',
                 statistic: 'Average',
-                period: Duration.minutes(2),
+                period: Duration.minutes(5),
                 dimensionsMap: { TableName: `${tableName}-${stage}`, Operation: 'Scan' },
             })
             latencyAlarms.push(
@@ -76,7 +76,7 @@ export class CloudWatchStack extends Stack {
                 namespace: 'AWS/DynamoDB',
                 metricName: 'SuccessfulRequestLatency',
                 statistic: 'Average',
-                period: Duration.minutes(2),
+                period: Duration.minutes(5),
                 dimensionsMap: { TableName: `${tableName}-${stage}`, Operation: 'PutItem' },
             })
             latencyAlarms.push(

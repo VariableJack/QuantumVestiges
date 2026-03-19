@@ -3,3 +3,4 @@ package-lock.json
 cdk.out
 .env
 bin
+cdk.context.json

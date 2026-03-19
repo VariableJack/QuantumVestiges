@@ -61,37 +61,39 @@ export class APIGatewayStack extends Stack {
                 resource = api.root.addResource(apiPath)
                 pathUrlResources.set(apiPath, resource)
             }
+			const intOpts = {
+				proxy: false,
+				integrationResponses: [
+					{
+						statusCode: '200',
+						responseParameters: {
+							'method.response.header.Access-Control-Allow-Origin': '\'*\'',
+						},
+						responseTemplates: {
+							'application/json': '',
+						},
+					},
+				],
+			}
+			const methodOpts = {
+				...requestParameters,
+				methodResponses: [
+					{
+						statusCode: '200',
+						responseParameters: {
+							'method.response.header.Access-Control-Allow-Origin': true,
+						},
+						responseModels: {
+							'application/json': emptyResponseModel,
+						},
+					},
+				],
+			}
             resource.addMethod(
                 methodType,
-                new LambdaIntegration(lambdaFunction, {
-                    proxy: false,
-                    integrationResponses: [
-                        {
-                            statusCode: '200',
-                            responseParameters: {
-                                'method.response.header.Access-Control-Allow-Origin': '\'*\'',
-                            },
-                            responseTemplates: {
-                                'application/json': '',
-                            },
-                        },
-                    ],
-                }),
-                {
-                    ...requestParameters,
-                    methodResponses: [
-                        {
-                            statusCode: '200',
-                            responseParameters: {
-                                'method.response.header.Access-Control-Allow-Origin': true,
-                            },
-                            responseModels: {
-                                'application/json': emptyResponseModel,
-                            },
-                        },
-                    ],
-                },
+                new LambdaIntegration(lambdaFunction, intOpts),
+                methodOpts
             )
-        }
+        })
     }
 }

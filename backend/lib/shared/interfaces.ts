@@ -3,6 +3,7 @@ interface LambdaFunctionType {
     name: string
     methodType: string
     apiPath: string
+	requestParameters?: any
 }
 interface KeyType {
     name: string
