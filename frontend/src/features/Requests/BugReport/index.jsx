@@ -80,7 +80,7 @@ const BugReport = () => {
             </div>
         
         </div>
-        <Sidebar url={`${hostname}:${path}`} title={'Recent bug reports'} items={sidebarItems} />
+        <Sidebar url={`${hostname}:${port}`} title={'Recent bug reports'} items={sidebarItems} />
     </div>)
 };
 

@@ -21,6 +21,10 @@ import {
     port,
     menubarItems,
 } from './shared/constants'
+
+import {
+    getConfig
+} from './shared/utils/getConfiguration'
 // Base pages
 import Home from './features/Home';
 import ContactUs from './features/ContactUs';
@@ -37,6 +41,18 @@ import SupportRequest from './features/Requests/SupportRequest';
 // Game Pages
 import FranchisePage from './features/FranchisePage'
 import GamePage from './features/FranchisePage/GamePage'
+
+// Auth
+import { AuthProvider } from "react-oidc-context";
+
+const cognitoAuthConfig = {
+  authority: "https://cognito-idp.us-west-1.amazonaws.com/us-west-1_U8YRON4G4",
+  client_id: getConfig('clientId'),
+  response_type: "code",
+  redirect_uri: 'https://127.0.0.1:3000',
+  scope: "email openid phone",
+};
+
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 const App = () => {
@@ -67,32 +83,33 @@ const App = () => {
     useEffect(() => {
         getFranchises()
     }, [])
-    
     return (
         <div>
             <div>
                 <React.StrictMode>
-                    <div>
-                        <Menubar url={`${hostname}:${port}`} items={finalItemsToDisplay}/>
-                    </div>
-                    <Router>
-                        <Routes>
-                            <Route path='/about-us' element={<AboutUs />} />
-                            <Route path='/contact-us' element={<ContactUs />} />
-                            <Route path='/login' element={<Login />} />
-                            <Route path='/franchise' element={<FranchisePage />} />
-                            <Route path='/game?franchiseId=:franchiseId&gameId=:gameId' element={<GamePage />} />
-                            
-                            <Route path='/feature-request' element={<FeatureRequest />} />
-                            <Route path='/game-request' element={<GameRequest />} />
-                            <Route path='/bug-report' element={<BugReport />} />
-                            <Route path='/support' element={<SupportRequest />} />
-                            <Route path='/login' element={<Login />} />
-                            
-                            <Route path='/*' element={<NoPage />} />
-                            <Route path='/' element={<Home />} />
-                        </Routes>
-                    </Router>
+                    <AuthProvider {...cognitoAuthConfig}>
+                        <div>
+                            <Menubar url={`${hostname}:${port}`} items={finalItemsToDisplay}/>
+                        </div>
+                        <Router>
+                            <Routes>
+                                <Route path='/about-us' element={<AboutUs />} />
+                                <Route path='/contact-us' element={<ContactUs />} />
+                                <Route path='/login' element={<Login />} />
+                                <Route path='/franchise' element={<FranchisePage />} />
+                                <Route path='/game?franchiseId=:franchiseId&gameId=:gameId' element={<GamePage />} />
+                                
+                                <Route path='/feature-request' element={<FeatureRequest />} />
+                                <Route path='/game-request' element={<GameRequest />} />
+                                <Route path='/bug-report' element={<BugReport />} />
+                                <Route path='/support' element={<SupportRequest />} />
+                                <Route path='/login' element={<Login />} />
+                                
+                                <Route path='/*' element={<NoPage />} />
+                                <Route path='/' element={<Home />} />
+                            </Routes>
+                        </Router>
+                    </AuthProvider>
                 </React.StrictMode>
             </div>
         </div>)

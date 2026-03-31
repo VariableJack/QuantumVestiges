@@ -80,7 +80,7 @@ const FeatureRequest = () => {
             </div>
         
         </div>
-        <Sidebar url={`${hostname}:${path}`} title={'Recent feature requests'} items={sidebarItems} />
+        <Sidebar url={`${hostname}:${port}`} title={'Recent feature requests'} items={sidebarItems} />
     </div>)
 };
 

@@ -1,4 +1,4 @@
-const hostname = 'http://127.0.0.1';
+const hostname = 'https://127.0.0.1';
 const port = '3000';
 
 const menubarItems = [

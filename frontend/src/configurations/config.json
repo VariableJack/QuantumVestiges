@@ -1,0 +1,12 @@
+{
+    "development": {
+        "region": "us-west-1",
+        "userPoolId": "us-west-1_U8YRON4G4",
+        "clientId": "abh6e3f1j5o0kq5fcssq0k7ka"
+    },
+    "prod": {
+        "region": "us-west-1",
+        "userPoolId": "",
+        "clientId": ""
+    }
+}

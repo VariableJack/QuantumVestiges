@@ -80,7 +80,7 @@ const GameRequest = () => {
             </div>
         
         </div>
-        <Sidebar url={`${hostname}:${path}`} title={'Recent game requests'} items={sidebarItems} />
+        <Sidebar url={`${hostname}:${port}`} title={'Recent game requests'} items={sidebarItems} />
     </div>)
 };
 

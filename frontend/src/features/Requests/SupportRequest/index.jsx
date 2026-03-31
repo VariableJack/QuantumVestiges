@@ -84,7 +84,7 @@ const SupportRequest = () => {
             </div>
         
         </div>
-        <Sidebar url={`${hostname}:${path}`} title={'Recent support tickets'} items={sidebarItems} />
+        <Sidebar url={`${hostname}:${port}`} title={'Recent support tickets'} items={sidebarItems} />
     </div>)
 };
 
