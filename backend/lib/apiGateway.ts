@@ -1,4 +1,5 @@
 import { App, Stack, StackProps } from 'aws-cdk-lib'
+import { RemovalPolicy } from 'aws-cdk-lib/core';
 import { ServicePrincipal } from 'aws-cdk-lib/aws-iam'
 import { Function } from 'aws-cdk-lib/aws-lambda'
 import {
@@ -8,6 +9,7 @@ import {
     LambdaIntegration,
     JsonSchemaVersion,
     JsonSchemaType,
+    Model,
 } from 'aws-cdk-lib/aws-apigateway'
 
 import { LAMBDA_FUNCTIONS } from './shared/constants'
@@ -31,6 +33,11 @@ export class APIGatewayStack extends Stack {
             deployOptions: {
                 stageName: stage
             },
+            cloudWatchRole: true,
+            cloudWatchRoleRemovalPolicy: RemovalPolicy.DESTROY,
+        })
+        const requestValidator = api.addRequestValidator('GamerParadiseServer-RequestValidator', {
+            validateRequestParameters: true,
         })
 
         const emptyResponseModel = api.addModel('EmptyResponseModel', {
@@ -45,7 +52,7 @@ export class APIGatewayStack extends Stack {
 
         const pathUrlResources = new Map()
         LAMBDA_FUNCTIONS.forEach((lambda) => {
-            const { name, methodType, apiPath, requestParameters } = lambda
+            const { name, methodType, apiPath, requestParameters, methodRequestParameters, integrationRequestParameters } = lambda
             const lambdaFunction = Function.fromFunctionArn(
                 this,
                 `APIG-${name}-${stage}`,
@@ -61,34 +68,48 @@ export class APIGatewayStack extends Stack {
                 resource = api.root.addResource(apiPath)
                 pathUrlResources.set(apiPath, resource)
             }
-			const intOpts = {
-				proxy: false,
-				integrationResponses: [
-					{
-						statusCode: '200',
-						responseParameters: {
-							'method.response.header.Access-Control-Allow-Origin': '\'*\'',
-						},
-						responseTemplates: {
-							'application/json': '',
-						},
-					},
-				],
-			}
-			const methodOpts = {
-				...requestParameters,
-				methodResponses: [
-					{
-						statusCode: '200',
-						responseParameters: {
-							'method.response.header.Access-Control-Allow-Origin': true,
-						},
-						responseModels: {
-							'application/json': emptyResponseModel,
-						},
-					},
-				],
-			}
+            let requestTemplates: {
+                'application/json': string
+            }| undefined = undefined
+            if (requestParameters) {
+                const requestTemplateInput = Object.keys(requestParameters).map((param) => `"${param}": "$input.params('${param}')"`).join(',')
+                requestTemplates = {
+                    'application/json': `{
+                        ${requestTemplateInput}
+                    }`
+                }
+            }
+            const intOpts = {
+                requestParameters: integrationRequestParameters,
+                proxy: false,
+                integrationResponses: [
+                    {
+                        statusCode: '200',
+                        responseParameters: {
+                            'method.response.header.Access-Control-Allow-Origin': '\'*\'',
+                        },
+                        responseTemplates: {
+                            'application/json': '',
+                        },
+                    },
+                ],
+                requestTemplates,
+            }
+            const methodOpts = {
+                requestValidator,
+                requestParameters: methodRequestParameters,
+                methodResponses: [
+                    {
+                        statusCode: '200',
+                        responseParameters: {
+                            'method.response.header.Access-Control-Allow-Origin': true,
+                        },
+                        responseModels: {
+                            'application/json': emptyResponseModel,
+                        },
+                    },
+                ],
+            }
             resource.addMethod(
                 methodType,
                 new LambdaIntegration(lambdaFunction, intOpts),

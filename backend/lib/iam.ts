@@ -26,6 +26,8 @@ export class IamStack extends Stack {
                             's3:ListBucket',
                             's3:GetObject',
                             's3:PutObject',
+                            'logs:CreateLogStream',
+                            'logs:PutLogEvents'
                         ],
                         resources: ['*'],
                     }),

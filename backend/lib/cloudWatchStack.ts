@@ -1,5 +1,6 @@
 import { App, Duration, Stack, StackProps } from 'aws-cdk-lib'
 import { Alarm, Metric, TreatMissingData } from 'aws-cdk-lib/aws-cloudwatch'
+import { LogGroup } from 'aws-cdk-lib/aws-logs'
 import { LAMBDA_FUNCTIONS, TABLES } from './shared/constants'
 
 interface CloudWatchProps extends StackProps {
@@ -15,6 +16,10 @@ export class CloudWatchStack extends Stack {
         // Lambda alarms
         LAMBDA_FUNCTIONS.forEach(lambda => {
             const { name } = lambda
+            const logGroup = new LogGroup(this, `${name}-${stage}`, {
+                logGroupName: `/aws/lambda/${name}-${stage}`
+            })
+            /*
             const latencyMetric = new Metric({
                 namespace: 'AWS/Lambda',
                 metricName: 'Duration',
@@ -50,8 +55,10 @@ export class CloudWatchStack extends Stack {
                     treatMissingData: TreatMissingData.NOT_BREACHING,
                 }),
             )
+            /* */
         })
         // DynamoDB alarms
+        /*
         TABLES.forEach(table => {
             const { tableName } = table
             const scanLatencyMetric = new Metric({
@@ -90,5 +97,6 @@ export class CloudWatchStack extends Stack {
                 }),
             )
         })
+        /* */
     }
 }

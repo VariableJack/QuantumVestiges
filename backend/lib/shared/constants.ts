@@ -1,4 +1,5 @@
 import { AttributeType } from 'aws-cdk-lib/aws-dynamodb'
+import { JsonSchemaType } from 'aws-cdk-lib/aws-apigateway'
 import { LambdaFunctionType, DynamoDbType } from './interfaces'
 
 const LAMBDA_FUNCTIONS: LambdaFunctionType[] = [
@@ -11,7 +12,27 @@ const LAMBDA_FUNCTIONS: LambdaFunctionType[] = [
         name: 'GetGames',
         methodType: 'GET',
         apiPath: 'games',
-        requestParameters: { franchiseId: 'franchiseId' },
+        requestParameters: {
+            franchiseId: {
+                type: JsonSchemaType.NUMBER
+            }
+        },
+        methodRequestParameters: {
+            'method.request.querystring.franchiseId': true,
+        },
+        integrationRequestParameters: {
+            'integration.request.querystring.franchiseId': 'method.request.querystring.franchiseId',
+        },
+    },
+    {
+        name: 'GetFeatureRequests',
+        methodType: 'GET',
+        apiPath: 'feature-request',
+        requestParameters: {
+            featureRequestId: {
+                type: JsonSchemaType.NUMBER
+            }
+        },
     },
 ]
 
