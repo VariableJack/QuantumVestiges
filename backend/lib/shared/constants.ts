@@ -34,6 +34,36 @@ const LAMBDA_FUNCTIONS: LambdaFunctionType[] = [
             }
         },
     },
+    {
+        name: 'GetBugReports',
+        methodType: 'GET',
+        apiPath: 'bug-report',
+        requestParameters: {
+            bugReportId: {
+                type: JsonSchemaType.NUMBER
+            }
+        },
+    },
+    {
+        name: 'GetSupportRequests',
+        methodType: 'GET',
+        apiPath: 'support-request',
+        requestParameters: {
+            supportRequestId: {
+                type: JsonSchemaType.NUMBER
+            }
+        },
+    },
+    {
+        name: 'GetGameRequests',
+        methodType: 'GET',
+        apiPath: 'game-request',
+        requestParameters: {
+            gameRequestId: {
+                type: JsonSchemaType.NUMBER
+            }
+        },
+    },
 ]
 
 const TABLES: DynamoDbType[] = [
@@ -46,6 +76,22 @@ const TABLES: DynamoDbType[] = [
         partitionKey: { name: 'franchise_id', type: AttributeType.NUMBER },
         sortKey: { name: 'game_id', type: AttributeType.NUMBER },
     },
+	{
+		tableName: 'featureRequests',
+		partitionKey: { name: 'feature_id', type: AttributeType.NUMBER },
+	},
+	{
+		tableName: 'supportRequests',
+		partitionKey: { name: 'support_id', type: AttributeType.NUMBER },
+	},
+	{
+		tableName: 'bugReports',
+		partitionKey: { name: 'bug_report_id', type: AttributeType.NUMBER },
+	},
+	{
+		tableName: 'gameRequests',
+		partitionKey: { name: 'game_request_id', type: AttributeType.NUMBER },
+	},
 ]
 
 export { LAMBDA_FUNCTIONS, TABLES }
