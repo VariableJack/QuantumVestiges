@@ -64,6 +64,43 @@ const LAMBDA_FUNCTIONS: LambdaFunctionType[] = [
             }
         },
     },
+    {
+        name: 'GetPurchasedGames',
+        methodType: 'GET',
+        apiPath: 'purchase-games',
+        requestParameters: {
+            username: {
+                type: JsonSchemaType.STRING
+            }
+        },
+        methodRequestParameters: {
+            'method.request.querystring.username': true,
+        },
+        integrationRequestParameters: {
+            'integration.request.querystring.username': 'method.request.querystring.username',
+        },
+    },
+    {
+        name: 'PurchaseGame',
+        methodType: 'POST',
+        apiPath: 'purchase-request',
+        requestParameters: {
+            username: {
+                type: JsonSchemaType.STRING
+            },
+            gameId: {
+                type: JsonSchemaType.NUMBER
+            }
+        },
+        methodRequestParameters: {
+            'method.request.querystring.username': true,
+            'method.request.querystring.gameId': true,
+        },
+        integrationRequestParameters: {
+            'integration.request.querystring.username': 'method.request.querystring.username',
+            'integration.request.querystring.gameId': 'method.request.querystring.gameId',
+        },
+    },
 ]
 
 const TABLES: DynamoDbType[] = [
@@ -76,22 +113,27 @@ const TABLES: DynamoDbType[] = [
         partitionKey: { name: 'franchise_id', type: AttributeType.NUMBER },
         sortKey: { name: 'game_id', type: AttributeType.NUMBER },
     },
-	{
-		tableName: 'featureRequests',
-		partitionKey: { name: 'feature_id', type: AttributeType.NUMBER },
-	},
-	{
-		tableName: 'supportRequests',
-		partitionKey: { name: 'support_id', type: AttributeType.NUMBER },
-	},
-	{
-		tableName: 'bugReports',
-		partitionKey: { name: 'bug_report_id', type: AttributeType.NUMBER },
-	},
-	{
-		tableName: 'gameRequests',
-		partitionKey: { name: 'game_request_id', type: AttributeType.NUMBER },
-	},
+    {
+        tableName: 'featureRequests',
+        partitionKey: { name: 'feature_id', type: AttributeType.NUMBER },
+    },
+    {
+        tableName: 'supportRequests',
+        partitionKey: { name: 'support_id', type: AttributeType.NUMBER },
+    },
+    {
+        tableName: 'bugReports',
+        partitionKey: { name: 'bug_report_id', type: AttributeType.NUMBER },
+    },
+    {
+        tableName: 'gameRequests',
+        partitionKey: { name: 'game_request_id', type: AttributeType.NUMBER },
+    },
+    {
+        tableName: 'purchased_games',
+        partitionKey: { name: 'game_request_id', type: AttributeType.NUMBER },
+        sortKey: { name: 'game_id', type: AttributeType.NUMBER },
+    },
 ]
 
 export { LAMBDA_FUNCTIONS, TABLES }

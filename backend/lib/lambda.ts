@@ -17,8 +17,8 @@ export class LambdaStack extends Stack {
             const newFunction = new Function(this, `${lambda.name}-${stage}`, {
                 runtime: Runtime.NODEJS_22_X,
                 functionName: `${lambda.name}-${stage}`,
-                handler: `${lambda.name}.handler`,
-                code: Code.fromAsset(`src`),
+                handler: `index.handler`,
+                code: Code.fromAsset(`src/${lambda.name}`),
                 environment: { stage },
                 role: lambdaExecutionRole,
             })

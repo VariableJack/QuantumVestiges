@@ -10,7 +10,7 @@ environments=("default" "devo" "pre-prod" "prod")
 setEnvironmentVariables() {
     ACCOUNT="$1_ACCOUNT"
     REGION="$1_REGION"
-	
+
     environmentVariables["$ACCOUNT"]=$(eval "cat .env | grep '$1.account_id' | sed -r 's/$1.account_id=(.*)/\1/g'")
     environmentVariables["$REGION"]=$(eval "cat .env | grep '$1.region' | sed -r 's/$1.region=(.*)/\1/g'")
 
@@ -25,10 +25,10 @@ setEnvironmentVariables() {
 for environment in "${environments[@]}"
 do
     setEnvironmentVariables $environment
-	if [[ "$1" != "default" ]]; then
-    sed -i "s/'${environment}-account-id'/${environmentVariables[${environment}_ACCOUNT]}/" bin/cdk.ts
-    sed -i "s/'${environment}-region'/${environmentVariables["${environment}_REGION"]}/" bin/cdk.ts
-	fi
+    if [[ "$1" != "default" ]]; then
+        sed -i "s/'${environment}-account-id'/${environmentVariables[${environment}_ACCOUNT]}/" bin/cdk.ts
+        sed -i "s/'${environment}-region'/${environmentVariables["${environment}_REGION"]}/" bin/cdk.ts
+    fi
 done
 
 rm -rf .env

@@ -9,7 +9,7 @@ export const handler = async (event) => {
     const { supportRequestId } = event
     const stage = process.env.stage
 
-	// TODO: filter by requester, as they should only see their own support requests
+    // TODO: filter by requester, as they should only see their own support requests
     const command = new ScanCommand({
         TableName: `supportRequests-${stage}`,
         ...(featureRequestId ? {
