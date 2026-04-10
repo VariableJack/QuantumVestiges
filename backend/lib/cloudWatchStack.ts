@@ -17,7 +17,7 @@ export class CloudWatchStack extends Stack {
         LAMBDA_FUNCTIONS.forEach(lambda => {
             const { name } = lambda
             const logGroup = new LogGroup(this, `${name}-${stage}`, {
-                logGroupName: `/aws/lambda/${name}-${stage}`
+                logGroupName: `/aws/lambda/${name}-${stage}`,
             })
             /*
             const latencyMetric = new Metric({

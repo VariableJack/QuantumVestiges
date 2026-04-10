@@ -20,6 +20,7 @@ export class IamStack extends Stack {
                 statements: [
                     new PolicyStatement({
                         actions: [
+                            'cognito-idp:GetUser',
                             'dynamodb:Scan',
                             'dynamodb:GetItem',
                             'dynamodb:PutItem',
@@ -27,7 +28,7 @@ export class IamStack extends Stack {
                             's3:GetObject',
                             's3:PutObject',
                             'logs:CreateLogStream',
-                            'logs:PutLogEvents'
+                            'logs:PutLogEvents',
                         ],
                         resources: ['*'],
                     }),

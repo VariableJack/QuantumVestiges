@@ -3,10 +3,25 @@ import { JsonSchemaType } from 'aws-cdk-lib/aws-apigateway'
 import { LambdaFunctionType, DynamoDbType } from './interfaces'
 
 const LAMBDA_FUNCTIONS: LambdaFunctionType[] = [
+    // Get APIs
     {
         name: 'GetFranchises',
         methodType: 'GET',
         apiPath: 'franchises',
+        methodRequestParameters: {
+            'method.request.querystring.franchiseId': false,
+        },
+        integrationRequestParameters: {
+            'integration.request.querystring.franchiseId': 'method.request.querystring.franchiseId',
+        },
+        methodResponse: {
+            franchiseId: {
+                type: JsonSchemaType.NUMBER,
+            },
+            franchiseName: {
+                type: JsonSchemaType.STRING,
+            },
+        },
     },
     {
         name: 'GetGames',
@@ -14,14 +29,33 @@ const LAMBDA_FUNCTIONS: LambdaFunctionType[] = [
         apiPath: 'games',
         requestParameters: {
             franchiseId: {
-                type: JsonSchemaType.NUMBER
-            }
+                type: JsonSchemaType.NUMBER,
+            },
+            gameId: {
+                type: JsonSchemaType.NUMBER,
+            },
         },
         methodRequestParameters: {
             'method.request.querystring.franchiseId': true,
+            'method.request.querystring.gameId': false,
         },
         integrationRequestParameters: {
             'integration.request.querystring.franchiseId': 'method.request.querystring.franchiseId',
+            'integration.request.querystring.gameId': 'method.request.querystring.gameId',
+        },
+        methodResponse: {
+            gameId: {
+                type: JsonSchemaType.NUMBER,
+            },
+            gameName: {
+                type: JsonSchemaType.STRING,
+            },
+            franchiseId: {
+                type: JsonSchemaType.NUMBER,
+            },
+            franchiseName: {
+                type: JsonSchemaType.STRING,
+            },
         },
     },
     {
@@ -30,8 +64,26 @@ const LAMBDA_FUNCTIONS: LambdaFunctionType[] = [
         apiPath: 'feature-request',
         requestParameters: {
             featureRequestId: {
-                type: JsonSchemaType.NUMBER
-            }
+                type: JsonSchemaType.NUMBER,
+            },
+        },
+        methodRequestParameters: {
+            'method.request.querystring.featureRequestId': false,
+        },
+        integrationRequestParameters: {
+            'integration.request.querystring.featureRequestId':
+                'method.request.querystring.featureRequestId',
+        },
+        methodResponse: {
+            featureRequestId: {
+                type: JsonSchemaType.NUMBER,
+            },
+            title: {
+                type: JsonSchemaType.NUMBER,
+            },
+            gameName: {
+                type: JsonSchemaType.STRING,
+            },
         },
     },
     {
@@ -40,8 +92,14 @@ const LAMBDA_FUNCTIONS: LambdaFunctionType[] = [
         apiPath: 'bug-report',
         requestParameters: {
             bugReportId: {
-                type: JsonSchemaType.NUMBER
-            }
+                type: JsonSchemaType.NUMBER,
+            },
+        },
+        methodRequestParameters: {
+            'method.request.querystring.bugReportId': false,
+        },
+        integrationRequestParameters: {
+            'integration.request.querystring.bugReportId': 'method.request.querystring.bugReportId',
         },
     },
     {
@@ -50,8 +108,18 @@ const LAMBDA_FUNCTIONS: LambdaFunctionType[] = [
         apiPath: 'support-request',
         requestParameters: {
             supportRequestId: {
-                type: JsonSchemaType.NUMBER
-            }
+                type: JsonSchemaType.NUMBER,
+            },
+            requester: {
+                type: JsonSchemaType.STRING,
+            },
+        },
+        methodRequestParameters: {
+            'method.request.querystring.supportRequestId': false,
+        },
+        integrationRequestParameters: {
+            'integration.request.querystring.supportRequestId':
+                'method.request.querystring.supportRequestId',
         },
     },
     {
@@ -60,46 +128,167 @@ const LAMBDA_FUNCTIONS: LambdaFunctionType[] = [
         apiPath: 'game-request',
         requestParameters: {
             gameRequestId: {
-                type: JsonSchemaType.NUMBER
-            }
+                type: JsonSchemaType.NUMBER,
+            },
+        },
+        methodRequestParameters: {
+            'method.request.querystring.gameRequestId': false,
+        },
+        integrationRequestParameters: {
+            'integration.request.querystring.gameRequestId':
+                'method.request.querystring.gameRequestId',
         },
     },
     {
         name: 'GetPurchasedGames',
         methodType: 'GET',
         apiPath: 'purchase-games',
-        requestParameters: {
-            username: {
-                type: JsonSchemaType.STRING
-            }
-        },
-        methodRequestParameters: {
-            'method.request.querystring.username': true,
-        },
-        integrationRequestParameters: {
-            'integration.request.querystring.username': 'method.request.querystring.username',
-        },
+        methodResponse: {
+            franchiseId: {
+                type: JsonSchemaType.NUMBER,
+            },
+            franchiseName: {
+                type: JsonSchemaType.STRING,
+            },
+            gameId: {
+                type: JsonSchemaType.NUMBER,
+            },
+            gameName: {
+                type: JsonSchemaType.STRING,
+            },
+        }
     },
     {
-        name: 'PurchaseGame',
+        name: 'GetCart',
+        methodType: 'GET',
+        apiPath: 'cart',
+        methodResponse: {
+            franchiseId: {
+                type: JsonSchemaType.NUMBER,
+            },
+            franchiseName: {
+                type: JsonSchemaType.STRING,
+            },
+            gameId: {
+                type: JsonSchemaType.NUMBER,
+            },
+            gameName: {
+                type: JsonSchemaType.STRING,
+            },
+        }
+    },
+    // Post APIs
+    //{
+    //    name: 'SubmitFeatureRequest',
+    //    methodType: 'POST',
+    //    apiPath: 'feature-request',
+    //    requestParameters: {
+    //        featureRequestId: {
+    //            type: JsonSchemaType.NUMBER
+    //        },
+    //        requester: {
+    //            type: JsonSchemaType.STRING
+    //        },
+    //        title: {
+    //            type: JsonSchemaType.STRING
+    //        },
+    //        description: {
+    //            type: JsonSchemaType.STRING
+    //        },
+    //    },
+    //    methodRequestParameters: {
+    //        'method.request.querystring.featureRequestId': true,
+    //        'method.request.querystring.requester': true,
+    //        'method.request.querystring.title': true,
+    //        'method.request.querystring.description': true,
+    //    },
+    //    integrationRequestParameters: {
+    //        'integration.request.querystring.featureRequestId': 'method.request.querystring.featureRequestId',
+    //        'integration.request.querystring.requester': 'method.request.querystring.requester',
+    //        'integration.request.querystring.title': 'method.request.querystring.title',
+    //        'integration.request.querystring.description': 'method.request.querystring.description',
+    //    },
+    //},
+    //{
+    //    name: 'SubmitBugReport',
+    //    methodType: 'POST',
+    //    apiPath: 'bug-report',
+    //    requestParameters: {
+    //        bugReportId: {
+    //            type: JsonSchemaType.NUMBER
+    //        }
+    //    },
+    //    methodRequestParameters: {
+    //        'method.request.querystring.featureRequestId': true,
+    //    },
+    //    integrationRequestParameters: {
+    //        'integration.request.querystring.featureRequestId': 'method.request.querystring.featureRequestId',
+    //    },
+    //},
+    //{
+    //    name: 'SubmitSupportRequest',
+    //    methodType: 'POST',
+    //    apiPath: 'support-request',
+    //    requestParameters: {
+    //        supportRequestId: {
+    //            type: JsonSchemaType.NUMBER
+    //        }
+    //        requester: {
+    //            type: JsonSchemaType.STRING
+    //        }
+    //    },
+    //    methodRequestParameters: {
+    //        'method.request.querystring.supportRequestId': true,
+    //        'method.request.querystring.requester': true,
+    //    },
+    //    integrationRequestParameters: {
+    //        'integration.request.querystring.supportRequestId': 'method.request.querystring.supportRequestId',
+    //        'integration.request.querystring.requester': 'method.request.querystring.requester',
+    //    },
+    //},
+    //{
+    //    name: 'SubmitGameRequest',
+    //    methodType: 'POST',
+    //    apiPath: 'game-request',
+    //    requestParameters: {
+    //        gameRequestId: {
+    //            type: JsonSchemaType.NUMBER
+    //        }
+    //    },
+    //    methodRequestParameters: {
+    //        'method.request.querystring.featureRequestId': true,
+    //    },
+    //    integrationRequestParameters: {
+    //        'integration.request.querystring.featureRequestId': 'method.request.querystring.featureRequestId',
+    //    },
+    //},
+    {
+        name: 'CheckoutCart',
         methodType: 'POST',
-        apiPath: 'purchase-request',
+        apiPath: 'checkout-cart',
+    },
+    {
+        name: 'UpdateCart',
+        methodType: 'POST',
+        apiPath: 'update-cart',
         requestParameters: {
-            username: {
+            action: {
                 type: JsonSchemaType.STRING
             },
             gameId: {
                 type: JsonSchemaType.NUMBER
-            }
+            },
         },
-        methodRequestParameters: {
-            'method.request.querystring.username': true,
-            'method.request.querystring.gameId': true,
-        },
-        integrationRequestParameters: {
-            'integration.request.querystring.username': 'method.request.querystring.username',
-            'integration.request.querystring.gameId': 'method.request.querystring.gameId',
-        },
+        //methodRequestParameters: {
+        //    'method.request.body.action': true,
+        //    'method.request.body.accessToken': true,
+        //    'method.request.body.gameId': true,
+        //},
+        //integrationRequestParameters: {
+        //    'integration.request.body.action': 'method.request.body.action',
+        //    'integration.request.body.accessToken': 'method.request.body.accessToken',
+        //    'integration.request.body.gameId': 'method.request.body.gameId',
+        //},
     },
 ]
 
@@ -130,9 +319,12 @@ const TABLES: DynamoDbType[] = [
         partitionKey: { name: 'game_request_id', type: AttributeType.NUMBER },
     },
     {
-        tableName: 'purchased_games',
-        partitionKey: { name: 'game_request_id', type: AttributeType.NUMBER },
-        sortKey: { name: 'game_id', type: AttributeType.NUMBER },
+        tableName: 'purchasedGames',
+        partitionKey: { name: 'username', type: AttributeType.STRING },
+    },
+    {
+        tableName: 'carts',
+        partitionKey: { name: 'username', type: AttributeType.STRING },
     },
 ]
 

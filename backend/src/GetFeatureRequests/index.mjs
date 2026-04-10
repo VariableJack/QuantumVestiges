@@ -6,7 +6,7 @@ const docClient = DynamoDBDocumentClient.from(client);
 
 export const handler = async (event) => {
     console.log(`GetFeatureRequests - Received event (${JSON.stringify(event)})`)
-    const { featureRequestId } = event
+    const { featureRequestId } = event.queryStringParameters
     const stage = process.env.stage
 
     const command = new ScanCommand({
@@ -19,6 +19,9 @@ export const handler = async (event) => {
         } : {}
     });
     const results = await docClient.send(command)
-    console.log('GetFeatureRequests - Finished processing')
-    return results.Items
+    console.log(`GetFeatureRequests - Finished processing, returning results ${JSON.stringify(results)}`)
+    return {
+        headers: { 'Access-Control-Allow-Origin': 'https://localhost:3000', 'Access-Control-Allow-Credentials': 'true', 'Content-Type': 'application/json' },
+        body: JSON.stringify(results.Items)
+    }
 };

@@ -15,6 +15,11 @@ interface LambdaFunctionType {
     integrationRequestParameters?: {
         [string]: string
     }
+    methodResponse?: {
+        [string]: {
+            type: JsonSchemaType
+        }
+    }
 }
 interface KeyType {
     name: string

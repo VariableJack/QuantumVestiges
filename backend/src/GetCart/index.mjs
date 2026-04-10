@@ -17,7 +17,7 @@ const transformOutput = (items) => {
 }
 
 export const handler = async (event) => {
-    console.log(`GetPurchasedGames - Received event (${JSON.stringify(event)})`)
+    console.log(`GetCart - Received event (${JSON.stringify(event)})`)
     const accessToken = event.headers.Authorization
     const stage = process.env.stage
     if (!accessToken) {
@@ -48,16 +48,16 @@ export const handler = async (event) => {
                 body: JSON.stringify({ message: 'Failed to validate user' })
             }
     }
-    const getPurchasedGamesCommand = new ScanCommand({
-        TableName: `purchasedGames-${stage}`,
+    const getCartCommand = new ScanCommand({
+        TableName: `carts-${stage}`,
         FilterExpression: 'username = :username',
         ExpressionAttributeValues: {
-            ':username': user.Username
+            ':username': user.Username,
         }
     });
-    const getPurchasedGamesResults = await docClient.send(getPurchasedGamesCommand)
-    const results = transformOutput(getPurchasedGamesResults.Items)
-    console.log(`GetPurchasedGames - Finished processing, returning results ${JSON.stringify(results)}`)
+    const getCartResults = await docClient.send(getCartCommand)
+    const results = transformOutput(getCartResults.Items)
+    console.log(`GetCart - Finished processing, returning results ${JSON.stringify(results)}`)
     return {
         headers: { 'Access-Control-Allow-Origin': 'https://localhost:3000', 'Access-Control-Allow-Credentials': 'true', 'Content-Type': 'application/json' },
         body: JSON.stringify(results)

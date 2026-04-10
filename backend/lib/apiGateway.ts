@@ -26,7 +26,7 @@ export class APIGatewayStack extends Stack {
             restApiName: `GamerParadiseServer-${stage}`,
             defaultCorsPreflightOptions: {
                 allowHeaders: ['Content-Type', 'X-Amz-Date', 'Authorization', 'X-Api-Key'],
-                allowOrigins: ['http://localhost:3000'],
+                allowOrigins: ['http://localhost:3000', 'https://localhost:3000'],
                 allowMethods: ['OPTIONS', 'GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
                 allowCredentials: true,
             },
@@ -40,19 +40,19 @@ export class APIGatewayStack extends Stack {
             validateRequestParameters: true,
         })
 
-        const emptyResponseModel = api.addModel('EmptyResponseModel', {
-          contentType: 'application/json',
-          modelName: 'EmptyResponseModel',
-          schema: {
-            schema: JsonSchemaVersion.DRAFT4,
-            title: 'Empty Schema',
-            type: JsonSchemaType.OBJECT,
-          }
-        });
-
         const pathUrlResources = new Map()
         LAMBDA_FUNCTIONS.forEach((lambda) => {
-            const { name, methodType, apiPath, requestParameters, methodRequestParameters, integrationRequestParameters } = lambda
+            const { name, methodType, apiPath, requestParameters, methodRequestParameters, integrationRequestParameters, methodResponse } = lambda
+            const apiModel = api.addModel(`${name}-${stage}-ResponseModel`, {
+                contentType: 'application/json',
+                schema: {
+                    schema: JsonSchemaVersion.DRAFT4,
+                    title: `${name}-${stage}-Schema`,
+                    type: JsonSchemaType.OBJECT,
+                    properties: methodResponse
+                }
+            })
+            
             const lambdaFunction = Function.fromFunctionArn(
                 this,
                 `APIG-${name}-${stage}`,
@@ -74,14 +74,12 @@ export class APIGatewayStack extends Stack {
             if (requestParameters) {
                 const requestTemplateInput = Object.keys(requestParameters).map((param) => `"${param}": "$input.params('${param}')"`).join(',')
                 requestTemplates = {
-                    'application/json': `{
-                        ${requestTemplateInput}
-                    }`
+                    'application/json': `{${requestTemplateInput}}`
                 }
             }
             const intOpts = {
                 requestParameters: integrationRequestParameters,
-                proxy: false,
+                proxy: true,
                 integrationResponses: [
                     {
                         statusCode: '200',
@@ -105,7 +103,7 @@ export class APIGatewayStack extends Stack {
                             'method.response.header.Access-Control-Allow-Origin': true,
                         },
                         responseModels: {
-                            'application/json': emptyResponseModel,
+                            'application/json': apiModel,
                         },
                     },
                 ],
