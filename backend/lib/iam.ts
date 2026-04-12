@@ -22,6 +22,7 @@ export class IamStack extends Stack {
                         actions: [
                             'cognito-idp:GetUser',
                             'dynamodb:Scan',
+                            'dynamodb:DeleteItem',
                             'dynamodb:GetItem',
                             'dynamodb:PutItem',
                             's3:ListBucket',

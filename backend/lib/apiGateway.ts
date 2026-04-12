@@ -41,6 +41,24 @@ export class APIGatewayStack extends Stack {
         })
 
         const pathUrlResources = new Map()
+        const errorModel = api.addModel('ErrorModel', {
+                contentType: 'application/json',
+                schema: {
+                    schema: JsonSchemaVersion.DRAFT4,
+                    title: 'ErrorSchema',
+                    type: JsonSchemaType.OBJECT,
+                    properties: {
+                        message: {
+                            type: JsonSchemaType.STRING
+                        }
+                    }
+                }
+        })
+        const responseHeaders = {
+            'method.response.header.Access-Control-Allow-Origin': true,
+            'method.response.header.Access-Control-Allow-Credentials': true,
+            'method.response.header.Content-Type': true,
+        }
         LAMBDA_FUNCTIONS.forEach((lambda) => {
             const { name, methodType, apiPath, requestParameters, methodRequestParameters, integrationRequestParameters, methodResponse } = lambda
             const apiModel = api.addModel(`${name}-${stage}-ResponseModel`, {
@@ -100,10 +118,46 @@ export class APIGatewayStack extends Stack {
                     {
                         statusCode: '200',
                         responseParameters: {
-                            'method.response.header.Access-Control-Allow-Origin': true,
+                            ...responseHeaders
                         },
                         responseModels: {
                             'application/json': apiModel,
+                        },
+                    },
+                    {
+                        statusCode: '400',
+                        responseParameters: {
+                            ...responseHeaders
+                        },
+                        responseModels: {
+                            'application/json': errorModel,
+                        },
+                    },
+                    {
+                        statusCode: '401',
+                        responseParameters: {
+                            ...responseHeaders
+                        },
+                        responseModels: {
+                            'application/json': errorModel,
+                        },
+                    },
+                    {
+                        statusCode: '403',
+                        responseParameters: {
+                            ...responseHeaders
+                        },
+                        responseModels: {
+                            'application/json': errorModel,
+                        },
+                    },
+                    {
+                        statusCode: '404',
+                        responseParameters: {
+                            ...responseHeaders
+                        },
+                        responseModels: {
+                            'application/json': errorModel,
                         },
                     },
                 ],

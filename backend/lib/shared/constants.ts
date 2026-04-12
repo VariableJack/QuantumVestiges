@@ -266,29 +266,21 @@ const LAMBDA_FUNCTIONS: LambdaFunctionType[] = [
         name: 'CheckoutCart',
         methodType: 'POST',
         apiPath: 'checkout-cart',
+        methodResponse: {
+            message: {
+                type: JsonSchemaType.STRING,
+            },
+        }
     },
     {
         name: 'UpdateCart',
         methodType: 'POST',
         apiPath: 'update-cart',
-        requestParameters: {
-            action: {
-                type: JsonSchemaType.STRING
+        methodResponse: {
+            message: {
+                type: JsonSchemaType.STRING,
             },
-            gameId: {
-                type: JsonSchemaType.NUMBER
-            },
-        },
-        //methodRequestParameters: {
-        //    'method.request.body.action': true,
-        //    'method.request.body.accessToken': true,
-        //    'method.request.body.gameId': true,
-        //},
-        //integrationRequestParameters: {
-        //    'integration.request.body.action': 'method.request.body.action',
-        //    'integration.request.body.accessToken': 'method.request.body.accessToken',
-        //    'integration.request.body.gameId': 'method.request.body.gameId',
-        //},
+        }
     },
 ]
 
