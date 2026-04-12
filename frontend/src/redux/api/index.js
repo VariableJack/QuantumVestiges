@@ -10,7 +10,6 @@ export const store = configureStore({
         [globalReducer.name]: globalReducer.reducer,
         userReducer: userReducer,
     },
-    middleware:
-        (getDefaultMiddleware) =>
-            getDefaultMiddleware().concat(gamerParadiseApiSlice.middleware)
+    middleware: getDefaultMiddleware =>
+        getDefaultMiddleware().concat(gamerParadiseApiSlice.middleware),
 })

@@ -1,5 +1,5 @@
-const hostname = 'https://127.0.0.1';
-const port = '3000';
+const hostname = 'https://localhost'
+const port = '3000'
 
 const menubarItems = [
     {
@@ -18,10 +18,10 @@ const menubarItems = [
                 path: '/about-us',
             },
             {
-                menubarHeader: 'Login',
-                path: '/login',
-            }
-        ]
+                menubarHeader: 'Account',
+                path: '/account',
+            },
+        ],
     },
     {
         title: 'Support & New Feature Request',
@@ -39,11 +39,11 @@ const menubarItems = [
                 path: '/feature-request',
             },
             {
-                menubarHeader: 'Game request',
+                menubarHeader: 'Game Request',
                 path: '/game-request',
             },
-        ]
-    }
+        ],
+    },
 ]
 /*
 {
@@ -58,10 +58,5 @@ const MOCK_ITEMS_TO_DISPLAY = [
         id: 12345,
         type: 'FEATURE_REQUEST',
     },
-];
-export {
-    hostname,
-    port,
-    menubarItems,
-    MOCK_ITEMS_TO_DISPLAY,
-}
+]
+export { hostname, port, menubarItems, MOCK_ITEMS_TO_DISPLAY }

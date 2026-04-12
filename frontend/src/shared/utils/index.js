@@ -1,18 +1,16 @@
-const getUrl = (urlType) => {
+const getUrl = urlType => {
     switch (urlType) {
         case 'FEATURE_REQUEST':
-            return '/feature-request/';
+            return '/feature-request/'
         case 'GAME_REQUEST':
-            return '/game-request/';
+            return '/game-request/'
         case 'BUG_REPORT':
-            return '/bug-report/';
+            return '/bug-report/'
         case 'SUPPORT':
-            return '/support/';
+            return '/support/'
         default:
-            return '';
+            return ''
     }
 }
 
-export {
-    getUrl,
-}
+export { getUrl }

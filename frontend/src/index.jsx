@@ -1,82 +1,139 @@
-import React, { useEffect, useState } from 'react';
-import ReactDOM from 'react-dom/client';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { useDispatch, Provider } from 'react-redux'
+import React, { useEffect, useState } from 'react'
+import ReactDOM from 'react-dom/client'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { useSelector, useDispatch, Provider } from 'react-redux'
 import { createStore, applyMiddleware } from 'redux'
-import { thunk } from 'redux-thunk'
 import { store } from './redux/api'
 import {
-    useLazyGetFranchisesQuery
+    useLazyGetFranchisesQuery,
+    useLazyGetPurchasedGamesQuery,
+    useLazyGetCartQuery,
+    useCheckoutCartMutation,
 } from './redux/api/mediaEndpoints'
+import { setFranchises } from './redux/api/globalSlice'
 import {
-    setFranchises
-} from './redux/api/globalSlice'
+    setUsername,
+    setAccessToken,
+    setGroup,
+    setCart,
+    setPurchasedGames,
+} from './redux/api/userSlice'
 
 // Support components
-import Menubar from './shared/components/Menubar';
+import Menubar from './shared/components/Menubar'
 
 // Constants
-import {
-    hostname,
-    port,
-    menubarItems,
-} from './shared/constants'
+import { hostname, port, menubarItems } from './shared/constants'
 
-import {
-    getConfig
-} from './shared/utils/getConfiguration'
+import { getConfig } from './shared/utils/getConfiguration'
 // Base pages
-import Home from './features/Home';
-import ContactUs from './features/ContactUs';
-import AboutUs from './features/AboutUs';
-import NoPage from './features/NoPage';
-import Login from './features/Login';
+import Home from './features/Home'
+import ContactUs from './features/ContactUs'
+import AboutUs from './features/AboutUs'
+import NoPage from './features/NoPage'
+import Account from './features/Account'
 
 // Support & Request pages
-import FeatureRequest from './features/Requests/FeatureRequest';
-import GameRequest from './features/Requests/GameRequest';
-import BugReport from './features/Requests/BugReport';
-import SupportRequest from './features/Requests/SupportRequest';
+import FeatureRequest from './features/Requests/FeatureRequest'
+import GameRequest from './features/Requests/GameRequest'
+import BugReport from './features/Requests/BugReport'
+import SupportRequest from './features/Requests/SupportRequest'
 
 // Game Pages
 import FranchisePage from './features/FranchisePage'
 import GamePage from './features/FranchisePage/GamePage'
 
 // Auth
-import { AuthProvider } from "react-oidc-context";
+import { AuthProvider } from 'react-oidc-context'
 
 const cognitoAuthConfig = {
-  authority: "https://cognito-idp.us-west-1.amazonaws.com/us-west-1_U8YRON4G4",
-  client_id: getConfig('clientId'),
-  response_type: "code",
-  redirect_uri: 'https://127.0.0.1:3000',
-  scope: "email openid phone",
-};
+    authority: `https://cognito-idp.us-west-1.amazonaws.com/${getConfig('userPoolId')}`,
+    client_id: getConfig('clientId'),
+    response_type: 'code',
+    redirect_uri: `${hostname}:${port}`,
+    scope: 'email openid phone aws.cognito.signin.user.admin',
+}
 
+import { useAuth } from 'react-oidc-context'
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const RouterWrapper = props => {
+    const auth = useAuth()
+    const dispatch = useDispatch()
+
+    const [triggerGetCart, { isLoading: isGetCartLoading }] = useLazyGetCartQuery()
+    const [triggerGetPurchasedGames, { isLoading: isPurchasedGamesLoading }] =
+        useLazyGetPurchasedGamesQuery()
+    const getDetails = async () => {
+        const cartResults = await triggerGetCart({
+            accessToken: auth.user.accessToken,
+        }).unwrap()
+        const purchasedGamesResults = await triggerGetPurchasedGames({
+            accessToken: auth.user.accessToken,
+        }).unwrap()
+        dispatch(setCart([...cartResults]))
+        dispatch(setPurchasedGames([...purchasedGamesResults]))
+    }
+    useEffect(() => {
+        if (auth.isAuthenticated) {
+            const username = auth.user.profile['cognito:username']
+            const accessToken = auth.user.access_token
+            console.debug(accessToken)
+            const group = auth.user.profile['cognito:group']
+            dispatch(setUsername(username))
+            dispatch(setGroup(group))
+            localStorage.setItem('accessToken', accessToken)
+
+            getDetails()
+        }
+    }, [auth])
+    return (
+        <Router>
+            <Routes>
+                <Route path="/about-us" element={<AboutUs />} />
+                <Route path="/contact-us" element={<ContactUs />} />
+                <Route path="/account" element={<Account auth={auth} />} />
+                <Route path="/franchise" element={<FranchisePage />} />
+                <Route path="/game" element={<GamePage />} />
+
+                <Route path="/feature-request" element={<FeatureRequest />} />
+                <Route path="/game-request" element={<GameRequest />} />
+                <Route path="/bug-report" element={<BugReport />} />
+                <Route path="/support" element={<SupportRequest />} />
+
+                <Route path="/*" element={<NoPage />} />
+                <Route path="/" element={<Home />} />
+            </Routes>
+        </Router>
+    )
+    /* */
+}
+
+const root = ReactDOM.createRoot(document.getElementById('root'))
 const App = () => {
     const dispatch = useDispatch()
-    
+
     const [triggerGetFranchises] = useLazyGetFranchisesQuery()
-    const [finalItemsToDisplay, setFinalItemsToDisplay] = useState([...menubarItems,
+    const [finalItemsToDisplay, setFinalItemsToDisplay] = useState([
+        ...menubarItems,
         {
             title: 'Franchise',
-            elements: []
-        }
+            elements: [],
+        },
     ])
-    
-    const getFranchises = async() => {
-        const response = await triggerGetFranchises().unwrap()
-        setFinalItemsToDisplay([...menubarItems, {
+
+    const getFranchises = async () => {
+        const response = await triggerGetFranchises({}).unwrap()
+        setFinalItemsToDisplay([
+            ...menubarItems,
+            {
                 title: 'Franchise',
-                elements: response.map(({ franchise_name, franchise_id }) => {
+                elements: response.map(({ franchiseName, franchiseId }) => {
                     return {
-                        menubarHeader: franchise_name,
-                        path: `/franchise?franchiseId=${franchise_id}`,
+                        menubarHeader: franchiseName,
+                        path: `/franchise?franchiseId=${franchiseId}`,
                     }
-                })
-            }
+                }),
+            },
         ])
         dispatch(setFranchises(response))
     }
@@ -85,33 +142,19 @@ const App = () => {
     }, [])
     return (
         <div>
-            <div>
-                <React.StrictMode>
-                    <AuthProvider {...cognitoAuthConfig}>
-                        <div>
-                            <Menubar url={`${hostname}:${port}`} items={finalItemsToDisplay}/>
-                        </div>
-                        <Router>
-                            <Routes>
-                                <Route path='/about-us' element={<AboutUs />} />
-                                <Route path='/contact-us' element={<ContactUs />} />
-                                <Route path='/login' element={<Login />} />
-                                <Route path='/franchise' element={<FranchisePage />} />
-                                <Route path='/game?franchiseId=:franchiseId&gameId=:gameId' element={<GamePage />} />
-                                
-                                <Route path='/feature-request' element={<FeatureRequest />} />
-                                <Route path='/game-request' element={<GameRequest />} />
-                                <Route path='/bug-report' element={<BugReport />} />
-                                <Route path='/support' element={<SupportRequest />} />
-                                <Route path='/login' element={<Login />} />
-                                
-                                <Route path='/*' element={<NoPage />} />
-                                <Route path='/' element={<Home />} />
-                            </Routes>
-                        </Router>
-                    </AuthProvider>
-                </React.StrictMode>
-            </div>
-        </div>)
+            <React.StrictMode>
+                <AuthProvider {...cognitoAuthConfig}>
+                    <div>
+                        <Menubar url={`${hostname}:${port}`} items={finalItemsToDisplay} />
+                    </div>
+                    <RouterWrapper />
+                </AuthProvider>
+            </React.StrictMode>
+        </div>
+    )
 }
-root.render(<Provider store={store}><App /></Provider>);
+root.render(
+    <Provider store={store}>
+        <App />
+    </Provider>,
+)
