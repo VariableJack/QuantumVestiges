@@ -1,5 +1,5 @@
 import { App, Stack, StackProps } from 'aws-cdk-lib'
-import { RemovalPolicy } from 'aws-cdk-lib/core';
+import { RemovalPolicy } from 'aws-cdk-lib/core'
 import { ServicePrincipal } from 'aws-cdk-lib/aws-iam'
 import { Function } from 'aws-cdk-lib/aws-lambda'
 import {
@@ -31,46 +31,66 @@ export class APIGatewayStack extends Stack {
                 allowCredentials: true,
             },
             deployOptions: {
-                stageName: stage
+                stageName: stage,
             },
             cloudWatchRole: true,
             cloudWatchRoleRemovalPolicy: RemovalPolicy.DESTROY,
         })
         const requestValidator = api.addRequestValidator('GamerParadiseServer-RequestValidator', {
+            validateRequestBody: true,
             validateRequestParameters: true,
         })
 
         const pathUrlResources = new Map()
         const errorModel = api.addModel('ErrorModel', {
-                contentType: 'application/json',
-                schema: {
-                    schema: JsonSchemaVersion.DRAFT4,
-                    title: 'ErrorSchema',
-                    type: JsonSchemaType.OBJECT,
-                    properties: {
-                        message: {
-                            type: JsonSchemaType.STRING
-                        }
-                    }
-                }
+            contentType: 'application/json',
+            schema: {
+                schema: JsonSchemaVersion.DRAFT4,
+                title: 'ErrorSchema',
+                type: JsonSchemaType.OBJECT,
+                properties: {
+                    message: {
+                        type: JsonSchemaType.STRING,
+                    },
+                },
+            },
         })
         const responseHeaders = {
             'method.response.header.Access-Control-Allow-Origin': true,
             'method.response.header.Access-Control-Allow-Credentials': true,
             'method.response.header.Content-Type': true,
         }
-        LAMBDA_FUNCTIONS.forEach((lambda) => {
-            const { name, methodType, apiPath, requestParameters, methodRequestParameters, integrationRequestParameters, methodResponse } = lambda
-            const apiModel = api.addModel(`${name}-${stage}-ResponseModel`, {
+        LAMBDA_FUNCTIONS.forEach(lambda => {
+            const {
+                name,
+                methodType,
+                apiPath,
+                requestParameters,
+                methodRequestParameters,
+                methodResponse,
+            } = lambda
+            const successModel = api.addModel(`${name}-${stage}-ResponseModel`, {
                 contentType: 'application/json',
+                modelName: `${name}${stage}SuccessResponse`,
                 schema: {
                     schema: JsonSchemaVersion.DRAFT4,
                     title: `${name}-${stage}-Schema`,
                     type: JsonSchemaType.OBJECT,
-                    properties: methodResponse
-                }
+                    properties: methodResponse,
+                },
             })
-            
+            let inputModel: Model | undefined = undefined
+            if (methodType === 'POST' && requestParameters) {
+                inputModel = api.addModel(`${name}-${stage}-RequestModel`, {
+                    contentType: 'application/json',
+                    modelName: `${name}${stage}RequestInput`,
+                    schema: {
+                        type: JsonSchemaType.OBJECT,
+                        properties: requestParameters,
+                    },
+                })
+            }
+
             const lambdaFunction = Function.fromFunctionArn(
                 this,
                 `APIG-${name}-${stage}`,
@@ -79,55 +99,49 @@ export class APIGatewayStack extends Stack {
             lambdaFunction.addPermission(`APIGatewayInvocation-${methodType}-${name}-${stage}`, {
                 principal: new ServicePrincipal('apigateway.amazonaws.com'),
                 action: 'lambda:InvokeFunction',
-                sourceArn: `arn:aws:execute-api:${region}:${account}:\${GamerParadiseServer-${stage}}/${stage}/${methodType}/${name}-${stage}`
+                sourceArn: `arn:aws:execute-api:${region}:${account}:\${GamerParadiseServer-${stage}}/${stage}/${methodType}/${name}-${stage}`,
             })
             let resource = pathUrlResources.get(apiPath)
             if (resource === undefined) {
                 resource = api.root.addResource(apiPath)
                 pathUrlResources.set(apiPath, resource)
             }
-            let requestTemplates: {
-                'application/json': string
-            }| undefined = undefined
-            if (requestParameters) {
-                const requestTemplateInput = Object.keys(requestParameters).map((param) => `"${param}": "$input.params('${param}')"`).join(',')
-                requestTemplates = {
-                    'application/json': `{${requestTemplateInput}}`
-                }
-            }
             const intOpts = {
-                requestParameters: integrationRequestParameters,
                 proxy: true,
                 integrationResponses: [
                     {
                         statusCode: '200',
                         responseParameters: {
-                            'method.response.header.Access-Control-Allow-Origin': '\'*\'',
-                        },
-                        responseTemplates: {
-                            'application/json': '',
+                            'method.response.header.Access-Control-Allow-Origin': "'*'",
                         },
                     },
                 ],
-                requestTemplates,
             }
             const methodOpts = {
                 requestValidator,
-                requestParameters: methodRequestParameters,
+                ...(inputModel
+                    ? {
+                          requestModels: {
+                              'application/json': inputModel,
+                          },
+                      }
+                    : {
+                          requestParameters: methodRequestParameters,
+                      }),
                 methodResponses: [
                     {
                         statusCode: '200',
                         responseParameters: {
-                            ...responseHeaders
+                            ...responseHeaders,
                         },
                         responseModels: {
-                            'application/json': apiModel,
+                            'application/json': successModel,
                         },
                     },
                     {
                         statusCode: '400',
                         responseParameters: {
-                            ...responseHeaders
+                            ...responseHeaders,
                         },
                         responseModels: {
                             'application/json': errorModel,
@@ -136,7 +150,7 @@ export class APIGatewayStack extends Stack {
                     {
                         statusCode: '401',
                         responseParameters: {
-                            ...responseHeaders
+                            ...responseHeaders,
                         },
                         responseModels: {
                             'application/json': errorModel,
@@ -145,7 +159,7 @@ export class APIGatewayStack extends Stack {
                     {
                         statusCode: '403',
                         responseParameters: {
-                            ...responseHeaders
+                            ...responseHeaders,
                         },
                         responseModels: {
                             'application/json': errorModel,
@@ -154,7 +168,7 @@ export class APIGatewayStack extends Stack {
                     {
                         statusCode: '404',
                         responseParameters: {
-                            ...responseHeaders
+                            ...responseHeaders,
                         },
                         responseModels: {
                             'application/json': errorModel,
@@ -165,7 +179,7 @@ export class APIGatewayStack extends Stack {
             resource.addMethod(
                 methodType,
                 new LambdaIntegration(lambdaFunction, intOpts),
-                methodOpts
+                methodOpts,
             )
         })
     }

@@ -1,19 +1,14 @@
 import { AttributeType } from 'aws-cdk-lib/aws-dynamodb'
-import { JsonSchemaType } from 'aws-cdk-lib/aws-apigateway'
+import { JsonSchemaType, JsonSchema } from 'aws-cdk-lib/aws-apigateway'
 interface LambdaFunctionType {
     name: string
     methodType: string
     apiPath: string
     requestParameters?: {
-        [string]: {
-            type: JsonSchemaType
-        }
+        [string]: JsonSchema
     }
     methodRequestParameters?: {
         [string]: boolean
-    }
-    integrationRequestParameters?: {
-        [string]: string
     }
     methodResponse?: {
         [string]: {

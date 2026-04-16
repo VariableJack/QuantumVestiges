@@ -11,9 +11,6 @@ const LAMBDA_FUNCTIONS: LambdaFunctionType[] = [
         methodRequestParameters: {
             'method.request.querystring.franchiseId': false,
         },
-        integrationRequestParameters: {
-            'integration.request.querystring.franchiseId': 'method.request.querystring.franchiseId',
-        },
         methodResponse: {
             franchiseId: {
                 type: JsonSchemaType.NUMBER,
@@ -39,10 +36,6 @@ const LAMBDA_FUNCTIONS: LambdaFunctionType[] = [
             'method.request.querystring.franchiseId': true,
             'method.request.querystring.gameId': false,
         },
-        integrationRequestParameters: {
-            'integration.request.querystring.franchiseId': 'method.request.querystring.franchiseId',
-            'integration.request.querystring.gameId': 'method.request.querystring.gameId',
-        },
         methodResponse: {
             gameId: {
                 type: JsonSchemaType.NUMBER,
@@ -59,34 +52,6 @@ const LAMBDA_FUNCTIONS: LambdaFunctionType[] = [
         },
     },
     {
-        name: 'GetFeatureRequests',
-        methodType: 'GET',
-        apiPath: 'feature-request',
-        requestParameters: {
-            featureRequestId: {
-                type: JsonSchemaType.NUMBER,
-            },
-        },
-        methodRequestParameters: {
-            'method.request.querystring.featureRequestId': false,
-        },
-        integrationRequestParameters: {
-            'integration.request.querystring.featureRequestId':
-                'method.request.querystring.featureRequestId',
-        },
-        methodResponse: {
-            featureRequestId: {
-                type: JsonSchemaType.NUMBER,
-            },
-            title: {
-                type: JsonSchemaType.NUMBER,
-            },
-            gameName: {
-                type: JsonSchemaType.STRING,
-            },
-        },
-    },
-    {
         name: 'GetBugReports',
         methodType: 'GET',
         apiPath: 'bug-report',
@@ -97,9 +62,6 @@ const LAMBDA_FUNCTIONS: LambdaFunctionType[] = [
         },
         methodRequestParameters: {
             'method.request.querystring.bugReportId': false,
-        },
-        integrationRequestParameters: {
-            'integration.request.querystring.bugReportId': 'method.request.querystring.bugReportId',
         },
     },
     {
@@ -116,27 +78,6 @@ const LAMBDA_FUNCTIONS: LambdaFunctionType[] = [
         },
         methodRequestParameters: {
             'method.request.querystring.supportRequestId': false,
-        },
-        integrationRequestParameters: {
-            'integration.request.querystring.supportRequestId':
-                'method.request.querystring.supportRequestId',
-        },
-    },
-    {
-        name: 'GetGameRequests',
-        methodType: 'GET',
-        apiPath: 'game-request',
-        requestParameters: {
-            gameRequestId: {
-                type: JsonSchemaType.NUMBER,
-            },
-        },
-        methodRequestParameters: {
-            'method.request.querystring.gameRequestId': false,
-        },
-        integrationRequestParameters: {
-            'integration.request.querystring.gameRequestId':
-                'method.request.querystring.gameRequestId',
         },
     },
     {
@@ -156,7 +97,7 @@ const LAMBDA_FUNCTIONS: LambdaFunctionType[] = [
             gameName: {
                 type: JsonSchemaType.STRING,
             },
-        }
+        },
     },
     {
         name: 'GetCart',
@@ -175,40 +116,9 @@ const LAMBDA_FUNCTIONS: LambdaFunctionType[] = [
             gameName: {
                 type: JsonSchemaType.STRING,
             },
-        }
+        },
     },
     // Post APIs
-    //{
-    //    name: 'SubmitFeatureRequest',
-    //    methodType: 'POST',
-    //    apiPath: 'feature-request',
-    //    requestParameters: {
-    //        featureRequestId: {
-    //            type: JsonSchemaType.NUMBER
-    //        },
-    //        requester: {
-    //            type: JsonSchemaType.STRING
-    //        },
-    //        title: {
-    //            type: JsonSchemaType.STRING
-    //        },
-    //        description: {
-    //            type: JsonSchemaType.STRING
-    //        },
-    //    },
-    //    methodRequestParameters: {
-    //        'method.request.querystring.featureRequestId': true,
-    //        'method.request.querystring.requester': true,
-    //        'method.request.querystring.title': true,
-    //        'method.request.querystring.description': true,
-    //    },
-    //    integrationRequestParameters: {
-    //        'integration.request.querystring.featureRequestId': 'method.request.querystring.featureRequestId',
-    //        'integration.request.querystring.requester': 'method.request.querystring.requester',
-    //        'integration.request.querystring.title': 'method.request.querystring.title',
-    //        'integration.request.querystring.description': 'method.request.querystring.description',
-    //    },
-    //},
     //{
     //    name: 'SubmitBugReport',
     //    methodType: 'POST',
@@ -220,9 +130,6 @@ const LAMBDA_FUNCTIONS: LambdaFunctionType[] = [
     //    },
     //    methodRequestParameters: {
     //        'method.request.querystring.featureRequestId': true,
-    //    },
-    //    integrationRequestParameters: {
-    //        'integration.request.querystring.featureRequestId': 'method.request.querystring.featureRequestId',
     //    },
     //},
     //{
@@ -241,26 +148,6 @@ const LAMBDA_FUNCTIONS: LambdaFunctionType[] = [
     //        'method.request.querystring.supportRequestId': true,
     //        'method.request.querystring.requester': true,
     //    },
-    //    integrationRequestParameters: {
-    //        'integration.request.querystring.supportRequestId': 'method.request.querystring.supportRequestId',
-    //        'integration.request.querystring.requester': 'method.request.querystring.requester',
-    //    },
-    //},
-    //{
-    //    name: 'SubmitGameRequest',
-    //    methodType: 'POST',
-    //    apiPath: 'game-request',
-    //    requestParameters: {
-    //        gameRequestId: {
-    //            type: JsonSchemaType.NUMBER
-    //        }
-    //    },
-    //    methodRequestParameters: {
-    //        'method.request.querystring.featureRequestId': true,
-    //    },
-    //    integrationRequestParameters: {
-    //        'integration.request.querystring.featureRequestId': 'method.request.querystring.featureRequestId',
-    //    },
     //},
     {
         name: 'CheckoutCart',
@@ -270,18 +157,57 @@ const LAMBDA_FUNCTIONS: LambdaFunctionType[] = [
             message: {
                 type: JsonSchemaType.STRING,
             },
-        }
+        },
     },
     {
         name: 'UpdateCart',
         methodType: 'POST',
         apiPath: 'update-cart',
+        requestParameters: {
+            gameId: {
+                type: JsonSchemaType.NUMBER,
+            },
+            action: {
+                type: JsonSchemaType.STRING,
+            },
+        },
+        methodRequestParameters: {
+            gameId: true,
+            action: true,
+        },
         methodResponse: {
             message: {
                 type: JsonSchemaType.STRING,
             },
-        }
+        },
     },
+    //{
+    //    name: 'PostComment',
+    //    methodType: 'POST',
+    //    apiPath: 'post-comment',
+    //    requestParameters: {
+    //        requestId: {
+    //            type: JsonSchemaType.NUMBER,
+    //        },
+    //        requestType: {
+    //            type: JsonSchemaType.STRING,
+    //        },
+    //        message: {
+    //            type: JsonSchemaType.STRING,
+    //        },
+    //        imageLinks: {
+    //            type: JsonSchemaType.ARRAY,
+    //            items: { type: JsonSchemaType.STRING },
+    //            minItems: 1,
+    //        },
+    //    },
+    //    methodRequestParameters: {
+    //        requestId: true,
+    //        requestType: true,
+    //        message: true,
+    //        imageLinks: false,
+    //    },
+    //},
 ]
 
 const TABLES: DynamoDbType[] = [
@@ -295,20 +221,12 @@ const TABLES: DynamoDbType[] = [
         sortKey: { name: 'game_id', type: AttributeType.NUMBER },
     },
     {
-        tableName: 'featureRequests',
-        partitionKey: { name: 'feature_id', type: AttributeType.NUMBER },
-    },
-    {
         tableName: 'supportRequests',
         partitionKey: { name: 'support_id', type: AttributeType.NUMBER },
     },
     {
         tableName: 'bugReports',
         partitionKey: { name: 'bug_report_id', type: AttributeType.NUMBER },
-    },
-    {
-        tableName: 'gameRequests',
-        partitionKey: { name: 'game_request_id', type: AttributeType.NUMBER },
     },
     {
         tableName: 'purchasedGames',

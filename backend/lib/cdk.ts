@@ -42,7 +42,7 @@ deploymentEnvironments.forEach(deploymentEnvironment => {
     const apiGatewayStack = new APIGatewayStack(
         app,
         `APIGatewayStack-${stage}`,
-        deploymentEnvironment
+        deploymentEnvironment,
     )
     apiGatewayStack.addDependency(
         lambdaStack,
