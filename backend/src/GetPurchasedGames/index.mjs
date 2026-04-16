@@ -22,7 +22,7 @@ export const handler = async (event) => {
     const stage = process.env.stage
     if (!accessToken) {
         return {
-            statusCode 401,
+            statusCode: 401,
             headers: { 'Access-Control-Allow-Origin': 'https://localhost:3000', 'Access-Control-Allow-Credentials': 'true', 'Content-Type': 'application/json' },
             body: JSON.stringify({ message: 'Please log in.' })
         }
@@ -37,13 +37,13 @@ export const handler = async (event) => {
         console.log(e)
         if (typeof(e) === 'NotAuthorizedException')
             return {
-                statusCode 401,
+                statusCode: 401,
                 headers: { 'Access-Control-Allow-Origin': 'https://localhost:3000', 'Access-Control-Allow-Credentials': 'true', 'Content-Type': 'application/json' },
                 body: JSON.stringify({ message: 'Please log in again' })
             }
         else
             return {
-                statusCode 400,
+                statusCode: 400,
                 headers: { 'Access-Control-Allow-Origin': 'https://localhost:3000', 'Access-Control-Allow-Credentials': 'true', 'Content-Type': 'application/json' },
                 body: JSON.stringify({ message: 'Failed to validate user' })
             }

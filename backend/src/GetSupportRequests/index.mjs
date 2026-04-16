@@ -19,13 +19,13 @@ export const handler = async (event) => {
     } catch (e) {
         if (typeof(e) === 'NotAuthorizedException')
             return {
-                statusCode 401,
+                statusCode: 401,
                 headers: { 'Access-Control-Allow-Origin': 'https://localhost:3000', 'Access-Control-Allow-Credentials': 'true', 'Content-Type': 'application/json' },
                 body: JSON.stringify({ message: 'Please log in again' })
             }
         else
             return {
-                statusCode 400,
+                statusCode: 400,
                 headers: { 'Access-Control-Allow-Origin': 'https://localhost:3000', 'Access-Control-Allow-Credentials': 'true', 'Content-Type': 'application/json' },
                 body: JSON.stringify({ message: 'Failed to validate user' })
             }
@@ -52,7 +52,7 @@ export const handler = async (event) => {
     if (supportRequestId) {
         if (!results.Items.length) {
             return {
-                statusCode 404,
+                statusCode: 404,
                 headers: { 'Access-Control-Allow-Origin': 'https://localhost:3000', 'Access-Control-Allow-Credentials': 'true', 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     message: 'Support request does not exist at that ID'

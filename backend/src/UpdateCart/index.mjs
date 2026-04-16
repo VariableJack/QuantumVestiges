@@ -22,13 +22,13 @@ export const handler = async (event) => {
         console.log(e)
         if (typeof(e) === 'NotAuthorizedException')
             return {
-                statusCode 401,
+                statusCode: 401,
                 headers: { 'Access-Control-Allow-Origin': 'https://localhost:3000', 'Access-Control-Allow-Credentials': 'true', 'Content-Type': 'application/json' },
                 body: JSON.stringify({ message: 'Please log in again' })
             }
         else
             return {
-                statusCode 400,
+                statusCode: 400,
                 headers: { 'Access-Control-Allow-Origin': 'https://localhost:3000', 'Access-Control-Allow-Credentials': 'true', 'Content-Type': 'application/json' },
                 body: JSON.stringify({ message: 'Failed to validate user' })
             }
@@ -49,7 +49,7 @@ export const handler = async (event) => {
             } catch (e) {
                 if (typeof e === 'ResourceNotFoundException'){
                     return {
-                        statusCode 400,
+                        statusCode: 400,
                         headers: { 'Access-Control-Allow-Origin': 'https://localhost:3000', 'Access-Control-Allow-Credentials': 'true', 'Content-Type': 'application/json' },
                         body: JSON.stringify({
                             message: 'No game found at the game ID'
@@ -60,7 +60,7 @@ export const handler = async (event) => {
             const gameDetails = gameDetailsResults.Items
             if (gameDetails.length != 1) {
                 return {
-                    statusCode 400,
+                    statusCode: 400,
                     headers: { 'Access-Control-Allow-Origin': 'https://localhost:3000', 'Access-Control-Allow-Credentials': 'true', 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         message: 'Game ID is not associated with exactly one game.'
@@ -99,7 +99,7 @@ export const handler = async (event) => {
             } catch (e) {
                 console.log(e)
                 return {
-                    statusCode 400,
+                    statusCode: 400,
                     headers: { 'Access-Control-Allow-Origin': 'https://localhost:3000', 'Access-Control-Allow-Credentials': 'true', 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         message: 'Failed to add the game to your cart. Please try again. If this error persists, please cut us a support ticket'
@@ -120,7 +120,7 @@ export const handler = async (event) => {
             const associatedGame = associatedGameResults.Items
             if (associatedGame.length < 1) {
                 return {
-                    statusCode 400,
+                    statusCode: 400,
                     headers: { 'Access-Control-Allow-Origin': 'https://localhost:3000', 'Access-Control-Allow-Credentials': 'true', 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         message: 'Game is not in your cart and thus cannot be removed'
@@ -147,7 +147,7 @@ export const handler = async (event) => {
             } catch (e) {
                 console.log(e)
                 return {
-                    statusCode 400,
+                    statusCode: 400,
                     headers: { 'Access-Control-Allow-Origin': 'https://localhost:3000', 'Access-Control-Allow-Credentials': 'true', 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         message: 'Failed to remove the game from your cart. Please try again. If this error persists, please cut us a support ticket'
@@ -157,7 +157,7 @@ export const handler = async (event) => {
             break
         default:
             return {
-                statusCode 400,
+                statusCode: 400,
                 headers: { 'Access-Control-Allow-Origin': 'https://localhost:3000', 'Access-Control-Allow-Credentials': 'true', 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                         message: 'Cannot perform that action'
@@ -166,7 +166,7 @@ export const handler = async (event) => {
     }
     console.log(`UpdateCart - Finished processing`)
     return {
-        statusCode 200,
+        statusCode: 200,
         headers: { 'Access-Control-Allow-Origin': 'https://localhost:3000', 'Access-Control-Allow-Credentials': 'true', 'Content-Type': 'application/json' },
         body: JSON.stringify({
             message: 'Successfully updated cart'

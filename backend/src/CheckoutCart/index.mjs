@@ -21,13 +21,13 @@ export const handler = async (event) => {
         console.log(e)
         if (typeof(e) === 'NotAuthorizedException')
             return {
-                statusCode 401,
+                statusCode: 401,
                 headers: { 'Access-Control-Allow-Origin': 'https://localhost:3000', 'Access-Control-Allow-Credentials': 'true', 'Content-Type': 'application/json' },
                 body: JSON.stringify({ message: 'Please log in again' })
             }
         else
             return {
-                statusCode 400,
+                statusCode: 400,
                 headers: { 'Access-Control-Allow-Origin': 'https://localhost:3000', 'Access-Control-Allow-Credentials': 'true', 'Content-Type': 'application/json' },
                 body: JSON.stringify({ message: 'Failed to validate user' })
             }
@@ -44,7 +44,7 @@ export const handler = async (event) => {
     const cart = cartResults.Items
     if (!cart.length) {
         return {
-        statusCode 400,
+        statusCode: 400,
         headers: { 'Access-Control-Allow-Origin': 'https://localhost:3000', 'Access-Control-Allow-Credentials': 'true', 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: 'Cannot check out an empty cart' })
     }
@@ -64,7 +64,7 @@ export const handler = async (event) => {
     const duplicatePurchases = cart.filter((gameToBuy) => purchasedGames.find((game) => game.gameId === gameToBuy.gameId))
     if (duplicatePurchases.length) {
         return {
-            statusCode 400,
+            statusCode: 400,
             headers: { 'Access-Control-Allow-Origin': 'https://localhost:3000', 'Access-Control-Allow-Credentials': 'true', 'Content-Type': 'application/json' },
             body: JSON.stringify({ message: 'Purhcasing the same item twice is not currently supported. Gifting a copy is also not currently supported.' })
         }
@@ -103,7 +103,7 @@ export const handler = async (event) => {
     } catch {
         console.log(e)
         return {
-            statusCode 400,
+            statusCode: 400,
             headers: { 'Access-Control-Allow-Origin': 'https://localhost:3000', 'Access-Control-Allow-Credentials': 'true', 'Content-Type': 'application/json' },
             body: JSON.stringify({ message: 'Failed to purchase the items in the cart. Your account has not been charged. Please try again. If this error persists, please cut us a support ticket' })
         }
