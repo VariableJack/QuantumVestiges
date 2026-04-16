@@ -11,13 +11,13 @@ import { getUserPoolId } from '../../shared/utils/getConfiguration'
 
 const initialState = {
     username: undefined,
-    group: undefined,
+    group: '',
     cart: [],
     purchasedGames: [],
     error: null,
 }
 
-const userViewSlice = createSlice({
+const userSlice = createSlice({
     name: 'userReducer',
     initialState,
     reducers: {
@@ -31,7 +31,7 @@ const userViewSlice = createSlice({
             state.group = action.payload
         },
         clearGroup: state => {
-            state.group = undefined
+            state.group = ''
         },
         setCart: (state, action) => {
             state.cart = [...action.payload]
@@ -65,7 +65,7 @@ const {
     clearPurchasedGames,
     setError,
     clearError,
-} = userViewSlice.actions
+} = userSlice.actions
 export {
     setUsername,
     clearUsername,
@@ -78,4 +78,4 @@ export {
     setError,
     clearError,
 }
-export default userViewSlice.reducer
+export default userSlice

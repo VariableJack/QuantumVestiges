@@ -34,13 +34,20 @@ const menubarItems = [
                 menubarHeader: 'Support',
                 path: '/support',
             },
+        ],
+    },
+]
+const ADMINISTRATOR_ITEMS = [
+    {
+        title: 'Administrator',
+        elements: [
             {
-                menubarHeader: 'Feature Request',
-                path: '/feature-request',
+                menubarHeader: 'Create new franchise',
+                path: '/',
             },
             {
-                menubarHeader: 'Game Request',
-                path: '/game-request',
+                menubarHeader: 'Upload Game',
+                path: '/',
             },
         ],
     },
@@ -52,11 +59,4 @@ const menubarItems = [
 },
 */
 
-const MOCK_ITEMS_TO_DISPLAY = [
-    {
-        title: 'Test',
-        id: 12345,
-        type: 'FEATURE_REQUEST',
-    },
-]
-export { hostname, port, menubarItems, MOCK_ITEMS_TO_DISPLAY }
+export { hostname, port, menubarItems, ADMINISTRATOR_ITEMS, }

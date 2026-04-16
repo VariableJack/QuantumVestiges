@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 
 import '../../../styles/App.css'
 import Sidebar from '../../../shared/components/Sidebar'
-import { hostname, port, MOCK_ITEMS_TO_DISPLAY } from '../../../shared/constants'
+import { hostname, port } from '../../../shared/constants'
 import { getUrl } from '../../../shared/utils'
 
 const BugReport = () => {
@@ -15,12 +15,7 @@ const BugReport = () => {
         subject: false,
     })
 
-    const sidebarItems = MOCK_ITEMS_TO_DISPLAY.map(item => {
-        return {
-            ...item,
-            subpath: getUrl(item.type),
-        }
-    })
+    const sidebarItems = []
     return (
         <div>
             <h1 className="mb-n pb-n">Bug Report page</h1>

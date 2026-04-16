@@ -23,7 +23,7 @@ import {
 import Menubar from './shared/components/Menubar'
 
 // Constants
-import { hostname, port, menubarItems } from './shared/constants'
+import { hostname, port, menubarItems, ADMINISTRATOR_ITEMS } from './shared/constants'
 
 import { getConfig } from './shared/utils/getConfiguration'
 // Base pages
@@ -34,8 +34,6 @@ import NoPage from './features/NoPage'
 import Account from './features/Account'
 
 // Support & Request pages
-import FeatureRequest from './features/Requests/FeatureRequest'
-import GameRequest from './features/Requests/GameRequest'
 import BugReport from './features/Requests/BugReport'
 import SupportRequest from './features/Requests/SupportRequest'
 
@@ -63,7 +61,7 @@ const RouterWrapper = props => {
     const [triggerGetCart, { isLoading: isGetCartLoading }] = useLazyGetCartQuery()
     const [triggerGetPurchasedGames, { isLoading: isPurchasedGamesLoading }] =
         useLazyGetPurchasedGamesQuery()
-    const getDetails = async () => {
+    const getDetails = async auth => {
         const cartResults = await triggerGetCart({
             accessToken: auth.user.accessToken,
         }).unwrap()
@@ -77,13 +75,12 @@ const RouterWrapper = props => {
         if (auth.isAuthenticated) {
             const username = auth.user.profile['cognito:username']
             const accessToken = auth.user.access_token
-            console.debug(accessToken)
-            const group = auth.user.profile['cognito:group']
+            const groups = auth.user.profile['cognito:groups']
             dispatch(setUsername(username))
-            dispatch(setGroup(group))
+            if (groups.length) dispatch(setGroup(groups[0]))
             localStorage.setItem('accessToken', accessToken)
 
-            getDetails()
+            getDetails(auth)
         }
     }, [auth])
     return (
@@ -95,8 +92,9 @@ const RouterWrapper = props => {
                 <Route path="/franchise" element={<FranchisePage />} />
                 <Route path="/game" element={<GamePage />} />
 
-                <Route path="/feature-request" element={<FeatureRequest />} />
-                <Route path="/game-request" element={<GameRequest />} />
+                <Route path="/bug-report/:bugReportId" element={<BugReport />} />
+                <Route path="/support/:supportRequestId" element={<SupportRequest />} />
+
                 <Route path="/bug-report" element={<BugReport />} />
                 <Route path="/support" element={<SupportRequest />} />
 
@@ -105,7 +103,6 @@ const RouterWrapper = props => {
             </Routes>
         </Router>
     )
-    /* */
 }
 
 const root = ReactDOM.createRoot(document.getElementById('root'))
@@ -120,6 +117,7 @@ const App = () => {
             elements: [],
         },
     ])
+    const { group } = useSelector(state => state.userReducer)
 
     const getFranchises = async () => {
         const response = await triggerGetFranchises({}).unwrap()
@@ -134,6 +132,7 @@ const App = () => {
                     }
                 }),
             },
+            ...((group === 'admin' && ADMINISTRATOR_ITEMS) || []),
         ])
         dispatch(setFranchises(response))
     }
