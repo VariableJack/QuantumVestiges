@@ -6,6 +6,16 @@ import { CognitoIdentityProviderClient, GetUserCommand } from '@aws-sdk/client-c
 const client = new DynamoDBClient({});
 const docClient = DynamoDBDocumentClient.from(client);
 
+const transformOutput = (items) => {
+    return items.map((item) => ({
+        supportRequestId: item.support_request_id,
+        title: item.title,
+        subject: item.subject,
+        description: item.description,
+        author: item.author,
+    }))
+}
+
 export const handler = async (event) => {
     console.log(`GetSupportRequests - Received event (${JSON.stringify(event)})`)
     const { supportRequestId, accessToken } = event.queryStringParameters
@@ -66,9 +76,10 @@ export const handler = async (event) => {
             }
         }
     }
-    console.log(`GetSupportRequests - Finished processing, returning results ${JSON.stringify(resultsToReturn)}`)
+	const results = transformOutput(resultsToReturn)
+    console.log(`GetSupportRequests - Finished processing, returning results ${JSON.stringify(results)}`)
     return {
         headers: { 'Access-Control-Allow-Origin': 'https://localhost:3000', 'Access-Control-Allow-Credentials': 'true', 'Content-Type': 'application/json' },
-        body: JSON.stringify(resultsToReturn)
+        body: JSON.stringify(results)
     }
 };

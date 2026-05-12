@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.gamerparadise.dao.mapper.GameDAOMapper">
+    <resultMap id="CartResultMap" type="CartDAODTO">
+        <result property="gameId" column="game_id"/>
+        <result property="gameName" column="game_name"/>
+        <result property="franchiseId" column="franchise_id"/>
+        <result property="franchiseName" column="franchise_name"/>
+        <result property="username" column="username"/>
+    </resultMap>
+
+    <select id="getCart" parameterType="String" resultMap="CartResultMap">
+        SELECT
+			*
+		FROM cart WHERE username = #{username};
+    </select>
+
+    <select id="insertItem" parameterType="CartDAODTO" resultMap="CartResultMap">
+        SELECT
+			*
+		FROM cart WHERE game_id = #{cartItem.gameId};
+    </select>
+
+    <select id="removeItem" parameterType="CartDAODTO" resultMap="CartResultMap">
+        SELECT
+			*
+		FROM cart WHERE game_id = #{cartItem.gameId};
+    </select>
+
+    <select id="clearItem" parameterType="String" resultMap="CartResultMap">
+        SELECT
+			*
+		FROM cart WHERE username = #{username};
+    </select>
+
+</mapper>

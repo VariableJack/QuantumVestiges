@@ -24,15 +24,15 @@ const menubarItems = [
         ],
     },
     {
-        title: 'Support & New Feature Request',
+        title: 'Browse',
         elements: [
             {
-                menubarHeader: 'Bug report',
-                path: '/bug-report',
+                menubarHeader: 'Forums',
+                path: '/forums',
             },
             {
-                menubarHeader: 'Support',
-                path: '/support',
+                menubarHeader: 'Discord',
+                path: 'www.discord.gg/',
             },
         ],
     },
@@ -59,4 +59,32 @@ const ADMINISTRATOR_ITEMS = [
 },
 */
 
-export { hostname, port, menubarItems, ADMINISTRATOR_ITEMS, }
+const FORUM_PAGES = {
+	BUG_REPORT: 'BUG_REPORT',
+	SUPPORT: 'SUPPORT',
+	DISCUSSION: 'DISCUSSION'
+}
+
+const FORUM_PAGE_ITEMS = {
+	[FORUM_PAGES.BUG_REPORT]: {
+		baseTitle: (group) => 'All bug reports',
+		submitPageTitle: () => 'Create a bug report',
+		submitButtonText: () => 'Submit a bug',
+		recentText: () => 'Recent bug reports',
+	},
+	[FORUM_PAGES.SUPPORT]: {
+		baseTitle: (group) => `${group === 'admin' && 'All ' || 'Your'} support requests`,
+		submitPageTitle: () => 'Request support',
+		submitButtonText: () => 'Request support',
+		recentText: () => 'Recent support requests',
+	},
+	[FORUM_PAGES.DISCUSSION]: {
+		baseTitle: (group) => 'Discussions',
+		submitPageTitle:() =>  'Start new discussion',
+		submitButtonText:() =>  'Post',
+		recentText: () => 'Recent discussions',
+		
+	},
+}
+
+export { hostname, port, menubarItems, ADMINISTRATOR_ITEMS, FORUM_PAGES, FORUM_PAGE_ITEMS }

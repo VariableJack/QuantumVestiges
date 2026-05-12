@@ -3,7 +3,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 const initialState = {
     supportRequests: [],
     bugReports: [],
-    threads: [],
+    discussionThreads: [],
 }
 
 const requestsSlice = createSlice({
@@ -13,12 +13,15 @@ const requestsSlice = createSlice({
         setSupportRequests: (state, action) => {
             state.supportRequests = [...action.payload]
         },
-        setBugRequests: (state, action) => {
+        setBugReports: (state, action) => {
             state.supportRequests = [...action.payload]
         },
+		setDiscussionThreads: (state, action) => {
+            state.discussionThreads = [...action.payload]
+        }
     },
 })
 
-const { setSupportRequests, setBugRequests } = requestsSlice.actions
-export { setSupportRequests, setBugRequests }
+const { setSupportRequests, setBugReports, setDiscussionThreads } = requestsSlice.actions
+export { setSupportRequests, setBugReports, setDiscussionThreads }
 export default requestsSlice

@@ -4,6 +4,16 @@ import { DynamoDBDocumentClient, ScanCommand } from '@aws-sdk/lib-dynamodb';
 const client = new DynamoDBClient({});
 const docClient = DynamoDBDocumentClient.from(client);
 
+const transformOutput = (items) => {
+    return items.map((item) => ({
+        bugReportId: item.bug_report_id,
+        title: item.title,
+        subject: item.subject,
+        description: item.description,
+        author: item.author,
+    }))
+}
+
 export const handler = async (event) => {
     console.log(`GetBugReports - Received event (${JSON.stringify(event)})`)
     const { bugReportId } = event.queryStringParameters
@@ -18,10 +28,11 @@ export const handler = async (event) => {
             }
         } : {}
     });
-    const results = await docClient.send(command)
+    const getBugReportResults = await docClient.send(command)
+	const results = transformOutput(getBugReportResults.Items)
     console.log(`GetBugReports - Finished processing, returning results ${JSON.stringify(results)}`)
     return {
         headers: { 'Access-Control-Allow-Origin': 'https://localhost:3000', 'Access-Control-Allow-Credentials': 'true', 'Content-Type': 'application/json' },
-        body: JSON.stringify(results.Items)
+        body: JSON.stringify(results)
     }
 };

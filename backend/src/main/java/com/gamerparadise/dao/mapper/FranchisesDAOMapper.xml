@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.gamerparadise.dao.mapper.FranchisesDAOMapper">
+
+    <resultMap id="FranchiseResultMap" type="FranchiseDAODTO">
+        <id property="franchiseId" column="franchise_id"/>
+        <result property="franchiseName" column="franchise_name"/>
+    </resultMap>
+
+	<select id="getFranchises" parameterType="FranchiseDAODTO" resultMap="FranchiseResultMap">
+		SELECT * FROM franchise
+		<if test="franchise_id != null">
+		WHERE franchise_id = #{franchise_id}
+		</if>
+		;
+    </select>
+</mapper>

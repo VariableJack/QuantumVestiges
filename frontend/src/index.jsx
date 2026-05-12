@@ -23,9 +23,9 @@ import {
 import Menubar from './shared/components/Menubar'
 
 // Constants
-import { hostname, port, menubarItems, ADMINISTRATOR_ITEMS } from './shared/constants'
+import { hostname, port, menubarItems, ADMINISTRATOR_ITEMS, FORUM_PAGES } from './shared/constants'
 
-import { getConfig } from './shared/utils/getConfiguration'
+import { getConfig } from './shared/utils'
 // Base pages
 import Home from './features/Home'
 import ContactUs from './features/ContactUs'
@@ -33,9 +33,10 @@ import AboutUs from './features/AboutUs'
 import NoPage from './features/NoPage'
 import Account from './features/Account'
 
-// Support & Request pages
-import BugReport from './features/Requests/BugReport'
-import SupportRequest from './features/Requests/SupportRequest'
+// Forum pages
+import ForumPage from './features/Requests/ForumPage'
+import DiscussionWrapper from './features/Requests/DiscussionWrapper'
+import DiscussionWrapperCreate from './features/Requests/DiscussionWrapper/Create'
 
 // Game Pages
 import FranchisePage from './features/FranchisePage'
@@ -75,6 +76,7 @@ const RouterWrapper = props => {
         if (auth.isAuthenticated) {
             const username = auth.user.profile['cognito:username']
             const accessToken = auth.user.access_token
+			console.debug(accessToken)
             const groups = auth.user.profile['cognito:groups']
             dispatch(setUsername(username))
             if (groups.length) dispatch(setGroup(groups[0]))
@@ -91,12 +93,19 @@ const RouterWrapper = props => {
                 <Route path="/account" element={<Account auth={auth} />} />
                 <Route path="/franchise" element={<FranchisePage />} />
                 <Route path="/game" element={<GamePage />} />
+                <Route path="/forums" element={<ForumPage />} />
 
-                <Route path="/bug-report/:bugReportId" element={<BugReport />} />
-                <Route path="/support/:supportRequestId" element={<SupportRequest />} />
+                <Route path="/bug-report/:bugReportId" element={<DiscussionWrapper type={FORUM_PAGES.BUG_REPORT} />} />
+                <Route path="/support/:supportRequestId" element={<DiscussionWrapper type={FORUM_PAGES.SUPPORT} />} />
+                <Route path="/discussion/:supportRequestId" element={<DiscussionWrapper type={FORUM_PAGES.DISCUSSION} />} />
 
-                <Route path="/bug-report" element={<BugReport />} />
-                <Route path="/support" element={<SupportRequest />} />
+                <Route path="/bug-report" element={<DiscussionWrapper type={FORUM_PAGES.BUG_REPORT} />} />
+                <Route path="/support" element={<DiscussionWrapper type={FORUM_PAGES.SUPPORT} />} />
+                <Route path="/discussion" element={<DiscussionWrapper type={FORUM_PAGES.DISCUSSION} />} />
+
+                <Route path="/bug-report/create" element={<DiscussionWrapperCreate type={FORUM_PAGES.BUG_REPORT} />} />
+                <Route path="/support/create" element={<DiscussionWrapperCreate type={FORUM_PAGES.SUPPORT} />} />
+                <Route path="/discussion/create" element={<DiscussionWrapperCreate type={FORUM_PAGES.DISCUSSION} />} />
 
                 <Route path="/*" element={<NoPage />} />
                 <Route path="/" element={<Home />} />

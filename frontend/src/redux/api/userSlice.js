@@ -7,7 +7,7 @@ import {
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 import config from '../../configurations/config.json'
-import { getUserPoolId } from '../../shared/utils/getConfiguration'
+import { getUserPoolId } from '../../shared/utils'
 
 const initialState = {
     username: undefined,

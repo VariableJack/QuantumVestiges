@@ -20,14 +20,19 @@
     margin-bottom: 8px;
 }
 
+.f-l {
+	float: left
+}
+
+.f-r {
+	float: right
+}
 
 .d-i {
-    float:left;
     display: inline;
 }
 
 .d-ib {
-    float:left;
     display: inline block;
 }
 

@@ -1,0 +1,52 @@
+#!/usr/bin/env node
+
+import { App } from 'aws-cdk-lib'
+import { RdsStack } from './rds'
+import { EcsStack } from './ecs'
+import { IamStack } from './iam'
+import { VpcStack } from './vpc'
+import { CloudWatchStack } from './cloudWatchStack'
+
+const deploymentEnvironments: {
+    stage: string
+    env: {
+        account: string
+        region: string
+    }
+}[] = [
+    { stage: 'devo', env: { account: 'devo-account-id', region: 'devo-region' } },
+    { stage: 'pre-prod', env: { account: 'pre-prod-account-id', region: 'pre-prod-region' } },
+    { stage: 'prod', env: { account: 'prod-account-id', region: 'prod-region' } },
+]
+
+const app = new App()
+deploymentEnvironments.forEach(deploymentEnvironment => {
+    const { stage }: { stage: string } = deploymentEnvironment
+    const iamStack = new IamStack(app, `IamStack-${stage}`, deploymentEnvironment)
+    const vpcStack = new VpcStack(app, `VpcStack-${stage}`, deploymentEnvironment)
+
+    const { ecsExecutionRole } = iamStack
+    const { vpc } = vpcStack
+    const ecsStack = new EcsStack(app, `EcsStack-${stage}`, {
+        ...deploymentEnvironment,
+        ecsExecutionRole,
+        vpc,
+    })
+    ecsStack.addDependency(iamStack)
+    ecsStack.addDependency(vpcStack)
+    const { ecsConnections } = ecsStack
+    const rdsStack = new RdsStack(app, `RdsStack-${stage}`, {
+        ...deploymentEnvironment,
+        vpc,
+        ecsConnections,
+    })
+    rdsStack.addDependency(vpcStack)
+    rdsStack.addDependency(ecsStack)
+
+    const cloudWatchStack = new CloudWatchStack(
+        app,
+        `CloudWatchStack-${stage}`,
+        deploymentEnvironment,
+    )
+    cloudWatchStack.addDependency(ecsStack)
+})

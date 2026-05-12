@@ -1,14 +1,13 @@
 import gamerParadiseApiSlice from '../../../redux/api/gamerParadiseApiSlice'
 
 export const requestsEndpoints = gamerParadiseApiSlice.injectEndpoints({
-    tagTypes: ['featureRequest', 'bugReport', 'supportRequest', 'gameRequest'],
+    tagTypes: ['bugReport', 'supportRequest', 'discussionThreads', 'comments'],
     endpoints: builder => ({
         // Get APIs
         getBugReports: builder.query({
-            query: ({ requester, requestId }) => ({
+            query: ({ requestId }) => ({
                 url: '/bug-report',
                 param: {
-                    requester: requester || '',
                     requestId,
                 },
                 method: 'GET',
@@ -16,51 +15,99 @@ export const requestsEndpoints = gamerParadiseApiSlice.injectEndpoints({
             providesTags: ['bugReport'],
         }),
         getSupportRequests: builder.query({
-            providesTags: ['Request'],
-            query: ({ requester, requestId }) => ({
+            query: ({ requestId }) => ({
                 url: '/support-request',
                 param: {
-                    requester: requester || '',
                     requestId,
                 },
                 method: 'GET',
             }),
             providesTags: ['supportRequest'],
         }),
+        getDiscussionThreads: builder.query({
+            query: ({ requestId }) => ({
+                url: '/discussion-threads',
+                param: {
+                    requestId,
+                },
+                method: 'GET',
+            }),
+            providesTags: ['discussionThreads'],
+        }),
+		getComments: builder.query({
+            query: ({ type, requestId }) => ({
+                url: '/comments',
+                param: {
+					type,
+                    requestId,
+                },
+                method: 'GET',
+            }),
+            providesTags: ['comments'],
+        }),
         // Post APIs
         submitBugReport: builder.mutation({
-            query: ({ requester, requestId }) => ({
+            query: ({ title, body, subject }) => ({
                 url: '/bug-report',
-                param: {
-                    requester: requester || '',
-                    requestId,
+                bod: {title, body, subject
                 },
                 method: 'POST',
             }),
             invalidateTags: ['bugReport'],
         }),
         submitSupportRequest: builder.mutation({
-            query: ({ requester, requestId }) => ({
+            query: ({ title, body, subject }) => ({
                 url: '/support-request',
-                param: {
-                    type,
-                    requester: requester || '',
-                    requestId,
+                bod: {title, body, subject
                 },
                 method: 'POST',
             }),
             invalidateTags: ['supportRequest'],
         }),
+        submitDiscussionThread: builder.mutation({
+            query: ({ title, body, subject }) => ({
+                url: '/discussion-threads',
+                bod: {title, body, subject
+                },
+                method: 'POST',
+            }),
+            invalidateTags: ['discussionThreads'],
+        }),
+		postComment: builder.query({
+            query: ({ type, requestId, comment }) => ({
+                url: '/post-comment',
+                bod: {
+					type,
+                    requestId,
+					comment
+                },
+                method: 'POST',
+            }),
+            invalidateTags: ['comments'],
+        }),
+		editComment: builder.query({
+            query: ({ type, requestId, commentId, comment }) => ({
+                url: '/edit-comment',
+                bod: {
+					type,
+                    requestId,
+					commentId,
+					comment
+                },
+                method: 'POST',
+            }),
+            invalidateTags: ['comments'],
+        }),
     }),
 })
 
 export const {
-    useLazyGetFeatureRequestsQuery,
     useLazyGetBugReportsQuery,
     useLazyGetSupportRequestsQuery,
-    useLazyGetGameRequestsQuery,
-    useSubmitFeatureRequestMutation,
+    useLazyGetDiscussionThreadsQuery,
+	useLazyGetCommentsQuery,
     useSubmitBugReportMutation,
     useSubmitSupportRequestMutation,
-    useSubmitGameRequestMutation,
+    useSubmitDiscussionThreadMutation,
+	usePostCommentMutation,
 } = requestsEndpoints

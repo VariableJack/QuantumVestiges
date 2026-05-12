@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.gamerparadise.dao.mapper.GameDAOMapper">
+
+    <resultMap id="GameResultMap" type="GameDAODTO">
+        <id property="gameId" column="game_id"/>
+        <result property="gameName" column="game_name"/>
+        <result property="franchiseId" column="franchise_id"/>
+        <result property="franchiseName" column="franchise_name"/>
+    </resultMap>
+
+    <select id="getGames" parameterType="GameDAODTO" resultMap="GameResultMap">
+        SELECT
+			games.game_id,
+			games.game_name,
+			franchises.franchise_id,
+			franchises.franchise_name
+		FROM games JOIN franchises ON games.franchise_id = franchises.franchise_id
+		WHERE franchise_id = #{franchise_id}
+		<if test="game_id != null">
+		AND game_id = #{game_id}
+		</if>
+		;
+    </select>
+
+    <select id="getGameById" parameterType="Integer" resultMap="GameResultMap">
+        SELECT
+			games.game_id,
+			games.game_name,
+			franchises.franchise_id,
+			franchises.franchise_name
+		FROM games JOIN franchises ON games.franchise_id = franchises.franchise_id
+		WHERE game_id = #{game_id};
+    </select>
+
+</mapper>

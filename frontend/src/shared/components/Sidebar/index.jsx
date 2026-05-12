@@ -4,7 +4,7 @@ import '../../../styles/App.css'
 
 const Sidebar = ({ url, title, items }) => {
     return (
-        <div className="d-i">
+        <div className="d-i f-l">
             <h3>{title}</h3>
             {items.map(item => {
                 return (
