@@ -36,4 +36,7 @@
 		WHERE game_id = #{game_id};
     </select>
 
+	<insert id="insertGame" parameterType="GameDAODTO">
+		INSERT INTO games(game_name) VALUES(#{gameName});
+	</insert>
 </mapper>

@@ -10,11 +10,15 @@
         <result property="franchiseName" column="franchise_name"/>
     </resultMap>
 
-	<select id="getFranchises" parameterType="FranchiseDAODTO" resultMap="FranchiseResultMap">
+	<select id="getFranchises" parameterType="java.lang.Integer" resultMap="FranchiseResultMap">
 		SELECT * FROM franchise
 		<if test="franchise_id != null">
 		WHERE franchise_id = #{franchise_id}
 		</if>
 		;
     </select>
+
+	<insert id="insertFranchise" parameterType="FranchiseDAODTO">
+		INSERT INTO franchises(franchise_name) VALUES(#{franchise.franchiseName});
+	</insert>
 </mapper>
