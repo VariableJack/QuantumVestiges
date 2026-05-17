@@ -1,1 +1,47 @@
-package com.gamerparadise.builder.converter;import org.springframework.stereotype.Component;import lombok.NonNull;import com.gamerparadise.component.dto.CartComponentDTO;import com.gamerparadise.component.dto.UpdateCartComponentInputDTO;import com.gamerparadise.component.dto.PurchasedItemComponentDTO;import com.gamerparadise.dao.dto.CartDAODTO;import com.gamerparadise.dao.dto.PurchasedItemDAODTO;@Componentpublic class AccountBuilderConverter {	public CartComponentDTO convertCartDAODTOToComponentDTO(@NonNull CartDAODTO input) {		return CartComponentDTO.builder()			.gameId(input.getGameId())			.gameName(input.getGameName())			.franchiseId(input.getFranchiseId())			.franchiseName(input.getFranchiseName())			.build();	}	public CartDAODTO convertCartComponentDTOToDAODTO(@NonNull CartComponentDTO input) {		return CartDAODTO.builder()			.gameId(input.getGameId())			.gameName(input.getGameName())			.franchiseId(input.getFranchiseId())			.franchiseName(input.getFranchiseName())			.build();	}		public PurchasedItemDAODTO convertCartComponentDTOToPurchasedItemDAODTO(@NonNull CartComponentDTO input) {		return PurchasedItemDAODTO.builder()			.id(input.getGameId())			.name(input.getGameName())			.type("GAME")			.build();	}	public PurchasedItemComponentDTO convertPurchasedItemDAODTOToComponentDTO(@NonNull PurchasedItemDAODTO input) {		return PurchasedItemComponentDTO.builder()			.id(input.getId())			.name(input.getName())			.type(input.getType())			.build();	}}
+package com.gamerparadise.builder.converter;
+import org.springframework.stereotype.Component;
+
+import lombok.NonNull;
+
+import com.gamerparadise.component.dto.CartComponentDTO;
+import com.gamerparadise.component.dto.UpdateCartComponentInputDTO;
+import com.gamerparadise.component.dto.PurchasedItemComponentDTO;
+import com.gamerparadise.dao.dto.CartDAODTO;
+import com.gamerparadise.dao.dto.PurchasedItemDAODTO;
+
+@Component
+public class AccountBuilderConverter {
+    public CartComponentDTO convertCartDAODTOToComponentDTO(@NonNull CartDAODTO input) {
+        return CartComponentDTO.builder()
+            .gameId(input.getGameId())
+            .gameName(input.getGameName())
+            .franchiseId(input.getFranchiseId())
+            .franchiseName(input.getFranchiseName())
+            .build();
+    }
+
+    public CartDAODTO convertCartComponentDTOToDAODTO(@NonNull CartComponentDTO input) {
+        return CartDAODTO.builder()
+            .gameId(input.getGameId())
+            .gameName(input.getGameName())
+            .franchiseId(input.getFranchiseId())
+            .franchiseName(input.getFranchiseName())
+            .build();
+    }
+
+    public PurchasedItemDAODTO convertCartComponentDTOToPurchasedItemDAODTO(@NonNull CartComponentDTO input) {
+        return PurchasedItemDAODTO.builder()
+            .id(input.getGameId())
+            .name(input.getGameName())
+            .type("GAME")
+            .build();
+    }
+
+    public PurchasedItemComponentDTO convertPurchasedItemDAODTOToComponentDTO(@NonNull PurchasedItemDAODTO input) {
+        return PurchasedItemComponentDTO.builder()
+            .id(input.getId())
+            .name(input.getName())
+            .type(input.getType())
+            .build();
+    }
+}

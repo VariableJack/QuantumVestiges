@@ -1,1 +1,52 @@
-package com.gamerparadise.activity;import org.springframework.boot.SpringApplication;import org.springframework.boot.autoconfigure.SpringBootApplication;import org.springframework.web.bind.annotation.RestController;import org.springframework.web.bind.annotation.RequestMapping;import org.springframework.web.bind.annotation.GetMapping;import org.springframework.web.bind.annotation.PostMapping;import org.springframework.web.bind.annotation.RequestParam;import org.springframework.web.bind.annotation.RequestBody;import org.springframework.web.bind.annotation.RequestHeader;import org.springframework.beans.factory.annotation.Autowired;import org.springframework.http.HttpHeaders;import org.apache.logging.log4j.LogManager;import org.apache.logging.log4j.Logger;import lombok.NonNull;import java.util.List;import java.util.Objects;import com.gamerparadise.activity.converter.FranchisesActivityConverter;import com.gamerparadise.activity.dto.FranchiseActivityDTO;import com.gamerparadise.component.FranchisesComponent;import com.gamerparadise.component.dto.FranchiseComponentDTO;@RestController@RequestMapping("/franchises")public class FranchisesActivity {	@Autowired	private FranchisesActivityConverter franchisesActivityConverter;	@Autowired	private FranchisesComponent franchisesComponent;	private static final Logger logger = LogManager.getLogger(FranchisesActivity.class);	@GetMapping("")	public List<FranchiseActivityDTO> getFranchises(@RequestParam(name="franchiseId",required=false) Integer franchiseId) {		logger.info("Beginning to process getFranchises{}", Objects.isNull(franchiseId) ? "" : " for franchise ID" + franchiseId.toString());		final List<FranchiseComponentDTO> getFranchisesComponentOutput = franchisesComponent.getFranchises(franchiseId);		final List<FranchiseActivityDTO> convertedOutput = getFranchisesComponentOutput			.stream()			.map((franchise) -> franchisesActivityConverter.convertFranchiseComponentDTOToActivityDTO(franchise))			.toList();		logger.info("Finished fetching {} franchise(s)", convertedOutput.size());		return convertedOutput;	}	@PostMapping("")	public void createFranchise(@NonNull @RequestBody FranchiseActivityDTO input) {				System.out.println(input);		return;	}}
+package com.gamerparadise.activity;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import lombok.NonNull;
+import java.util.List;
+import java.util.Objects;
+
+import com.gamerparadise.activity.converter.FranchisesActivityConverter;
+import com.gamerparadise.activity.dto.FranchiseActivityDTO;
+import com.gamerparadise.component.FranchisesComponent;
+import com.gamerparadise.component.dto.FranchiseComponentDTO;
+
+@RestController
+@RequestMapping("/franchises")
+public class FranchisesActivity {
+    @Autowired
+    private FranchisesActivityConverter franchisesActivityConverter;
+    @Autowired
+    private FranchisesComponent franchisesComponent;
+    private static final Logger logger = LogManager.getLogger(FranchisesActivity.class);
+
+    @GetMapping("")
+    public List<FranchiseActivityDTO> getFranchises(@RequestParam(name="franchiseId",required=false) Integer franchiseId) {
+        logger.info("Beginning to process getFranchises{}", Objects.isNull(franchiseId) ? "" : " for franchise ID" + franchiseId.toString());
+        final List<FranchiseComponentDTO> getFranchisesComponentOutput = franchisesComponent.getFranchises(franchiseId);
+        final List<FranchiseActivityDTO> convertedOutput = getFranchisesComponentOutput
+            .stream()
+            .map((franchise) -> franchisesActivityConverter.convertFranchiseComponentDTOToActivityDTO(franchise))
+            .toList();
+        logger.info("Finished fetching {} franchise(s)", convertedOutput.size());
+        return convertedOutput;
+    }
+
+    @PostMapping("")
+    public void createFranchise(@NonNull @RequestBody FranchiseActivityDTO input) {
+        logger.info("Beginning to process createFranchise with input {}", input);
+        return;
+    }
+}

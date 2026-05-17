@@ -6,8 +6,8 @@ import lombok.Data;
 @Builder
 @Data
 public class GameDAODTO {
-	private Integer gameId;
-	private String gameName;
-	private Integer franchiseId;
-	private String franchiseName;
+    private Integer gameId;
+    private String gameName;
+    private Integer franchiseId;
+    private String franchiseName;
 }

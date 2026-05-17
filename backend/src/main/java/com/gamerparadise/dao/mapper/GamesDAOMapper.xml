@@ -2,9 +2,7 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-
 <mapper namespace="com.gamerparadise.dao.mapper.GameDAOMapper">
-
     <resultMap id="GameResultMap" type="GameDAODTO">
         <id property="gameId" column="game_id"/>
         <result property="gameName" column="game_name"/>

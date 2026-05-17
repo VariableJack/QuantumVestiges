@@ -7,6 +7,6 @@ import lombok.Data;
 @Builder
 @Data
 public class UploadGameActivityInputDTO {
-	private String gameName;
-	private List<String> files;
+    private String gameName;
+    private List<String> files;
 }

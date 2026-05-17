@@ -6,6 +6,6 @@ import lombok.Data;
 @Builder
 @Data
 public class FranchiseDAODTO {
-	private Integer franchiseId;
-	private String franchiseName;
+    private Integer franchiseId;
+    private String franchiseName;
 }
