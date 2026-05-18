@@ -77,4 +77,16 @@ public class AccountDAO {
             logger.info("Finished running SQL query in {} ms", Utility.getElapsedTime(startDate));
         }
     }
+
+	public List<PurchasedItemDAODTO> getPurchasedItems(@NonNull String username) {
+        final Date startDate = new Date();
+        logger.info("Fetching purchased items for user {}", username);
+        try {
+            return mapper.getPurchasedItems(username);
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            logger.info("Finished running SQL query in {} ms", Utility.getElapsedTime(startDate));
+        }
+	}
 }

@@ -60,9 +60,22 @@ public class AccountActivity {
     public void checkoutCart(@NonNull @RequestHeader(HttpHeaders.AUTHORIZATION) String accessToken) throws AccessDeniedException {
         final Map<String, String> auth = cognitoAccessor.getUserDetailsFromAccessToken(accessToken);
         final String username = auth.get("username");
-        logger.info("Beginning to process updateCart for user {}", username);
+        logger.info("Beginning to process checkoutCart for user {}", username);
         accountComponent.checkoutCart(username);
-        logger.info("Finished processing updateCart");
+        logger.info("Finished processing checkoutCart");
         return;
+    }
+
+    @GetMapping(name="GetPurchasedItems",path="/purchased-games")
+    public List<PurchasedItemActivityDTO> getPurchasedItems(@NonNull @RequestHeader(HttpHeaders.AUTHORIZATION) String accessToken) throws AccessDeniedException {
+        final Map<String, String> auth = cognitoAccessor.getUserDetailsFromAccessToken(accessToken);
+        final String username = auth.get("username");
+        logger.info("Beginning to process getPurchasedItemsfor user {}", username);
+        final List<PurchasedItemActivityDTO> purchasedItems = accountComponent.getPurchasedItems(username)
+			.stream()
+			.map((purchasedItem) -> accountActivityConverter.convertPurchasedItemComponentDTOToActivityDTO(purchasedItem))
+			.toList();
+        logger.info("Finished processing getPurchasedItems, returning {} items", purchasedItems.size());
+        return purchasedItems;
     }
 }

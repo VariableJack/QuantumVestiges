@@ -82,4 +82,8 @@ public class AccountComponent {
         accountBuilder.addItemsToAccount(existingCart, username);
         accountBuilder.clearCart(username);
     }
+
+	public List<PurchasedItemComponentDTO> getPurchasedItems(@NonNull String username) {
+		return accountBuilder.getPurchasedItems(username);
+	}
 }

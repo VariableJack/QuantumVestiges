@@ -17,7 +17,7 @@ export const mediaEndpoints = gamerParadiseApiSlice.injectEndpoints({
         }),
         getPurchasedGames: builder.query({
             query: ({ accessToken }) => ({
-                url: `/purchase-games`,
+                url: `/purchased-games`,
                 method: 'GET',
                 headers: { Authorization: accessToken },
             }),

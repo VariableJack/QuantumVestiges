@@ -8,6 +8,7 @@ import java.util.List;
 
 import com.gamerparadise.builder.converter.AccountBuilderConverter;
 import com.gamerparadise.component.dto.CartComponentDTO;
+import com.gamerparadise.component.dto.PurchasedItemComponentDTO;
 import com.gamerparadise.dao.AccountDAO;
 
 @Component
@@ -37,4 +38,10 @@ public class AccountBuilder {
             .map((cartItem) -> accountBuilderConverter.convertCartComponentDTOToPurchasedItemDAODTO(cartItem))
             .toList(), username);
     }
+	public List<PurchasedItemComponentDTO> getPurchasedItems(@NonNull String username) {
+		return accountDAO.getPurchasedItems(username)
+            .stream()
+            .map((purchasedItem) -> accountBuilderConverter.convertPurchasedItemDAODTOToComponentDTO(purchasedItem))
+            .toList();
+	}
 }
