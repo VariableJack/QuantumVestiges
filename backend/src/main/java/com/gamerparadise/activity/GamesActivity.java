@@ -20,25 +20,21 @@ import java.util.Objects;
 
 import com.gamerparadise.activity.converter.GamesActivityConverter;
 import com.gamerparadise.activity.dto.GameActivityDTO;
-import com.gamerparadise.activity.dto.UploadGameActivityInputDTO;
 import com.gamerparadise.component.GamesComponent;
 import com.gamerparadise.component.dto.GameComponentDTO;
-import com.gamerparadise.component.dto.UploadGameComponentInputDTO;
 
 @RestController
-@RequestMapping("/games")public class GamesActivity {
+public class GamesActivity {
     @Autowired
     private GamesActivityConverter gamesActivityConverter;
     @Autowired
     private GamesComponent gamesComponent;
     private static final Logger logger = LogManager.getLogger(GamesActivity.class);
 
-    @GetMapping("")    public List<GameActivityDTO> getGames(
-        @RequestParam(name="franchiseId",required=true) Integer franchiseId,
-        @RequestParam(name="gameId",required=false) Integer gameId) {
-
-        logger.info("Beginning to process getGames for game ID {}{}", gameId.toString(), Objects.isNull(franchiseId) ? "" : " and for franchise ID" + franchiseId.toString());
-        final List<GameComponentDTO> getGamesComponentOutput = gamesComponent.getGames(franchiseId, gameId);
+    @GetMapping(name="GetGames",path="/games")
+    public List<GameActivityDTO> getGames(@RequestParam(name="franchiseId",required=true) Integer franchiseId) {
+        logger.info("Beginning to process getGames for franchise ID {}", franchiseId.toString());
+        final List<GameComponentDTO> getGamesComponentOutput = gamesComponent.getGames(franchiseId);
         final List<GameActivityDTO> convertedOutput = getGamesComponentOutput
             .stream()
             .map((game) -> gamesActivityConverter.convertGameComponentDTOToActivityDTO(game))
@@ -48,9 +44,22 @@ import com.gamerparadise.component.dto.UploadGameComponentInputDTO;
 
     }
 
-    @PostMapping("")
-    public void uploadGame(@NonNull @RequestBody UploadGameActivityInputDTO input) {
+    @GetMapping(name="GetGameById",path="/game")
+    public GameActivityDTO getGameById(@RequestParam(name="gameId",required=true) Integer gameId) {
+        logger.info("Beginning to process getGames for franchise ID {}{}", gameId.toString());
+        final GameComponentDTO getGamesComponentOutput = gamesComponent.getGameById(gameId);
+        final GameActivityDTO convertedOutput = gamesActivityConverter.convertGameComponentDTOToActivityDTO(getGamesComponentOutput);
+        logger.info("Finished fetching game {}", convertedOutput);
+        return convertedOutput;
+
+    }
+
+    @PostMapping(name="UploadGame",path="/games")
+    public GameActivityDTO uploadGame(@NonNull @RequestBody GameActivityDTO input) {
+        // TODO - file upload may be provided via a separate API
         logger.info("Beginning to process uploadGame with input {}", input);
-        return;
+        final GameComponentDTO output = gamesComponent.uploadGame(gamesActivityConverter.convertGameActivityDTOToComponentDTO(input));
+        logger.info("Finished processing uploadGame");
+        return gamesActivityConverter.convertGameComponentDTOToActivityDTO(output);
     }
 }

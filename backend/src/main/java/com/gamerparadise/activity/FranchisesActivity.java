@@ -24,7 +24,6 @@ import com.gamerparadise.component.FranchisesComponent;
 import com.gamerparadise.component.dto.FranchiseComponentDTO;
 
 @RestController
-@RequestMapping("/franchises")
 public class FranchisesActivity {
     @Autowired
     private FranchisesActivityConverter franchisesActivityConverter;
@@ -32,10 +31,10 @@ public class FranchisesActivity {
     private FranchisesComponent franchisesComponent;
     private static final Logger logger = LogManager.getLogger(FranchisesActivity.class);
 
-    @GetMapping("")
-    public List<FranchiseActivityDTO> getFranchises(@RequestParam(name="franchiseId",required=false) Integer franchiseId) {
-        logger.info("Beginning to process getFranchises{}", Objects.isNull(franchiseId) ? "" : " for franchise ID" + franchiseId.toString());
-        final List<FranchiseComponentDTO> getFranchisesComponentOutput = franchisesComponent.getFranchises(franchiseId);
+    @GetMapping(name="GetFranchises",path="/franchises")
+    public List<FranchiseActivityDTO> getFranchises() {
+        logger.info("Beginning to process getFranchises");
+        final List<FranchiseComponentDTO> getFranchisesComponentOutput = franchisesComponent.getFranchises();
         final List<FranchiseActivityDTO> convertedOutput = getFranchisesComponentOutput
             .stream()
             .map((franchise) -> franchisesActivityConverter.convertFranchiseComponentDTOToActivityDTO(franchise))
@@ -44,9 +43,20 @@ public class FranchisesActivity {
         return convertedOutput;
     }
 
-    @PostMapping("")
-    public void createFranchise(@NonNull @RequestBody FranchiseActivityDTO input) {
+    @GetMapping(name="GetFranchiseById",path="/franchise")
+    public FranchiseActivityDTO getFranchiseById(@RequestParam(name="franchiseId",required=true) Integer franchiseId) {
+        logger.info("Beginning to process getFranchiseById for franchise ID" + franchiseId.toString());
+        final FranchiseComponentDTO getFranchisesComponentOutput = franchisesComponent.getFranchiseById(franchiseId);
+        final FranchiseActivityDTO convertedOutput = franchisesActivityConverter.convertFranchiseComponentDTOToActivityDTO(getFranchisesComponentOutput);
+        logger.info("Finished fetching franchise {}", convertedOutput);
+        return convertedOutput;
+    }
+
+    @PostMapping(name="CreateFranchise",path="/franchises")
+    public FranchiseActivityDTO createFranchise(@NonNull @RequestBody FranchiseActivityDTO input) {
         logger.info("Beginning to process createFranchise with input {}", input);
-        return;
+        final FranchiseComponentDTO output = franchisesComponent.createFranchise(franchisesActivityConverter.convertFranchiseActivityDTOToComponentDTO(input));
+        logger.info("Finished processing createFranchise");
+        return franchisesActivityConverter.convertFranchiseComponentDTOToActivityDTO(output);
     }
 }

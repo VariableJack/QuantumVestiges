@@ -5,10 +5,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import lombok.NonNull;
 import java.util.List;
+import java.util.Objects;
 
 import com.gamerparadise.builder.converter.GamesBuilderConverter;
-import com.gamerparadise.dao.GamesDAO;
 import com.gamerparadise.component.dto.GameComponentDTO;
+import com.gamerparadise.dao.GamesDAO;
+import com.gamerparadise.dao.dto.GameDAODTO;
 
 @Component
 public class GamesBuilder {
@@ -17,8 +19,8 @@ public class GamesBuilder {
     @Autowired
     private GamesDAO gamesDAO;
 
-    public List<GameComponentDTO> getGames(@NonNull Integer franchiseId, Integer gameId) {
-        return gamesDAO.getGames(franchiseId, gameId)
+    public List<GameComponentDTO> getGames(@NonNull Integer franchiseId) {
+        return gamesDAO.getGames(franchiseId)
             .stream()
             .map((game) -> gamesBuilderConverter.convertGameDAODTOToComponentDTO(game))
             .toList();
@@ -26,6 +28,10 @@ public class GamesBuilder {
     }
 
     public GameComponentDTO getGameById(@NonNull Integer gameId) {
-        return gamesBuilderConverter.convertGameDAODTOToComponentDTO(gamesDAO.getGameById(gameId));
+        final GameDAODTO output = gamesDAO.getGameById(gameId);
+        if (Objects.isNull(output)) {
+            return null;
+        }
+        return gamesBuilderConverter.convertGameDAODTOToComponentDTO(output);
     }
 }

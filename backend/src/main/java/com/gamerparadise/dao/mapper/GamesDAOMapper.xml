@@ -11,30 +11,14 @@
     </resultMap>
 
     <select id="getGames" parameterType="GameDAODTO" resultMap="GameResultMap">
-        SELECT
-			games.game_id,
-			games.game_name,
-			franchises.franchise_id,
-			franchises.franchise_name
-		FROM games JOIN franchises ON games.franchise_id = franchises.franchise_id
-		WHERE franchise_id = #{franchise_id}
-		<if test="game_id != null">
-		AND game_id = #{game_id}
-		</if>
-		;
+        SELECT * FROM games WHERE franchise_id = #{franchiseId};
     </select>
 
     <select id="getGameById" parameterType="Integer" resultMap="GameResultMap">
-        SELECT
-			games.game_id,
-			games.game_name,
-			franchises.franchise_id,
-			franchises.franchise_name
-		FROM games JOIN franchises ON games.franchise_id = franchises.franchise_id
-		WHERE game_id = #{game_id};
+        SELECT * FROM games WHERE game_id = #{gameId};
     </select>
 
-	<insert id="insertGame" parameterType="GameDAODTO">
-		INSERT INTO games(game_name) VALUES(#{gameName});
-	</insert>
+    <insert id="insertGame" parameterType="GameDAODTO">
+        INSERT INTO games(game_name, franchise_id, franchise_name) VALUES(#{game.gameName}, #{game.franchiseId}, #{game.franchiseName});
+    </insert>
 </mapper>

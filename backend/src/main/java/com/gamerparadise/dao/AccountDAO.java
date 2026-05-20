@@ -19,7 +19,7 @@ import com.gamerparadise.shared.Utility;
 public class AccountDAO {
     @Autowired
     private AccountDAOMapper mapper;
-    private static final Logger logger = LogManager.getLogger(GamesDAO.class);
+    private static final Logger logger = LogManager.getLogger(AccountDAO.class);
     public List<CartDAODTO> getCart(@NonNull String username) {
         final Date startDate = new Date();
         logger.info("Fetching cart for user {}", username);
@@ -27,6 +27,8 @@ public class AccountDAO {
             return mapper.getCart(username);
         } catch (Exception e) {
             throw e;
+        } finally {
+            logger.info("Finished running SQL query in {} ms", Utility.getElapsedTime(startDate));
         }
     }
 
@@ -78,7 +80,7 @@ public class AccountDAO {
         }
     }
 
-	public List<PurchasedItemDAODTO> getPurchasedItems(@NonNull String username) {
+    public List<PurchasedItemDAODTO> getPurchasedItems(@NonNull String username) {
         final Date startDate = new Date();
         logger.info("Fetching purchased items for user {}", username);
         try {
@@ -88,5 +90,5 @@ public class AccountDAO {
         } finally {
             logger.info("Finished running SQL query in {} ms", Utility.getElapsedTime(startDate));
         }
-	}
+    }
 }

@@ -1,0 +1,20 @@
+package com.gamerparadise.dao.dto;
+
+import java.util.List;
+import java.sql.Timestamp;
+import lombok.Builder;
+import lombok.Data;
+
+import com.gamerparadise.dao.dto.ThreadCommentDAODTO;
+
+@Builder
+@Data
+public class ThreadDAODTO {
+    private Integer threadId;
+    private String title;
+    private String description;
+    private String author;
+    private Timestamp createTime;
+    private String status;
+    private List<ThreadCommentDAODTO> comments;
+}

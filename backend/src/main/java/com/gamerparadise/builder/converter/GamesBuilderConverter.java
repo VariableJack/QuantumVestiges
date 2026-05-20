@@ -1,5 +1,5 @@
 package com.gamerparadise.builder.converter;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Component;
 
 import lombok.NonNull;
 

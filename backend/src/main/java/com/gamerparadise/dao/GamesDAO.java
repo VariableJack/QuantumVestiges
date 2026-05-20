@@ -21,11 +21,11 @@ public class GamesDAO {
     private GamesDAOMapper mapper;
     private static final Logger logger = LogManager.getLogger(GamesDAO.class);
 
-    public List<GameDAODTO> getGames(@NonNull Integer franchiseId, Integer gameId) {
+    public List<GameDAODTO> getGames(@NonNull Integer franchiseId) {
         final Date startDate = new Date();
-        logger.info("Fetching games by franchiseId {}{}", franchiseId, Objects.isNull(gameId) ? "" : " and gameId" + gameId.toString());
+        logger.info("Fetching games by franchiseId {}", franchiseId);
         try {
-            return mapper.getGames(franchiseId, gameId);
+            return mapper.getGames(franchiseId);
         } catch (Exception e) {
             throw e;
         } finally {

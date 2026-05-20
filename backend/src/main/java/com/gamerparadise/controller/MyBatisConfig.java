@@ -35,13 +35,18 @@ public class MyBatisConfig {
         //final GetSecretValueResponse response = secretsManagerClient.getSecretValue(request);
         //final String secretData = response.secretString();
         //final Map<String, Object> resultMap = mapper.readValue(secretData, Map.class);
-        //try {
-        //    ds.setJdbcUrl(resultMap.get("databaseUrl"));
-        //    ds.setUser(resultMap.get("username"));
-        //    ds.setPassword(resultMap.get("password"));
-        //    ds.setDriverClass("com.mysql.cj.jdbc.Driver");
-        //} catch (PropertyVetoException e) {
-        //}
+        final Map<String, String> resultMap = Map.of(
+            "databaseUrl", "jdbc:mysql://gamerparadise-devo.crm0i0a40wfp.us-west-1.rds.amazonaws.com:3306/gamerparadise",
+            "username", "admin",
+            "password", "password"
+        );
+        try {
+            ds.setJdbcUrl(resultMap.get("databaseUrl"));
+            ds.setUser(resultMap.get("username"));
+            ds.setPassword(resultMap.get("password"));
+            ds.setDriverClass("com.mysql.cj.jdbc.Driver");
+        } catch (PropertyVetoException e) {
+        }
         return ds;
     }
 

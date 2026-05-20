@@ -38,10 +38,10 @@ public class AccountBuilder {
             .map((cartItem) -> accountBuilderConverter.convertCartComponentDTOToPurchasedItemDAODTO(cartItem))
             .toList(), username);
     }
-	public List<PurchasedItemComponentDTO> getPurchasedItems(@NonNull String username) {
-		return accountDAO.getPurchasedItems(username)
+    public List<PurchasedItemComponentDTO> getPurchasedItems(@NonNull String username) {
+        return accountDAO.getPurchasedItems(username)
             .stream()
             .map((purchasedItem) -> accountBuilderConverter.convertPurchasedItemDAODTOToComponentDTO(purchasedItem))
             .toList();
-	}
+    }
 }

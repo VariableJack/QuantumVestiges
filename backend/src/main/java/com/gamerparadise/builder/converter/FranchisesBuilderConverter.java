@@ -1,5 +1,5 @@
 package com.gamerparadise.builder.converter;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Component;
 
 import lombok.NonNull;
 
@@ -8,8 +8,15 @@ import com.gamerparadise.dao.dto.FranchiseDAODTO;
 
 @Component
 public class FranchisesBuilderConverter {
-    public FranchiseComponentDTO convertFranchiseComponentDTOToActivityDTO(@NonNull FranchiseDAODTO input) {
+    public FranchiseComponentDTO convertFranchiseDAODTOToComponentDTO(@NonNull FranchiseDAODTO input) {
         return FranchiseComponentDTO.builder()
+            .franchiseId(input.getFranchiseId())
+            .franchiseName(input.getFranchiseName())
+            .build();
+    }
+
+    public FranchiseDAODTO convertFranchiseComponentDTOToDAODTO(@NonNull FranchiseComponentDTO input) {
+        return FranchiseDAODTO.builder()
             .franchiseId(input.getFranchiseId())
             .franchiseName(input.getFranchiseName())
             .build();

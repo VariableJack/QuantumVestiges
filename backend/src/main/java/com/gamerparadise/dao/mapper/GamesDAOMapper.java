@@ -12,7 +12,7 @@ import com.gamerparadise.dao.dto.GameDAODTO;
 @Component
 @Mapper
 public interface GamesDAOMapper {
-    public List<GameDAODTO> getGames(@Param("franchiseId") @NonNull Integer franchiseId, @Param("gameId") Integer gameId);
+    public List<GameDAODTO> getGames(@Param("franchiseId") @NonNull Integer franchiseId);
     public GameDAODTO getGameById(@Param("gameId") @NonNull Integer gameId);
     public void insertGame(@Param("game") @NonNull GameDAODTO game);
 }

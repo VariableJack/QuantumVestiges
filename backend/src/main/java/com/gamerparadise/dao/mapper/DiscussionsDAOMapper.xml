@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gamerparadise.dao.mapper.DiscussionsDAOMapper">
+    <resultMap id="ThreadResultMap" type="ThreadDAODTO">
+        <id property="threadId" column="thread_id"/>
+        <result property="title" column="title"/>
+        <result property="description" column="description"/>
+        <result property="author" column="author"/>
+        <result property="createTime" column="create_time"/>
+        <result property="status" column="status"/>
+        <collection property="comments" ofType="ThreadCommentDAODTO" resultMap="ThreadCommentResultMap"/>
+    </resultMap>
+    <resultMap id="ThreadCommentResultMap" type="ThreadCommentDAODTO">
+        <id property="commentId" column="comment_id"/>
+        <result property="threadId" column="thread_id"/>
+        <result property="description" column="description"/>
+        <result property="author" column="author"/>
+        <result property="createTime" column="createTime"/>
+    </resultMap>
+    <!-- Support Requests -->
+    <select id="getSupportRequests" parameterType="String" resultMap="ThreadResultMap">
+        SELECT
+            *
+        FROM support_requests WHERE username = #{username};
+    </select>
+
+    <select id="getDetailedSupportRequest" parameterType="Integer" resultMap="ThreadResultMap">
+        SELECT
+            *
+        FROM support_requests WHERE thread_id = #{thread_id};
+    </select>
+
+    <insert id="createSupportRequest" parameterType="ThreadDAODTO"
+        useGeneratedKeys="true" keyColumn="thread_id" keyProperty="threadId">
+        INSERT INTO support_requests(title, description, author)
+        VALUES(thread.title, thread.description, thread.author);
+    </insert>
+
+    <insert id="addSupportRequestComment" parameterType="ThreadCommentDAODTO"
+        useGeneratedKeys="true" keyColumn="comment_id" keyProperty="commentId">
+        INSERT INTO support_request_comments(thread_id, description, author)
+        VALUES(comment.thread_id, comment.description, comment.author);
+    </insert>
+    <!-- "Standard" discussion threads -->
+    <select id="getDiscussions" parameterType="String" resultMap="ThreadResultMap">
+        SELECT
+            *
+        FROM discussions
+        CASE
+            WHEN author = #{username} THEN 2
+            ELSE 1
+        AS rank
+        ORDER BY create_time, rank desc;
+    </select>
+
+    <select id="getDetailedDiscussion" parameterType="Integer" resultMap="ThreadResultMap">
+        SELECT
+            *
+        FROM discussions WHERE thread_id = #{thread_id};
+    </select>
+
+    <insert id="createDiscussion" parameterType="ThreadDAODTO"
+        useGeneratedKeys="true" keyColumn="thread_id" keyProperty="threadId">
+        INSERT INTO discussions(title, description, author)
+        VALUES(thread.title, thread.description, thread.author);
+    </insert>
+
+    <insert id="addDiscussionComment" parameterType="ThreadCommentDAODTO"
+        useGeneratedKeys="true" keyColumn="comment_id" keyProperty="commentId">
+        INSERT INTO discussion_comments(thread_id, description, author)
+        VALUES(comment.thread_id, comment.description, comment.author);
+    </insert>
+    <!-- Bug reports -->
+    <select id="getBugReports" parameterType="String" resultMap="ThreadResultMap">
+        SELECT
+            *
+        FROM bug_reports
+        CASE
+            WHEN author = #{username} THEN 2
+            ELSE 1
+        AS rank
+        ORDER BY create_time, rank desc;
+    </select>
+
+    <select id="getDetailedBugReport" parameterType="Integer" resultMap="ThreadResultMap">
+        SELECT
+            *
+        FROM bug_reports WHERE thread_id = #{thread_id};
+    </select>
+
+    <insert id="createBugReport" parameterType="ThreadDAODTO"
+        useGeneratedKeys="true" keyColumn="thread_id" keyProperty="threadId">
+        INSERT INTO bug_reports(title, description, author)
+        VALUES(thread.title, thread.description, thread.author);
+    </insert>
+
+    <insert id="addBugReportComment" parameterType="ThreadCommentDAODTO"
+        useGeneratedKeys="true" keyColumn="comment_id" keyProperty="commentId">
+        INSERT INTO bug_report_comments(thread_id, description, author)
+        VALUES(comment.thread_id, comment.description, comment.author);
+    </insert>
+</mapper>

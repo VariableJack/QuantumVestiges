@@ -1,12 +1,15 @@
 package com.gamerparadise.activity.converter;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Component;
+
 import lombok.NonNull;
+
 import com.gamerparadise.activity.dto.CartActivityDTO;
 import com.gamerparadise.activity.dto.UpdateCartActivityInputDTO;
 import com.gamerparadise.activity.dto.PurchasedItemActivityDTO;
 import com.gamerparadise.component.dto.CartComponentDTO;
 import com.gamerparadise.component.dto.UpdateCartComponentInputDTO;
 import com.gamerparadise.component.dto.PurchasedItemComponentDTO;
+
 @Component
 public class AccountActivityConverter {
     public UpdateCartComponentInputDTO convertCartInputToComponentDTO(@NonNull UpdateCartActivityInputDTO input) {

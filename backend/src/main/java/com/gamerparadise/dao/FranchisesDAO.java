@@ -20,11 +20,23 @@ public class FranchisesDAO {
     private FranchisesDAOMapper mapper;
     private static final Logger logger = LogManager.getLogger(FranchisesDAO.class);
 
-    public List<FranchiseDAODTO> getFranchises(Integer franchiseId) {
+    public List<FranchiseDAODTO> getFranchises() {
         final Date startDate = new Date();
-        logger.info("Fetching franchises by franchiseId {}", franchiseId);
+        logger.info("Fetching franchises");
         try {
-            return mapper.getFranchises(franchiseId);
+            return mapper.getFranchises();
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            logger.info("Finished running SQL query in {} ms", Utility.getElapsedTime(startDate));
+        }
+    }
+
+    public FranchiseDAODTO getFranchiseById(@NonNull Integer franchiseId) {
+        final Date startDate = new Date();
+        logger.info("Fetching franchise by franchiseId {}", franchiseId);
+        try {
+            return mapper.getFranchiseById(franchiseId);
         } catch (Exception e) {
             throw e;
         } finally {

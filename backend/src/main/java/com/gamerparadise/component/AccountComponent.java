@@ -15,6 +15,8 @@ import com.gamerparadise.builder.GamesBuilder;
 import com.gamerparadise.component.dto.UpdateCartComponentInputDTO;
 import com.gamerparadise.component.dto.CartComponentDTO;
 import com.gamerparadise.component.dto.GameComponentDTO;
+import com.gamerparadise.component.dto.PurchasedItemComponentDTO;
+
 
 @Component
 public class AccountComponent {
@@ -83,7 +85,7 @@ public class AccountComponent {
         accountBuilder.clearCart(username);
     }
 
-	public List<PurchasedItemComponentDTO> getPurchasedItems(@NonNull String username) {
-		return accountBuilder.getPurchasedItems(username);
-	}
+    public List<PurchasedItemComponentDTO> getPurchasedItems(@NonNull String username) {
+        return accountBuilder.getPurchasedItems(username);
+    }
 }

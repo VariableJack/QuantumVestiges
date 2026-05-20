@@ -22,6 +22,7 @@ import java.util.Map;
 
 import com.gamerparadise.activity.dto.CartActivityDTO;
 import com.gamerparadise.activity.dto.UpdateCartActivityInputDTO;
+import com.gamerparadise.activity.dto.PurchasedItemActivityDTO;
 import com.gamerparadise.activity.converter.AccountActivityConverter;
 import com.gamerparadise.accessor.CognitoAccessor;
 import com.gamerparadise.component.AccountComponent;
@@ -37,10 +38,16 @@ public class AccountActivity {
     private static final Logger logger = LogManager.getLogger(AccountActivity.class);
 
     @GetMapping(name="GetCart",path="/cart")
-    public String getCart(@NonNull @RequestHeader(HttpHeaders.AUTHORIZATION) String accessToken) throws AccessDeniedException {
+    public List<CartActivityDTO> getCart(@NonNull @RequestHeader(HttpHeaders.AUTHORIZATION) String accessToken) throws AccessDeniedException {
         final Map<String, String> auth = cognitoAccessor.getUserDetailsFromAccessToken(accessToken);
         logger.info("Beginning to process getCart for user {}", auth.get("username"));
-        return "Cart";
+        final String username = auth.get("username");
+        final List<CartActivityDTO> cart = accountComponent.getCart(username)
+            .stream()
+            .map((cartItem) -> accountActivityConverter.convertCartComponentDTOToActivityDTO(cartItem))
+            .toList();
+        logger.info("Finished processing getCart, returning {} items", cart.size());
+        return cart;
     }
 
     @PostMapping(name="UpdateCart",path="/update-cart")
@@ -54,6 +61,7 @@ public class AccountActivity {
             return;
         }
         accountComponent.updateCart(accountActivityConverter.convertCartInputToComponentDTO(input), username);
+        logger.info("Finished processing updateCart");
     }
 
     @PostMapping(name="CheckoutCart",path="/checkout-cart")
@@ -72,9 +80,9 @@ public class AccountActivity {
         final String username = auth.get("username");
         logger.info("Beginning to process getPurchasedItemsfor user {}", username);
         final List<PurchasedItemActivityDTO> purchasedItems = accountComponent.getPurchasedItems(username)
-			.stream()
-			.map((purchasedItem) -> accountActivityConverter.convertPurchasedItemComponentDTOToActivityDTO(purchasedItem))
-			.toList();
+            .stream()
+            .map((purchasedItem) -> accountActivityConverter.convertPurchasedItemComponentDTOToActivityDTO(purchasedItem))
+            .toList();
         logger.info("Finished processing getPurchasedItems, returning {} items", purchasedItems.size());
         return purchasedItems;
     }

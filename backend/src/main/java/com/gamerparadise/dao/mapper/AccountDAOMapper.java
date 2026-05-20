@@ -18,5 +18,5 @@ public interface AccountDAOMapper {
     public void removeItem(@Param("cartItem") @NonNull CartDAODTO cartItem);
     public void clearCart(@Param("username") @NonNull String username);
     public void addItemsToAccount(@Param("items") @NonNull List<PurchasedItemDAODTO> input, @Param("username") @NonNull String username);
-	public List<PurchasedItemDAODTO> getPurchasedItems(@Param("username") @NonNull String username);
+    public List<PurchasedItemDAODTO> getPurchasedItems(@Param("username") @NonNull String username);
 }

@@ -19,13 +19,13 @@
 
     <select id="getCart" parameterType="String" resultMap="CartResultMap">
         SELECT
-			*
-		FROM cart WHERE username = #{username};
+            *
+        FROM cart WHERE username = #{username};
     </select>
 
     <insert id="insertItem" parameterType="CartDAODTO">
         INSERT INTO cart(username, game_id, game_name, franchise_id, franchise_name)
-		VALUES(#{username}, #{gameId}, #{gameName}, #{franchiseId}, #{franchiseName});
+        VALUES(#{username}, #{gameId}, #{gameName}, #{franchiseId}, #{franchiseName});
     </insert>
 
     <delete id="removeItem" parameterType="CartDAODTO">
@@ -36,18 +36,18 @@
         DELETE FROM cart WHERE username = #{username};
     </delete>
 
-	<insert id="addItemsToAccount" >
+    <insert id="addItemsToAccount" >
         INSERT INTO purchased_items (username, id, name, type)
         VALUES
         <foreach collection="items" item="item" separator=",">
             (#{username}, #{item.id}, #{item.name}, #{item.type})
         </foreach>
-		;
+        ;
     </insert>
 
-	<select id="getPurchasedItems" parameterType="String" resultMap="PurchasedItemResultMap">
+    <select id="getPurchasedItems" parameterType="String" resultMap="PurchasedItemResultMap">
         SELECT
-			*
-		FROM purchased_items WHERE username = #{username};
+            *
+        FROM purchased_items WHERE username = #{username};
     </select>
 </mapper>

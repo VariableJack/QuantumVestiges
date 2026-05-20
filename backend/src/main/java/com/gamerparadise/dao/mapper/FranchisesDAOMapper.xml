@@ -8,15 +8,15 @@
         <result property="franchiseName" column="franchise_name"/>
     </resultMap>
 
-	<select id="getFranchises" parameterType="java.lang.Integer" resultMap="FranchiseResultMap">
-		SELECT * FROM franchise
-		<if test="franchise_id != null">
-		WHERE franchise_id = #{franchise_id}
-		</if>
-		;
+    <select id="getFranchises" resultMap="FranchiseResultMap">
+        SELECT * FROM franchise;
     </select>
 
-	<insert id="insertFranchise" parameterType="FranchiseDAODTO">
-		INSERT INTO franchises(franchise_name) VALUES(#{franchise.franchiseName});
-	</insert>
+    <select id="getFranchiseById" parameterType="java.lang.Integer" resultMap="FranchiseResultMap">
+        SELECT * FROM franchise WHERE franchise_id = #{franchise_id};
+    </select>
+
+    <insert id="insertFranchise" parameterType="FranchiseDAODTO">
+        INSERT INTO franchises(franchise_name) VALUES(#{franchise.franchiseName});
+    </insert>
 </mapper>
