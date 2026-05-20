@@ -51,6 +51,14 @@ public class DiscussionsBuilder {
         }
         return discussionsBuilderConverter.convertThreadCommentDAODTOToComponentDTO(output);
     }
+
+    public void closeSupportRequest(@NonNull ThreadCommentComponentDTO input) {
+        discussionsDAO.closeSupportRequest(discussionsBuilderConverter.convertThreadCommentComponentDTOToDAODTO(input));
+    }
+
+    public void reopenSupportRequest(@NonNull ThreadCommentComponentDTO input) {
+        discussionsDAO.reopenSupportRequest(discussionsBuilderConverter.convertThreadCommentComponentDTOToDAODTO(input));
+    }
     /* "Standard" discussion builders */
     public List<ThreadComponentDTO> getDiscussions(@NonNull String username) {
         return discussionsDAO.getDiscussions(username)
@@ -82,6 +90,10 @@ public class DiscussionsBuilder {
         }
         return discussionsBuilderConverter.convertThreadCommentDAODTOToComponentDTO(output);
     }
+
+    public void closeDiscussion(@NonNull ThreadCommentComponentDTO input) {
+        discussionsDAO.closeDiscussion(discussionsBuilderConverter.convertThreadCommentComponentDTOToDAODTO(input));
+    }
     /* Bug report builders */
     public List<ThreadComponentDTO> getBugReports(@NonNull String username) {
         return discussionsDAO.getBugReports(username)
@@ -112,5 +124,13 @@ public class DiscussionsBuilder {
             return null;
         }
         return discussionsBuilderConverter.convertThreadCommentDAODTOToComponentDTO(output);
+    }
+
+    public void closeBugReport(@NonNull ThreadCommentComponentDTO input) {
+        discussionsDAO.closeBugReport(discussionsBuilderConverter.convertThreadCommentComponentDTOToDAODTO(input));
+    }
+
+    public void reopenBugReport(@NonNull ThreadCommentComponentDTO input) {
+        discussionsDAO.reopenBugReport(discussionsBuilderConverter.convertThreadCommentComponentDTOToDAODTO(input));
     }
 }

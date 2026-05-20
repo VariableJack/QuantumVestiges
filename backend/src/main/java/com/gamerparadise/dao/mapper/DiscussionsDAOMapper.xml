@@ -9,6 +9,8 @@
         <result property="description" column="description"/>
         <result property="author" column="author"/>
         <result property="createTime" column="create_time"/>
+        <result property="last_update_time" column="lastUpdateTime"/>
+        <result property="last_update_by" column="lastUpdateBy"/>
         <result property="status" column="status"/>
         <collection property="comments" ofType="ThreadCommentDAODTO" resultMap="ThreadCommentResultMap"/>
     </resultMap>
@@ -29,7 +31,7 @@
     <select id="getDetailedSupportRequest" parameterType="Integer" resultMap="ThreadResultMap">
         SELECT
             *
-        FROM support_requests WHERE thread_id = #{thread_id};
+        FROM support_requests WHERE thread_id = #{threadId};
     </select>
 
     <insert id="createSupportRequest" parameterType="ThreadDAODTO"
@@ -43,6 +45,16 @@
         INSERT INTO support_request_comments(thread_id, description, author)
         VALUES(comment.thread_id, comment.description, comment.author);
     </insert>
+
+    <update id="closeSupportRequest" parameterType="ThreadCommentDAODTO">
+        UPDATE support_requests SET last_update_time = CURRENT_TIME(), last_update_by = #{input.author}, status = "CLOSED"
+        WHERE thread_id = #{input.threadId};
+    </update>
+
+    <update id="reopenSupportRequest" parameterType="ThreadCommentDAODTO">
+        UPDATE support_requests SET last_update_time = CURRENT_TIME(), last_update_by = #{input.author}, status = "OPEN"
+        WHERE thread_id = #{input.threadId};
+    </update>
     <!-- "Standard" discussion threads -->
     <select id="getDiscussions" parameterType="String" resultMap="ThreadResultMap">
         SELECT
@@ -58,7 +70,7 @@
     <select id="getDetailedDiscussion" parameterType="Integer" resultMap="ThreadResultMap">
         SELECT
             *
-        FROM discussions WHERE thread_id = #{thread_id};
+        FROM discussions WHERE thread_id = #{threadId};
     </select>
 
     <insert id="createDiscussion" parameterType="ThreadDAODTO"
@@ -70,8 +82,13 @@
     <insert id="addDiscussionComment" parameterType="ThreadCommentDAODTO"
         useGeneratedKeys="true" keyColumn="comment_id" keyProperty="commentId">
         INSERT INTO discussion_comments(thread_id, description, author)
-        VALUES(comment.thread_id, comment.description, comment.author);
+        VALUES(comment.threadId, comment.description, comment.author);
     </insert>
+
+    <update id="closeDiscussion" parameterType="ThreadCommentDAODTO">
+        UPDATE support_requests SET last_update_time = CURRENT_TIME(), last_update_by = #{input.author}, status = "CLOSED"
+        WHERE thread_id = #{input.threadId};
+    </update>
     <!-- Bug reports -->
     <select id="getBugReports" parameterType="String" resultMap="ThreadResultMap">
         SELECT
@@ -87,7 +104,7 @@
     <select id="getDetailedBugReport" parameterType="Integer" resultMap="ThreadResultMap">
         SELECT
             *
-        FROM bug_reports WHERE thread_id = #{thread_id};
+        FROM bug_reports WHERE thread_id = #{threadId};
     </select>
 
     <insert id="createBugReport" parameterType="ThreadDAODTO"
@@ -99,6 +116,16 @@
     <insert id="addBugReportComment" parameterType="ThreadCommentDAODTO"
         useGeneratedKeys="true" keyColumn="comment_id" keyProperty="commentId">
         INSERT INTO bug_report_comments(thread_id, description, author)
-        VALUES(comment.thread_id, comment.description, comment.author);
+        VALUES(comment.threadId, comment.description, comment.author);
     </insert>
+
+    <update id="closeBugReport" parameterType="ThreadCommentDAODTO">
+        UPDATE bug_report SET last_update_time = CURRENT_TIME(), last_update_by = #{input.author}, status = "CLOSED"
+        WHERE thread_id = #{input.threadId};
+    </update>
+
+    <update id="reopenBugReport" parameterType="ThreadCommentDAODTO">
+        UPDATE bug_report SET last_update_time = CURRENT_TIME(), last_update_by = #{input.author}, status = "OPEN"
+        WHERE thread_id = #{input.threadId};
+    </update>
 </mapper>

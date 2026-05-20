@@ -15,6 +15,8 @@ public class ThreadDAODTO {
     private String description;
     private String author;
     private Timestamp createTime;
+    private Timestamp lastUpdateTime;
+    private String lastUpdateBy;
     private String status;
     private List<ThreadCommentDAODTO> comments;
 }

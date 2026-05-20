@@ -48,6 +48,7 @@ public class DiscussionsActivity {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("%s thread is missing a title and/or a description", type));
         }
     }
+
     private void validateThreadComment(ThreadCommentActivityDTO input, String type) {
         if (Objects.isNull(input.getDescription()) || input.getDescription().trim().isEmpty()) {
             logger.warn("{} comment is missing a description", type);
@@ -114,6 +115,32 @@ public class DiscussionsActivity {
         logger.info("Finished processing addSupportRequestComment");
         return supportRequestComment;
     }
+
+    @PostMapping(name="CloseSupportRequest",path="/support-request/close")
+    public void closeSupportRequest(
+        @NonNull @RequestHeader(HttpHeaders.AUTHORIZATION) String accessToken,
+        @NonNull @RequestBody ThreadCommentActivityDTO input) {
+
+        final Map<String, String> auth = cognitoAccessor.getUserDetailsFromAccessToken(accessToken);
+        final String username = auth.get("username");
+        final String group = auth.get("group");
+        logger.info("Beginning to process closeSupportRequest for user {}, with input {}", username, input);
+        discussionsComponent.closeSupportRequest(discussionsActivityConverter.convertThreadCommentActivityDTOToComponentDTO(input, username), group);
+        logger.info("Finished processing closeSupportRequest");
+    }
+
+    @PostMapping(name="ReopenSupportRequest",path="/support-request/reopen")
+    public void reopenSupportRequest(
+        @NonNull @RequestHeader(HttpHeaders.AUTHORIZATION) String accessToken,
+        @NonNull @RequestBody ThreadCommentActivityDTO input) {
+
+        final Map<String, String> auth = cognitoAccessor.getUserDetailsFromAccessToken(accessToken);
+        final String username = auth.get("username");
+        final String group = auth.get("group");
+        logger.info("Beginning to process reopenSupportRequest for user {}, with input {}", username, input);
+        discussionsComponent.reopenSupportRequest(discussionsActivityConverter.convertThreadCommentActivityDTOToComponentDTO(input, username), group);
+        logger.info("Finished processing reopenSupportRequest");
+    }
     /* "Standard" discussion thread APIs*/
     @GetMapping(name="GetDiscussions",path="/discussions")
     public List<ThreadActivityDTO> getDiscussions(@NonNull @RequestHeader(HttpHeaders.AUTHORIZATION) String accessToken) throws AccessDeniedException {
@@ -172,6 +199,19 @@ public class DiscussionsActivity {
         logger.info("Finished processing addDiscussionComment");
         return discussionComment;
     }
+
+    @PostMapping(name="CloseDiscussion",path="/discussion/close")
+    public void closeDiscussion(
+        @NonNull @RequestHeader(HttpHeaders.AUTHORIZATION) String accessToken,
+        @NonNull @RequestBody ThreadCommentActivityDTO input) {
+
+        final Map<String, String> auth = cognitoAccessor.getUserDetailsFromAccessToken(accessToken);
+        final String username = auth.get("username");
+        final String group = auth.get("group");
+        logger.info("Beginning to process closeDiscussion for user {}, with input {}", username, input);
+        discussionsComponent.closeDiscussion(discussionsActivityConverter.convertThreadCommentActivityDTOToComponentDTO(input, username), group);
+        logger.info("Finished processing closeDiscussion");
+    }
     /* Bug report APIs */
     @GetMapping(name="GetBugReports",path="/bug-reports")
     public List<ThreadActivityDTO> getBugReports(@NonNull @RequestHeader(HttpHeaders.AUTHORIZATION) String accessToken) throws AccessDeniedException {
@@ -229,5 +269,31 @@ public class DiscussionsActivity {
         final ThreadCommentActivityDTO bugReportComment = discussionsActivityConverter.convertThreadCommentComponentDTOToActivityDTO(output);
         logger.info("Finished processing addBugReportComment");
         return bugReportComment;
+    }
+
+    @PostMapping(name="CloseBugReport",path="/bug-report/close")
+    public void closeBugReport(
+        @NonNull @RequestHeader(HttpHeaders.AUTHORIZATION) String accessToken,
+        @NonNull @RequestBody ThreadCommentActivityDTO input) {
+
+        final Map<String, String> auth = cognitoAccessor.getUserDetailsFromAccessToken(accessToken);
+        final String username = auth.get("username");
+        final String group = auth.get("group");
+        logger.info("Beginning to process closeBugReport for user {}, with input {}", username, input);
+        discussionsComponent.closeBugReport(discussionsActivityConverter.convertThreadCommentActivityDTOToComponentDTO(input, username));
+        logger.info("Finished processing closeBugReport");
+    }
+
+    @PostMapping(name="ReopenBugReport",path="/bug-report/reopen")
+    public void reopenBugReport(
+        @NonNull @RequestHeader(HttpHeaders.AUTHORIZATION) String accessToken,
+        @NonNull @RequestBody ThreadCommentActivityDTO input) {
+
+        final Map<String, String> auth = cognitoAccessor.getUserDetailsFromAccessToken(accessToken);
+        final String username = auth.get("username");
+        final String group = auth.get("group");
+        logger.info("Beginning to process reopenBugReport for user {}, with input {}", username, input);
+        discussionsComponent.reopenBugReport(discussionsActivityConverter.convertThreadCommentActivityDTOToComponentDTO(input, username));
+        logger.info("Finished processing reopenBugReport");
     }
 }

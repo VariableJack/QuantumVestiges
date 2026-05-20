@@ -68,6 +68,30 @@ public class DiscussionsDAO {
             logger.info("Finished running SQL query in {} ms", Utility.getElapsedTime(startDate));
         }
     }
+
+    public void closeSupportRequest(@NonNull ThreadCommentDAODTO input) {
+        final Date startDate = new Date();
+        logger.info("Closing support request with input {}", input);
+        try {
+            mapper.closeSupportRequest(input);
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            logger.info("Finished running SQL query in {} ms", Utility.getElapsedTime(startDate));
+        }
+    }
+
+    public void reopenSupportRequest(@NonNull ThreadCommentDAODTO input) {
+        final Date startDate = new Date();
+        logger.info("Reopening support request with input {}", input);
+        try {
+            mapper.reopenSupportRequest(input);
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            logger.info("Finished running SQL query in {} ms", Utility.getElapsedTime(startDate));
+        }
+    }
     /* "Standard" discussions */
     public List<ThreadDAODTO> getDiscussions(@NonNull String username) {
         final Date startDate = new Date();
@@ -116,6 +140,18 @@ public class DiscussionsDAO {
             logger.info("Finished running SQL query in {} ms", Utility.getElapsedTime(startDate));
         }
     }
+
+    public void closeDiscussion(@NonNull ThreadCommentDAODTO input) {
+        final Date startDate = new Date();
+        logger.info("Closing discussion with input {}", input);
+        try {
+            mapper.closeDiscussion(input);
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            logger.info("Finished running SQL query in {} ms", Utility.getElapsedTime(startDate));
+        }
+    }
     /* Bug report */
     public List<ThreadDAODTO> getBugReports(@NonNull String username) {
         final Date startDate = new Date();
@@ -158,6 +194,30 @@ public class DiscussionsDAO {
         logger.info("Adding bug report comment {}", comment);
         try {
             return mapper.addBugReportComment(comment);
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            logger.info("Finished running SQL query in {} ms", Utility.getElapsedTime(startDate));
+        }
+    }
+
+    public void closeBugReport(@NonNull ThreadCommentDAODTO input) {
+        final Date startDate = new Date();
+        logger.info("Closing bug report with input {}", input);
+        try {
+            mapper.closeBugReport(input);
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            logger.info("Finished running SQL query in {} ms", Utility.getElapsedTime(startDate));
+        }
+    }
+
+    public void reopenBugReport(@NonNull ThreadCommentDAODTO input) {
+        final Date startDate = new Date();
+        logger.info("Reopening bug report with input {}", input);
+        try {
+            mapper.reopenBugReport(input);
         } catch (Exception e) {
             throw e;
         } finally {

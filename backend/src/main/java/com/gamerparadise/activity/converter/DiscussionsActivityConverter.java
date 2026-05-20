@@ -25,12 +25,14 @@ public class DiscussionsActivityConverter {
             .description(input.getDescription())
             .author(input.getAuthor())
             .createTime(input.getCreateTime())
+            .lastUpdateTime(input.getLastUpdateTime())
+            .lastUpdateBy(input.getLastUpdateBy())
+            .status(input.getStatus())
             .comments(input
                 .getComments()
                 .stream()
                 .map((comment) -> this.convertThreadCommentComponentDTOToActivityDTO(comment))
                 .toList())
-            .status(input.getStatus())
             .build();
     }
 
