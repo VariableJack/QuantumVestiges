@@ -23,15 +23,11 @@
     </resultMap>
     <!-- Support Requests -->
     <select id="getSupportRequests" parameterType="String" resultMap="ThreadResultMap">
-        SELECT
-            *
-        FROM support_requests WHERE username = #{username};
+        SELECT * FROM support_requests WHERE username = #{username};
     </select>
 
     <select id="getDetailedSupportRequest" parameterType="Integer" resultMap="ThreadResultMap">
-        SELECT
-            *
-        FROM support_requests WHERE thread_id = #{threadId};
+        SELECT * FROM support_requests WHERE thread_id = #{threadId};
     </select>
 
     <insert id="createSupportRequest" parameterType="ThreadDAODTO"
@@ -56,21 +52,12 @@
         WHERE thread_id = #{input.threadId};
     </update>
     <!-- "Standard" discussion threads -->
-    <select id="getDiscussions" parameterType="String" resultMap="ThreadResultMap">
-        SELECT
-            *
-        FROM discussions
-        CASE
-            WHEN author = #{username} THEN 2
-            ELSE 1
-        AS rank
-        ORDER BY create_time, rank desc;
+    <select id="getDiscussions" resultMap="ThreadResultMap">
+        SELECT * FROM discussions ORDER BY create_time desc;
     </select>
 
     <select id="getDetailedDiscussion" parameterType="Integer" resultMap="ThreadResultMap">
-        SELECT
-            *
-        FROM discussions WHERE thread_id = #{threadId};
+        SELECT * FROM discussions WHERE thread_id = #{threadId};
     </select>
 
     <insert id="createDiscussion" parameterType="ThreadDAODTO"
@@ -90,21 +77,12 @@
         WHERE thread_id = #{input.threadId};
     </update>
     <!-- Bug reports -->
-    <select id="getBugReports" parameterType="String" resultMap="ThreadResultMap">
-        SELECT
-            *
-        FROM bug_reports
-        CASE
-            WHEN author = #{username} THEN 2
-            ELSE 1
-        AS rank
-        ORDER BY create_time, rank desc;
+    <select id="getBugReports" resultMap="ThreadResultMap">
+        SELECT * FROM bug_reports ORDER BY create_time desc;
     </select>
 
     <select id="getDetailedBugReport" parameterType="Integer" resultMap="ThreadResultMap">
-        SELECT
-            *
-        FROM bug_reports WHERE thread_id = #{threadId};
+        SELECT * FROM bug_reports WHERE thread_id = #{threadId};
     </select>
 
     <insert id="createBugReport" parameterType="ThreadDAODTO"

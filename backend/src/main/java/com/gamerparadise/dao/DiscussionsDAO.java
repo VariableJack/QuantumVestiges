@@ -93,9 +93,9 @@ public class DiscussionsDAO {
         }
     }
     /* "Standard" discussions */
-    public List<ThreadDAODTO> getDiscussions(@NonNull String username) {
+    public List<ThreadDAODTO> getDiscussions() {
         final Date startDate = new Date();
-        logger.info("Fetching discussion for user {}", username);
+        logger.info("Fetching discussions");
         try {
             return mapper.getDiscussions(username);
         } catch (Exception e) {
@@ -153,11 +153,11 @@ public class DiscussionsDAO {
         }
     }
     /* Bug report */
-    public List<ThreadDAODTO> getBugReports(@NonNull String username) {
+    public List<ThreadDAODTO> getBugReports() {
         final Date startDate = new Date();
-        logger.info("Fetching bug report for user {}", username);
+        logger.info("Fetching bug reports");
         try {
-            return mapper.getBugReports(username);
+            return mapper.getBugReports();
         } catch (Exception e) {
             throw e;
         } finally {

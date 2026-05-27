@@ -79,8 +79,8 @@ public class DiscussionsComponent {
         discussionsBuilder.reopenSupportRequest(input);
     }
 
-    public List<ThreadComponentDTO> getDiscussions(@NonNull String username) {
-        return discussionsBuilder.getDiscussions(username);
+    public List<ThreadComponentDTO> getDiscussions() {
+        return discussionsBuilder.getDiscussions();
     }
 
     public ThreadComponentDTO getDetailedDiscussion(@NonNull Integer threadId) {
@@ -122,8 +122,8 @@ public class DiscussionsComponent {
         discussionsBuilder.closeDiscussion(input);
     }
 
-    public List<ThreadComponentDTO> getBugReports(@NonNull String username) {
-        return discussionsBuilder.getBugReports(username);
+    public List<ThreadComponentDTO> getBugReports() {
+        return discussionsBuilder.getBugReports();
     }
 
     public ThreadComponentDTO getDetailedBugReport(@NonNull Integer threadId) {

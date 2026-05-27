@@ -60,8 +60,8 @@ public class DiscussionsBuilder {
         discussionsDAO.reopenSupportRequest(discussionsBuilderConverter.convertThreadCommentComponentDTOToDAODTO(input));
     }
     /* "Standard" discussion builders */
-    public List<ThreadComponentDTO> getDiscussions(@NonNull String username) {
-        return discussionsDAO.getDiscussions(username)
+    public List<ThreadComponentDTO> getDiscussions() {
+        return discussionsDAO.getDiscussions()
             .stream()
             .map((discussion) -> discussionsBuilderConverter.convertThreadDAODTOToComponentDTO(discussion))
             .toList();
@@ -95,8 +95,8 @@ public class DiscussionsBuilder {
         discussionsDAO.closeDiscussion(discussionsBuilderConverter.convertThreadCommentComponentDTOToDAODTO(input));
     }
     /* Bug report builders */
-    public List<ThreadComponentDTO> getBugReports(@NonNull String username) {
-        return discussionsDAO.getBugReports(username)
+    public List<ThreadComponentDTO> getBugReports() {
+        return discussionsDAO.getBugReports()
             .stream()
             .map((bugReport) -> discussionsBuilderConverter.convertThreadDAODTOToComponentDTO(bugReport))
             .toList();

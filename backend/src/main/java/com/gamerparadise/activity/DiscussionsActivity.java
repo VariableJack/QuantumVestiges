@@ -147,7 +147,7 @@ public class DiscussionsActivity {
         final Map<String, String> auth = cognitoAccessor.getUserDetailsFromAccessToken(accessToken);
         final String username = auth.get("username");
         logger.info("Beginning to process getDiscussions for user {}", username);
-        final List<ThreadActivityDTO> discussions = discussionsComponent.getDiscussions(username)
+        final List<ThreadActivityDTO> discussions = discussionsComponent.getDiscussions()
             .stream()
             .map((discussion) -> discussionsActivityConverter.convertThreadComponentDTOToActivityDTO(discussion))
             .toList();
@@ -218,7 +218,7 @@ public class DiscussionsActivity {
         final Map<String, String> auth = cognitoAccessor.getUserDetailsFromAccessToken(accessToken);
         final String username = auth.get("username");
         logger.info("Beginning to process getBugReports for user {}", username);
-        final List<ThreadActivityDTO> bugReports = discussionsComponent.getBugReports(username)
+        final List<ThreadActivityDTO> bugReports = discussionsComponent.getBugReports()
             .stream()
             .map((bugReport) -> discussionsActivityConverter.convertThreadComponentDTOToActivityDTO(bugReport))
             .toList();
