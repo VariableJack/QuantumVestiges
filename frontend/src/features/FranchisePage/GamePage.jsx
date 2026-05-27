@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux'
 
 import { useLocation } from 'react-router-dom'
 
-import { useUpdateCartMutation, useLazyGetGamesQuery } from '../../redux/api/mediaEndpoints'
+import { useUpdateCartMutation, useLazyGetGameByIdQuery } from '../../redux/api/mediaEndpoints'
 
 import '../../styles/App.css'
 
@@ -14,7 +14,7 @@ const Game = () => {
     const franchiseId = params.get('franchiseId')
     const gameId = params.get('gameId')
 
-    const [triggerGetGames, { isLoading }] = useLazyGetGamesQuery()
+    const [triggerGetGame, { isLoading }] = useLazyGetGameByIdQuery()
     const [updateCart, { isLoading: isUpdating }] = useUpdateCartMutation()
 
     const [game, setGame] = useState({
@@ -24,8 +24,8 @@ const Game = () => {
         franchiseName: '',
     })
     const getGame = async () => {
-        const response = await triggerGetGames({ franchise: franchiseId, game: gameId }).unwrap()
-        setGame(response[0])
+        const response = await triggerGetGame({ game: gameId }).unwrap()
+        setGame(response)
     }
     useEffect(() => {
         if (!franchiseId || !gameId) {

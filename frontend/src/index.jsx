@@ -76,7 +76,7 @@ const RouterWrapper = props => {
         if (auth.isAuthenticated) {
             const username = auth.user.profile['cognito:username']
             const accessToken = auth.user.access_token
-			console.debug(accessToken)
+            console.debug(accessToken)
             const groups = auth.user.profile['cognito:groups']
             dispatch(setUsername(username))
             if (groups.length) dispatch(setGroup(groups[0]))
@@ -95,17 +95,47 @@ const RouterWrapper = props => {
                 <Route path="/game" element={<GamePage />} />
                 <Route path="/forums" element={<ForumPage />} />
 
-                <Route path="/bug-report/:bugReportId" element={<DiscussionWrapper type={FORUM_PAGES.BUG_REPORT} />} />
-                <Route path="/support/:supportRequestId" element={<DiscussionWrapper type={FORUM_PAGES.SUPPORT} />} />
-                <Route path="/discussion/:supportRequestId" element={<DiscussionWrapper type={FORUM_PAGES.DISCUSSION} />} />
+                <Route
+                    path="/bug-report/:bugReportId"
+                    element={
+                        <DiscussionWrapper type={FORUM_PAGES.BUG_REPORT} username={username} />
+                    }
+                />
+                <Route
+                    path="/support/:supportRequestId"
+                    element={<DiscussionWrapper type={FORUM_PAGES.SUPPORT} username={username} />}
+                />
+                <Route
+                    path="/discussion/:supportRequestId"
+                    element={
+                        <DiscussionWrapper type={FORUM_PAGES.DISCUSSION} username={username} />
+                    }
+                />
 
-                <Route path="/bug-report" element={<DiscussionWrapper type={FORUM_PAGES.BUG_REPORT} />} />
+                <Route
+                    path="/bug-report"
+                    element={
+                        <DiscussionWrapper type={FORUM_PAGES.BUG_REPORT} username={username} />
+                    }
+                />
                 <Route path="/support" element={<DiscussionWrapper type={FORUM_PAGES.SUPPORT} />} />
-                <Route path="/discussion" element={<DiscussionWrapper type={FORUM_PAGES.DISCUSSION} />} />
+                <Route
+                    path="/discussion"
+                    element={<DiscussionWrapper type={FORUM_PAGES.DISCUSSION} />}
+                />
 
-                <Route path="/bug-report/create" element={<DiscussionWrapperCreate type={FORUM_PAGES.BUG_REPORT} />} />
-                <Route path="/support/create" element={<DiscussionWrapperCreate type={FORUM_PAGES.SUPPORT} />} />
-                <Route path="/discussion/create" element={<DiscussionWrapperCreate type={FORUM_PAGES.DISCUSSION} />} />
+                <Route
+                    path="/bug-report/create"
+                    element={<DiscussionWrapperCreate type={FORUM_PAGES.BUG_REPORT} />}
+                />
+                <Route
+                    path="/support/create"
+                    element={<DiscussionWrapperCreate type={FORUM_PAGES.SUPPORT} />}
+                />
+                <Route
+                    path="/discussion/create"
+                    element={<DiscussionWrapperCreate type={FORUM_PAGES.DISCUSSION} />}
+                />
 
                 <Route path="/*" element={<NoPage />} />
                 <Route path="/" element={<Home />} />
@@ -129,7 +159,7 @@ const App = () => {
     const { group } = useSelector(state => state.userReducer)
 
     const getFranchises = async () => {
-        const response = await triggerGetFranchises({}).unwrap()
+        const response = await triggerGetFranchises().unwrap()
         setFinalItemsToDisplay([
             ...menubarItems,
             {

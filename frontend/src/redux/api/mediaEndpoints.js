@@ -5,13 +5,25 @@ export const mediaEndpoints = gamerParadiseApiSlice.injectEndpoints({
     endpoints: builder => ({
         getFranchises: builder.query({
             query: ({ franchise }) => ({
-                url: `/franchises${(franchise && `?gameId=${franchise}`) || ''}`,
+                url: `/franchises`,
+                method: 'GET',
+            }),
+        }),
+        getFranchiseById: builder.query({
+            query: ({ franchise }) => ({
+                url: `/franchise?franchiseId=${franchise}`,
                 method: 'GET',
             }),
         }),
         getGames: builder.query({
-            query: ({ franchise, game }) => ({
+            query: ({ franchise }) => ({
                 url: `/games?franchiseId=${franchise}${game && `&gameId=${game}`}`,
+                method: 'GET',
+            }),
+        }),
+        getGameById: builder.query({
+            query: ({ game }) => ({
+                url: `/game?gameId=${game}}`,
                 method: 'GET',
             }),
         }),
@@ -54,8 +66,12 @@ export const mediaEndpoints = gamerParadiseApiSlice.injectEndpoints({
 export const {
     useGetFranchisesQuery,
     useLazyGetFranchisesQuery,
+    useGetFranchiseByIdQuery,
+    useLazyGetFranchiseByIdQuery,
     useGetGamesQuery,
     useLazyGetGamesQuery,
+    useGetGameByIdQuery,
+    useLazyGetGameByIdQuery,
 
     useLazyGetPurchasedGamesQuery,
     useLazyGetCartQuery,

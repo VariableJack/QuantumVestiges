@@ -9,24 +9,19 @@ import {
     useSubmitSupportRequestMutation,
     useSubmitDiscussionThreadMutation,
 } from '../../api/requestsEndpoints'
-const DiscussionCreate = (props) => {
-	const {
-	submitPageTitle,
-	submitButtonText,
-	recentText,
-	submitAction
-	} = props
+const DiscussionCreate = props => {
+    const { submitPageTitle, submitButtonText, recentText, submitAction } = props
     const [inputs, setInputs] = useState({
         title: '',
         subject: '',
-		description: '',
+        description: '',
     })
     const [errors, setErrors] = useState({
         title: false,
         subject: false,
-		description: false,
+        description: false,
     })
-	return (
+    return (
         <div>
             <h1 className="mb-n pb-n">Support page</h1>
             <div className="d-i mr-xl">
@@ -86,60 +81,67 @@ const DiscussionCreate = (props) => {
                             console.log(newErrors)
                             setErrors(newErrors)
                             if (newErrors.title.length === 0 && newErrors.subject.length === 0) {
-								submitAction(input)
+                                submitAction(input)
                                 console.log('API call')
                             }
                         }}
                     >
-					{submitButtonText}
+                        {submitButtonText}
                     </button>
                 </div>
             </div>
-            <Sidebar
-                url={`${hostname}:${port}`}
-                title={recentText}
-                items={sidebarItems}
-            />
+            <Sidebar url={`${hostname}:${port}`} title={recentText} items={sidebarItems} />
         </div>
     )
 }
 
-const DiscussionWrapperCreate = (props) => {
-	const { type } = props
-	const [submitBugReport, { isLoading: isSubmittingBugReport, isSuccess: isSubmitBugReportSuccess }] = useSubmitBugReportMutation
-	const [submitSupportRequest, { isLoading: isSubmittingSupportRequest, isSuccess: isSubmitSupportRequestSuccess }] = useSubmitSupportRequestMutation
-	const [submitDiscussionThread, { isLoading: isSubmittingDiscussionThread, isSuccess: isSubmitDiscussionThreadSuccess }] = useSubmitDiscussionThreadMutation
-	
-	const [isSubmitting, setIsSubmitting] = useState(false)
+const DiscussionWrapperCreate = props => {
+    const { type } = props
+    const [
+        submitBugReport,
+        { isLoading: isSubmittingBugReport, isSuccess: isSubmitBugReportSuccess },
+    ] = useSubmitBugReportMutation
+    const [
+        submitSupportRequest,
+        { isLoading: isSubmittingSupportRequest, isSuccess: isSubmitSupportRequestSuccess },
+    ] = useSubmitSupportRequestMutation
+    const [
+        submitDiscussionThread,
+        { isLoading: isSubmittingDiscussionThread, isSuccess: isSubmitDiscussionThreadSuccess },
+    ] = useSubmitDiscussionThreadMutation
+
+    const [isSubmitting, setIsSubmitting] = useState(false)
     useEffect(() => {
-		setIsSubmitting(
-		isSubmittingBugReport ||
-		isSubmittingSupportRequest ||
-		isSubmittingDiscussionThread)
-	}, [isSubmittingBugReport,
-	    isSubmittingSupportRequest,
-	    isSubmittingDiscussionThread
-	])
+        setIsSubmitting(
+            isSubmittingBugReport || isSubmittingSupportRequest || isSubmittingDiscussionThread,
+        )
+    }, [isSubmittingBugReport, isSubmittingSupportRequest, isSubmittingDiscussionThread])
     const sidebarItems = []
-    return <DiscussionWrapper
-	submitPageTitle={FORUM_PAGE_ITEMS[type].submitPageTitle()}
-	submitButtonText={FORUM_PAGE_ITEMS[type].submitButtonText()}
-	recentText={FORUM_PAGE_ITEMS[type].recentText()}
-	submitAction={(input) => {
-		switch (type) {
-			case FORUM_TYPE.BUG_REPORT:
-				submitBugReport(input)
-				break;
-			case FORUM_PAGES.SUPPORT:
-				submitSupportRequest(input)
-				break;
-			case FORUM_PAGES.DISCUSSION:
-				submitDiscussionThread(input)
-				break;
-		}
-	}}
-	isSuccess={isSubmitBugReportSuccess || isSubmitSupportRequestSuccess || isSubmitDiscussionThreadSuccess}
-	/>
+    return (
+        <DiscussionWrapper
+            submitPageTitle={FORUM_PAGE_ITEMS[type].submitPageTitle()}
+            submitButtonText={FORUM_PAGE_ITEMS[type].submitButtonText()}
+            recentText={FORUM_PAGE_ITEMS[type].recentText()}
+            submitAction={input => {
+                switch (type) {
+                    case FORUM_TYPE.BUG_REPORT:
+                        submitBugReport(input)
+                        break
+                    case FORUM_PAGES.SUPPORT:
+                        submitSupportRequest(input)
+                        break
+                    case FORUM_PAGES.DISCUSSION:
+                        submitDiscussionThread(input)
+                        break
+                }
+            }}
+            isSuccess={
+                isSubmitBugReportSuccess ||
+                isSubmitSupportRequestSuccess ||
+                isSubmitDiscussionThreadSuccess
+            }
+        />
+    )
 }
 
 export default DiscussionWrapperCreate

@@ -18,27 +18,27 @@ const getUrl = urlType => {
             return ''
     }
 }
-const formatTimestamp = (timestamp) => {
-	let date;
+const formatTimestamp = timestamp => {
+    let date
 
-	if (timestamp instanceof Date) {
-		date = timestamp;
-	} else if (typeof timestamp === 'number') {
-		date = new Date(timestamp < 1e12 ? timestamp * 1000 : timestamp);
-	} else if (typeof timestamp === 'string') {
-		date = new Date(timestamp);
-	}
+    if (timestamp instanceof Date) {
+        date = timestamp
+    } else if (typeof timestamp === 'number') {
+        date = new Date(timestamp < 1e12 ? timestamp * 1000 : timestamp)
+    } else if (typeof timestamp === 'string') {
+        date = new Date(timestamp)
+    }
 
-	const dateOptions = {
-		year: 'numeric',
-		month: 'short',
-		day: '2-digit',
-		hour: '2-digit',
-		minute: '2-digit',
-		second: '2-digit',
-	};
+    const dateOptions = {
+        year: 'numeric',
+        month: 'short',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+    }
 
-	return new Intl.DateTimeFormat('en-US', dateOptions).format(date);
+    return new Intl.DateTimeFormat('en-US', dateOptions).format(date)
 }
 
 export { getConfig, getUrl, formatTimestamp }

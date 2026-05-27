@@ -6,9 +6,8 @@ import {
     useGetLazyGameRequestsQuery,
 } from '../api/requestsEndpoints'
 const ForumPage = () => {
-	
-	const dispatch = useDispatch()
+    const dispatch = useDispatch()
     const { username } = useSelector(state => state.userReducer)
-    return (<div></div>)
+    return <div></div>
 }
 export default ForumPage

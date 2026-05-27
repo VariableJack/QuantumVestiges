@@ -34,11 +34,11 @@ export const requestsEndpoints = gamerParadiseApiSlice.injectEndpoints({
             }),
             providesTags: ['discussionThreads'],
         }),
-		getComments: builder.query({
+        getComments: builder.query({
             query: ({ type, requestId }) => ({
                 url: '/comments',
                 param: {
-					type,
+                    type,
                     requestId,
                 },
                 method: 'GET',
@@ -49,8 +49,7 @@ export const requestsEndpoints = gamerParadiseApiSlice.injectEndpoints({
         submitBugReport: builder.mutation({
             query: ({ title, body, subject }) => ({
                 url: '/bug-report',
-                bod: {title, body, subject
-                },
+                bod: { title, body, subject },
                 method: 'POST',
             }),
             invalidateTags: ['bugReport'],
@@ -58,8 +57,7 @@ export const requestsEndpoints = gamerParadiseApiSlice.injectEndpoints({
         submitSupportRequest: builder.mutation({
             query: ({ title, body, subject }) => ({
                 url: '/support-request',
-                bod: {title, body, subject
-                },
+                bod: { title, body, subject },
                 method: 'POST',
             }),
             invalidateTags: ['supportRequest'],
@@ -67,32 +65,31 @@ export const requestsEndpoints = gamerParadiseApiSlice.injectEndpoints({
         submitDiscussionThread: builder.mutation({
             query: ({ title, body, subject }) => ({
                 url: '/discussion-threads',
-                bod: {title, body, subject
-                },
+                bod: { title, body, subject },
                 method: 'POST',
             }),
             invalidateTags: ['discussionThreads'],
         }),
-		postComment: builder.query({
+        postComment: builder.query({
             query: ({ type, requestId, comment }) => ({
                 url: '/post-comment',
                 bod: {
-					type,
+                    type,
                     requestId,
-					comment
+                    comment,
                 },
                 method: 'POST',
             }),
             invalidateTags: ['comments'],
         }),
-		editComment: builder.query({
+        editComment: builder.query({
             query: ({ type, requestId, commentId, comment }) => ({
                 url: '/edit-comment',
                 bod: {
-					type,
+                    type,
                     requestId,
-					commentId,
-					comment
+                    commentId,
+                    comment,
                 },
                 method: 'POST',
             }),
@@ -105,9 +102,9 @@ export const {
     useLazyGetBugReportsQuery,
     useLazyGetSupportRequestsQuery,
     useLazyGetDiscussionThreadsQuery,
-	useLazyGetCommentsQuery,
+    useLazyGetCommentsQuery,
     useSubmitBugReportMutation,
     useSubmitSupportRequestMutation,
     useSubmitDiscussionThreadMutation,
-	usePostCommentMutation,
+    usePostCommentMutation,
 } = requestsEndpoints

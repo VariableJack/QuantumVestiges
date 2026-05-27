@@ -16,9 +16,9 @@ const requestsSlice = createSlice({
         setBugReports: (state, action) => {
             state.supportRequests = [...action.payload]
         },
-		setDiscussionThreads: (state, action) => {
+        setDiscussionThreads: (state, action) => {
             state.discussionThreads = [...action.payload]
-        }
+        },
     },
 })
 

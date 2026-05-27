@@ -4,7 +4,7 @@ import { useLocation } from 'react-router-dom'
 
 import '../../styles/App.css'
 
-import { useGetFranchisesQuery, useLazyGetGamesQuery } from '../../redux/api/mediaEndpoints'
+import { useLazyGetGamesQuery } from '../../redux/api/mediaEndpoints'
 
 const Franchise = () => {
     const { search } = useLocation()
@@ -46,11 +46,7 @@ const Franchise = () => {
                     {games.map(game => (
                         <div>
                             Game {game.game_id}&nbsp;
-                            <a
-                                href={`/game?franchiseId=${franchise.franchiseId}&gameId=${game.gameId}`}
-                            >
-                                {game.gameName}
-                            </a>
+                            <a href={`/game?&gameId=${game.gameId}`}>{game.gameName}</a>
                         </div>
                     ))}
                 </div>

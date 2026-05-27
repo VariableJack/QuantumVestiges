@@ -1,0 +1,9 @@
+.disabled {
+  background-color: #646464;
+}
+.selected {
+  background-color: #848484;
+}
+.unselected {
+  background-color: #121212;
+}
