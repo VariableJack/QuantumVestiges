@@ -50,7 +50,7 @@ public class DiscussionsActivityConverter {
         return ThreadCommentComponentDTO.builder()
             .threadId(input.getThreadId())
             .description(input.getDescription())
-            .author(input.getAuthor())
+            .author(username)
             .build();
     }
 }
