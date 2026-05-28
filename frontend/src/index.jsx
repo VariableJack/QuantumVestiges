@@ -6,11 +6,11 @@ import { createStore, applyMiddleware } from 'redux'
 import { store } from './redux/api'
 import {
     useLazyGetFranchisesQuery,
-    useLazyGetPurchasedGamesQuery,
+    useLazyGetPurchasedItemsQuery,
     useLazyGetCartQuery,
     useCheckoutCartMutation,
 } from './redux/api/mediaEndpoints'
-import { setFranchises } from './redux/api/globalSlice'
+import { setFranchises, addErrorMessage } from './redux/api/globalSlice'
 import {
     setUsername,
     setAccessToken,
@@ -20,7 +20,7 @@ import {
 } from './redux/api/userSlice'
 
 // Support components
-import Menubar from './shared/components/Menubar'
+import { Flashbar, Menubar } from './shared/components'
 
 // Constants
 import { hostname, port, menubarItems, ADMINISTRATOR_ITEMS, FORUM_PAGES } from './shared/constants'
@@ -59,19 +59,50 @@ const RouterWrapper = props => {
     const auth = useAuth()
     const dispatch = useDispatch()
 
-    const [triggerGetCart, { isLoading: isGetCartLoading }] = useLazyGetCartQuery()
-    const [triggerGetPurchasedGames, { isLoading: isPurchasedGamesLoading }] =
-        useLazyGetPurchasedGamesQuery()
+    const [
+        triggerGetCart,
+        { isLoading: isGetCartLoading, isError: getCartIsError, error: getCartError },
+    ] = useLazyGetCartQuery()
+    const [
+        triggerGetPurchasedItems,
+        {
+            isLoading: isPurchasedGamesLoading,
+            isError: getPurchasedItemsIsError,
+            error: getPurchasedItemsError,
+        },
+    ] = useLazyGetPurchasedItemsQuery()
     const getDetails = async auth => {
-        const cartResults = await triggerGetCart({
-            accessToken: auth.user.accessToken,
-        }).unwrap()
-        const purchasedGamesResults = await triggerGetPurchasedGames({
-            accessToken: auth.user.accessToken,
-        }).unwrap()
-        dispatch(setCart([...cartResults]))
-        dispatch(setPurchasedGames([...purchasedGamesResults]))
+        try {
+            const cartResults = await triggerGetCart({
+                accessToken: auth.user.accessToken,
+            }).unwrap()
+            const purchasedGamesResults = await triggerGetPurchasedItems({
+                accessToken: auth.user.accessToken,
+            }).unwrap()
+            dispatch(setCart([...cartResults]))
+            dispatch(setPurchasedGames([...purchasedGamesResults]))
+        } catch (e) {}
     }
+    useEffect(() => {
+        if (getCartIsError) {
+            dispatch(
+                addErrorMessage({
+                    title: 'Failed to fetch your cart',
+                    description: getCartError.error,
+                    id: 'cartFetch',
+                }),
+            )
+        }
+        if (getPurchasedItemsIsError) {
+            dispatch(
+                addErrorMessage({
+                    title: 'Failed to fetch your list of purchased items',
+                    description: getPurchasedItemsError.error,
+                    id: 'purchasedItemsFetch',
+                }),
+            )
+        }
+    }, [getCartIsError, getPurchasedItemsIsError])
     useEffect(() => {
         if (auth.isAuthenticated) {
             const username = auth.user.profile['cognito:username']
@@ -97,26 +128,20 @@ const RouterWrapper = props => {
 
                 <Route
                     path="/bug-report/:bugReportId"
-                    element={
-                        <DiscussionWrapper type={FORUM_PAGES.BUG_REPORT} username={username} />
-                    }
+                    element={<DiscussionWrapper type={FORUM_PAGES.BUG_REPORT} />}
                 />
                 <Route
                     path="/support/:supportRequestId"
-                    element={<DiscussionWrapper type={FORUM_PAGES.SUPPORT} username={username} />}
+                    element={<DiscussionWrapper type={FORUM_PAGES.SUPPORT} />}
                 />
                 <Route
                     path="/discussion/:supportRequestId"
-                    element={
-                        <DiscussionWrapper type={FORUM_PAGES.DISCUSSION} username={username} />
-                    }
+                    element={<DiscussionWrapper type={FORUM_PAGES.DISCUSSION} />}
                 />
 
                 <Route
                     path="/bug-report"
-                    element={
-                        <DiscussionWrapper type={FORUM_PAGES.BUG_REPORT} username={username} />
-                    }
+                    element={<DiscussionWrapper type={FORUM_PAGES.BUG_REPORT} />}
                 />
                 <Route path="/support" element={<DiscussionWrapper type={FORUM_PAGES.SUPPORT} />} />
                 <Route
@@ -148,7 +173,7 @@ const root = ReactDOM.createRoot(document.getElementById('root'))
 const App = () => {
     const dispatch = useDispatch()
 
-    const [triggerGetFranchises] = useLazyGetFranchisesQuery()
+    const [triggerGetFranchises, { isError, error }] = useLazyGetFranchisesQuery()
     const [finalItemsToDisplay, setFinalItemsToDisplay] = useState([
         ...menubarItems,
         {
@@ -157,32 +182,55 @@ const App = () => {
         },
     ])
     const { group } = useSelector(state => state.userReducer)
+    const { successMessages, infoMessages, errorMessages } = useSelector(
+        state => state.globalReducer,
+    )
 
     const getFranchises = async () => {
-        const response = await triggerGetFranchises().unwrap()
-        setFinalItemsToDisplay([
-            ...menubarItems,
-            {
-                title: 'Franchise',
-                elements: response.map(({ franchiseName, franchiseId }) => {
-                    return {
-                        menubarHeader: franchiseName,
-                        path: `/franchise?franchiseId=${franchiseId}`,
-                    }
-                }),
-            },
-            ...((group === 'admin' && ADMINISTRATOR_ITEMS) || []),
-        ])
-        dispatch(setFranchises(response))
+        try {
+            const response = await triggerGetFranchises().unwrap()
+            setFinalItemsToDisplay([
+                ...menubarItems,
+                {
+                    title: 'Franchise',
+                    elements: response.map(({ franchiseName, franchiseId }) => {
+                        return {
+                            menubarHeader: franchiseName,
+                            path: `/franchise?franchiseId=${franchiseId}`,
+                        }
+                    }),
+                },
+                ...((group === 'admin' && ADMINISTRATOR_ITEMS) || []),
+            ])
+            dispatch(setFranchises(response))
+        } catch (e) {}
     }
     useEffect(() => {
         getFranchises()
     }, [])
+    useEffect(() => {
+        if (isError) {
+            dispatch(
+                addErrorMessage({
+                    title: 'Failed to fetch franchises',
+                    description: error.error,
+                    id: 'franchiseFetchError',
+                }),
+            )
+        }
+    }, [isError])
+
     return (
         <div>
             <React.StrictMode>
                 <AuthProvider {...cognitoAuthConfig}>
                     <div>
+                        <Flashbar
+                            successMessages={successMessages}
+                            infoMessages={infoMessages}
+                            errorMessages={errorMessages}
+                            dispatch={dispatch}
+                        />
                         <Menubar url={`${hostname}:${port}`} items={finalItemsToDisplay} />
                     </div>
                     <RouterWrapper />

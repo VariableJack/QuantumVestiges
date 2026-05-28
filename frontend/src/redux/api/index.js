@@ -1,5 +1,4 @@
 import { configureStore } from '@reduxjs/toolkit'
-import { setupListeners } from '@reduxjs/toolkit/query'
 import gamerParadiseApiSlice from './gamerParadiseApiSlice'
 import userReducer from './userSlice'
 import globalReducer from './globalSlice'

@@ -1,0 +1,105 @@
+.flashbar-container {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  
+  width: 800px;
+  height: auto;
+  animation: slideDown 0.5s ease-out;
+}
+
+.flashbar-item {
+  position: fixed;
+  width: 800px;
+  height: 70px;
+  border-radius: 10px;
+  gap: 15px;
+
+  box-sizing: border-box;
+  box-shadow: 0 3px 10px rgba(1, 1, 1, 1.15);
+  background: white;
+
+  transition: 2s cubic-bezier(0, 0, 0.25, 1);
+}
+
+.flashbar-item-header {
+  width: 100%;
+  height: 20px;
+  padding-top: 3px;
+  padding-bottom: 3px;
+}
+
+.flashbar-item-contents {
+  width: 100%;
+  height: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.flashbar-item-contents .description {
+	padding-left: 8px;
+}
+
+.flashbar-item-contents .buttons {
+	padding-right: 8px;
+}
+
+.flashbar-item-contents button {
+  font-size: 12px;
+  font-weight: bold;
+  color: #000000;
+  height: 35px;
+  cursor: pointer;
+  opacity: 0.9;
+  transition: opacity 0.2s;
+  padding: 0px 2px;
+  margin-left: 2px;
+  margin-right: 4px;
+  border-radius: 50px;
+  background-color: #F2EB27;
+}
+
+.flashbar-close-btn {
+  width: 100px;
+}
+
+.flashbar-expand-btn {
+  width: 150px;
+}
+
+.flashbar-btn:hover {
+  opacity: 1;
+}
+
+/* Smooth slide-in animation */
+@keyframes slideDown {
+  from {
+    top: -50px;
+    opacity: 0;
+  }
+  to {
+    top: 20px;
+    opacity: 1;
+  }
+}
+
+.flashbar-item.success {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.flashbar-item.error {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.flashbar-item.info {
+  background-color: #e2e3e5;
+  color: #383d41;
+  border: 1px solid #d6d8db;
+}

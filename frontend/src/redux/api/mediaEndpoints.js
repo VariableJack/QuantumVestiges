@@ -4,7 +4,7 @@ export const mediaEndpoints = gamerParadiseApiSlice.injectEndpoints({
     tagTypes: ['account-details', 'cart'],
     endpoints: builder => ({
         getFranchises: builder.query({
-            query: ({ franchise }) => ({
+            query: () => ({
                 url: `/franchises`,
                 method: 'GET',
             }),
@@ -27,7 +27,7 @@ export const mediaEndpoints = gamerParadiseApiSlice.injectEndpoints({
                 method: 'GET',
             }),
         }),
-        getPurchasedGames: builder.query({
+        getPurchasedItems: builder.query({
             query: ({ accessToken }) => ({
                 url: `/purchased-games`,
                 method: 'GET',
@@ -73,7 +73,7 @@ export const {
     useGetGameByIdQuery,
     useLazyGetGameByIdQuery,
 
-    useLazyGetPurchasedGamesQuery,
+    useLazyGetPurchasedItemsQuery,
     useLazyGetCartQuery,
     useUpdateCartMutation,
     useCheckoutCartMutation,
