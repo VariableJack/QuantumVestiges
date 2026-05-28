@@ -1,29 +1,36 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 
 import '../../../../styles/App.css'
 import Sidebar from '../../../../shared/components/Sidebar'
 import { hostname, port, FORUM_PAGES, FORUM_PAGE_ITEMS } from '../../../../shared/constants'
 import { getUrl } from '../../../../shared/utils'
 import {
-    useSubmitBugReportMutation,
     useSubmitSupportRequestMutation,
+    useSubmitBugReportMutation,
     useSubmitDiscussionThreadMutation,
 } from '../../api/requestsEndpoints'
+import { setSupportRequests, setBugReports, setDiscussionThreads } from '../../api/requestsSlice'
+import {
+    addSuccessMessage,
+    addInfoMessage,
+    removeInfoMessage,
+    addErrorMessage,
+} from '../../../../redux/api/globalSlice'
 const DiscussionCreate = props => {
-    const { submitPageTitle, submitButtonText, recentText, submitAction } = props
+    const { baseTitle, submitPageTitle, submitButtonText, recentText, submitAction, sidebarItems } = props
     const [inputs, setInputs] = useState({
         title: '',
-        subject: '',
+        description: '',
         description: '',
     })
     const [errors, setErrors] = useState({
         title: false,
-        subject: false,
         description: false,
     })
     return (
         <div>
-            <h1 className="mb-n pb-n">Support page</h1>
+            <h1 className="mb-n pb-n">{baseTitle}</h1>
             <div className="d-i mr-xl">
                 <h3>{submitPageTitle}</h3>
                 <div className="textarea-header">
@@ -55,16 +62,16 @@ const DiscussionCreate = props => {
                     </b>
                 </div>
                 <textarea
-                    className={`medium-border subject ${(errors.subject && 'error-text') || 'no-error-text'}`}
+                    className={`medium-border description ${(errors.description && 'error-text') || 'no-error-text'}`}
                     placeholder={'Enter description here'}
                     onChange={event => {
                         setInputs({
                             ...inputs,
-                            subject: event.nativeEvent.srcElement.value,
+                            description: event.nativeEvent.srcElement.value,
                         })
                         const newErrors = {
                             ...errors,
-                            subject: event.nativeEvent.srcElement.value.length === 0,
+                            description: event.nativeEvent.srcElement.value.length === 0,
                         }
                         setErrors(newErrors)
                     }}
@@ -73,16 +80,8 @@ const DiscussionCreate = props => {
                 <div>
                     <button
                         onClick={() => {
-                            console.log('click')
-                            const newErrors = {
-                                title: inputs.title.length === 0,
-                                subject: inputs.subject.length === 0,
-                            }
-                            console.log(newErrors)
-                            setErrors(newErrors)
-                            if (newErrors.title.length === 0 && newErrors.subject.length === 0) {
+                            if (!errors.title && !errors.description) {
                                 submitAction(input)
-                                console.log('API call')
                             }
                         }}
                     >
@@ -96,50 +95,181 @@ const DiscussionCreate = props => {
 }
 
 const DiscussionWrapperCreate = props => {
+    const dispatch = useDispatch()
     const { type } = props
-    const [
-        submitBugReport,
-        { isLoading: isSubmittingBugReport, isSuccess: isSubmitBugReportSuccess },
-    ] = useSubmitBugReportMutation
+    const { group } = useSelector(state => state.userReducer)
     const [
         submitSupportRequest,
-        { isLoading: isSubmittingSupportRequest, isSuccess: isSubmitSupportRequestSuccess },
-    ] = useSubmitSupportRequestMutation
+        {
+            isLoading: supportRequestIsSubmitting,
+            isError: supportRequestIsError,
+            error: supportRequestError,
+            isSuccess: supportRequestIsSuccess,
+        },
+    ] = useSubmitSupportRequestMutation()
+    const [
+        submitBugReport,
+        {
+            isLoading: bugReportIsSubmitting,
+            isError: bugReportIsError,
+            error: bugReportError,
+            isSuccess: bugReportIsSuccess,
+        },
+    ] = useSubmitBugReportMutation()
     const [
         submitDiscussionThread,
-        { isLoading: isSubmittingDiscussionThread, isSuccess: isSubmitDiscussionThreadSuccess },
-    ] = useSubmitDiscussionThreadMutation
+        {
+            isLoading: discussionThreadIsSubmitting,
+            isError: discussionThreadIsError,
+            error: discussionThreadError,
+            isSuccess: discussionThreadIsSuccess,
+        },
+    ] = useSubmitDiscussionThreadMutation()
+    const { supportRequests, bugReports, discussionThreads } = useSelector(
+        state => state.requestsReducer,
+    )
 
-    const [isSubmitting, setIsSubmitting] = useState(false)
     useEffect(() => {
-        setIsSubmitting(
-            isSubmittingBugReport || isSubmittingSupportRequest || isSubmittingDiscussionThread,
-        )
-    }, [isSubmittingBugReport, isSubmittingSupportRequest, isSubmittingDiscussionThread])
-    const sidebarItems = []
+        let infoMessage = undefined
+        if (supportRequestIsSubmitting) {
+            infoMessage = {
+                title: 'Creating support request',
+                description: 'Please wait as the system saves the support request',
+                id: 'supportRequestInfo',
+            }
+        } else {
+            dispatch(removeInfoMessage('supportRequestInfo'))
+        }
+        if (bugReportIsSubmitting) {
+            infoMessage = {
+                title: 'Creating bug report',
+                description: 'Please wait as the system saves the bug report',
+                id: 'bugReportInfo',
+            }
+        } else {
+            dispatch(removeInfoMessage('bugReportInfo'))
+        }
+        if (discussionThreadIsSubmitting) {
+            infoMessage = {
+                title: 'Creating new discussion',
+                description: 'Please wait as the system saves the discussion',
+                id: 'discussionThreadInfo',
+            }
+        } else {
+            dispatch(removeInfoMessage('discussionThreadInfo'))
+        }
+        if (infoMessage) dispatch(setInfoMessage(infoMessage))
+    }, [supportRequestIsSubmitting, bugReportIsSubmitting, discussionThreadIsSubmitting])
+
+    useEffect(() => {
+        let errorMessage = undefined
+        if (supportRequestIsError) {
+            errorMessage = {
+                title: 'Failed to create new support request',
+                description: supportRequestError.error,
+                id: 'supportRequestError',
+            }
+        }
+        if (bugReportIsError) {
+            errorMessage = {
+                title: 'Failed to create new bug report',
+                description: bugReportError.error,
+                id: 'bugReportError',
+            }
+        }
+        if (discussionThreadIsError) {
+            errorMessage = {
+                title: 'Failed to create new discussion',
+                description: discussionThreadError.error,
+                id: 'discussionThreadError',
+            }
+        }
+        if (errorMessage) dispatch(addErrorMessage(errorMessage))
+    }, [supportRequestIsError, bugReportIsError, discussionThreadIsError])
+
+    useEffect(() => {
+        let successMessage = undefined
+        if (supportRequestIsSuccess) {
+            const createdLink = `/support-request/requestId=${bugReports[0].threadId}`
+            successMessage = {
+                title: 'Successfully created new support request',
+                description: `Your support request has been successfully created and can be accessed ${(<a href={createdLink}>'here'</a>)}`,
+                id: 'supportRequestSuccess',
+            }
+        }
+        if (bugReportIsSuccess) {
+            const createdLink = `/bug-report/requestId=${supportRequests[0].threadId}`
+            successMessage = {
+                title: 'Successfully created new bug report',
+                description: `Your bug report has been successfully created and can be accessed ${(<a href={createdLink}>'here'</a>)}`,
+                id: 'bugReportSuccess',
+            }
+        }
+        if (discussionThreadIsSuccess) {
+            const createdLink = `/discussion/requestId=${discussionThreads[0].threadId}`
+            successMessage = {
+                title: 'Successfully created new discussion',
+                description: `Your discussion has been successfully created and can be accessed ${(<a href={createdLink}>'here'</a>)}`,
+                id: 'discussionThreadSuccess',
+            }
+        }
+        if (successMessage) dispatch(addSuccessMessage(successMessage))
+    }, [supportRequestIsSuccess, bugReportIsSuccess, discussionThreadIsSuccess])
+    const [sidebarItems, setSidebarItems] = useState([])
+    useEffect(() => {
+        switch (type) {
+            case FORUM_PAGES.SUPPORT:
+                setSidebarItems([...supportRequests])
+                break
+            case FORUM_PAGES.BUG_REPORT:
+                setSidebarItems([...bugReports])
+                break
+            case FORUM_PAGES.DISCUSSION:
+                setSidebarItems([...discussionThreads])
+                break
+        }
+    }, [supportRequests, bugReports, discussionThreads])
+    const submitAction = async input => {
+        let response = {
+            threadId: -1,
+        }
+        try {
+            switch (type) {
+                case FORUM_PAGES.SUPPORT:
+                    response = await submitSupportRequest(input).unwrap()
+                    break
+                case FORUM_PAGES.BUG_REPORT:
+                    response = await submitBugReport(input).unwrap()
+                    break
+                case FORUM_PAGES.DISCUSSION:
+                    response = await submitDiscussionThread(input).unwrap()
+                    break
+            }
+        } catch (e) {}
+        return response
+    }
+    const handleSubmitAndSave = input => {
+        const response = submitAction(input)
+        switch (type) {
+            case FORUM_PAGES.SUPPORT:
+                dispatch(setSupportRequests([response, ...supportRequests]))
+                break
+            case FORUM_PAGES.BUG_REPORT:
+                dispatch(setBugReports([response, ...bugReports]))
+                break
+            case FORUM_PAGES.DISCUSSION:
+                dispatch(setDiscussionThreads([response, ...discussionThreads]))
+                break
+        }
+    }
     return (
-        <DiscussionWrapper
+        <DiscussionCreate
+            baseTitle={FORUM_PAGE_ITEMS[type].baseTitle(group)}
             submitPageTitle={FORUM_PAGE_ITEMS[type].submitPageTitle()}
             submitButtonText={FORUM_PAGE_ITEMS[type].submitButtonText()}
             recentText={FORUM_PAGE_ITEMS[type].recentText()}
-            submitAction={input => {
-                switch (type) {
-                    case FORUM_TYPE.BUG_REPORT:
-                        submitBugReport(input)
-                        break
-                    case FORUM_PAGES.SUPPORT:
-                        submitSupportRequest(input)
-                        break
-                    case FORUM_PAGES.DISCUSSION:
-                        submitDiscussionThread(input)
-                        break
-                }
-            }}
-            isSuccess={
-                isSubmitBugReportSuccess ||
-                isSubmitSupportRequestSuccess ||
-                isSubmitDiscussionThreadSuccess
-            }
+            submitAction={handleSubmitAndSave}
+			sidebarItems={sidebarItems}
         />
     )
 }

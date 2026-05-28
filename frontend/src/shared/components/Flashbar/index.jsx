@@ -51,7 +51,7 @@ const generateFlashbarItemFromMessage = (
             </div>
             <br />
             <div className="flashbar-item-contents">
-                <div className="description f-l">{flashbarMessage.description}</div>
+                <div className="flashbar-item-description f-l">{flashbarMessage.description}</div>
                 <div className="buttons f-r">
                     {(shouldDisplayAdditionalButtons && (
                         <button

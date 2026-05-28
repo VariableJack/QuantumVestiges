@@ -60,29 +60,38 @@ const ADMINISTRATOR_ITEMS = [
 */
 
 const FORUM_PAGES = {
-    BUG_REPORT: 'BUG_REPORT',
     SUPPORT: 'SUPPORT',
+    BUG_REPORT: 'BUG_REPORT',
     DISCUSSION: 'DISCUSSION',
 }
 
 const FORUM_PAGE_ITEMS = {
-    [FORUM_PAGES.BUG_REPORT]: {
-        baseTitle: group => 'All bug reports',
-        submitPageTitle: () => 'Create a bug report',
-        submitButtonText: () => 'Submit a bug',
-        recentText: () => 'Recent bug reports',
-    },
     [FORUM_PAGES.SUPPORT]: {
         baseTitle: group => `${(group === 'admin' && 'All ') || 'Your'} support requests`,
         submitPageTitle: () => 'Request support',
         submitButtonText: () => 'Request support',
         recentText: () => 'Recent support requests',
+        detailedPageTitle: () => 'Support Request',
+        allViewUrl: () => '/support',
+        createUrl: () => '/support/create',
+    },
+    [FORUM_PAGES.BUG_REPORT]: {
+        baseTitle: group => 'All bug reports',
+        submitPageTitle: () => 'Create a bug report',
+        submitButtonText: () => 'Submit a bug',
+        recentText: () => 'Recent bug reports',
+        detailedPageTitle: () => 'Bug reports',
+        allViewUrl: () => '/bug-report',
+        createUrl: () => '/bug-report/create',
     },
     [FORUM_PAGES.DISCUSSION]: {
         baseTitle: group => 'Discussions',
         submitPageTitle: () => 'Start new discussion',
         submitButtonText: () => 'Post',
         recentText: () => 'Recent discussions',
+        detailedPageTitle: () => 'Bug Report',
+        allViewUrl: () => '/discussion',
+        createUrl: () => '/discussion/create',
     },
 }
 

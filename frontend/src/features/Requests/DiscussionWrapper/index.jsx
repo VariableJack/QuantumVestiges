@@ -1,10 +1,16 @@
 import React, { useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { isUndefined } from 'lodash'
 
 import '../../../styles/App.css'
-import { hostname, port, FORUM_PAGES, FORUM_PAGE_ITEMS } from '../../../shared/constants'
+import { FORUM_PAGES, FORUM_PAGE_ITEMS } from '../../../shared/constants'
 import { Dropdown, ThreadHeader, Toggle } from '../../../shared/components'
+import {
+    addSuccessMessage,
+    addInfoMessage,
+    removeInfoMessage,
+    addErrorMessage,
+} from '../../../redux/api/globalSlice'
 
 import {
     useLazyGetBugReportsQuery,
@@ -25,13 +31,17 @@ const getThreadHeaders = data => {
         <ThreadHeader
             title={singleItem.title}
             author={singleItem.author}
-            timestamp={singleItem.createTime}
+            createTime={singleItem.createTime}
+            lastUpdateTime={singleItem.lastUpdateTime}
+            lastUpdateBy={singleItem.lastUpdateBy}
+            status={singleItem.status}
         />
     ))
 }
 
 const DiscussionComponent = props => {
-    const { baseTitle, data, username, type } = props
+    const { baseTitle, data, type } = props
+    const { username } = useSelector(state => state.userReducer)
     const [selectedCount, setSelectedCount] = useState({
         title: '5',
         count: 5,
@@ -85,7 +95,7 @@ const DiscussionComponent = props => {
                 Set page
                 <Dropdown
                     items={Array.from(
-                        { length: Math.floor(data.length / pagination.count) },
+                        { length: Math.max(1, Math.floor(data.length / pagination.count)) },
                         (_, index) => ({
                             title: `${index + 1}`,
                             pageNumber: index + 1,
@@ -105,6 +115,8 @@ const DiscussionComponent = props => {
             </span>
             {type === FORUM_PAGES.SUPPORT && (
                 <span>
+                    <></>
+                    ||{' '}
                     <Toggle
                         items={[
                             { title: 'All', author: undefined, id: 'all', disabled: false },
@@ -120,7 +132,6 @@ const DiscussionComponent = props => {
                             setSelectedAuthor(item)
                         }}
                     />
-                    || <></>
                 </span>
             )}
         </div>
@@ -128,47 +139,123 @@ const DiscussionComponent = props => {
 }
 
 const DiscussionWrapper = props => {
+	const dispatch = useDispatch()
     const { username, type } = props
     const { group } = useSelector(state => state.userReducer)
     const { supportRequests, bugReports, discussionThreads } = useSelector(
         state => state.requestsReducer,
     )
-    const [triggerGetBugReport, { isLoading: isLoadingBugReport }] = useLazyGetBugReportsQuery()
-    const [triggerGetDiscussionThreads, { isLoading: isLoadingDiscussionThreads }] =
-        useLazyGetDiscussionThreadsQuery()
-    const [triggerGetSupportRequests, { isLoading: isLoadingSupportRequests }] =
-        useLazyGetSupportRequestsQuery()
+    const [
+        triggerGetBugReport,
+        { isLoading: bugReportsIsLoading, isError: bugReportsIsError, error: bugReportsError },
+    ] = useLazyGetBugReportsQuery()
+    const [
+        triggerGetSupportRequests,
+        {
+            isLoading: supportRequestsIsLoading,
+            isError: supportRequestsIsError,
+            error: supportRequestsError,
+        },
+    ] = useLazyGetSupportRequestsQuery()
+    const [
+        triggerGetDiscussionThreads,
+        {
+            isLoading: discussionThreadsIsLoading,
+            isError: discussionThreadsIsError,
+            error: discussionThreadsError,
+        },
+    ] = useLazyGetDiscussionThreadsQuery()
     const getRequests = async () => {
+		try {
         let response = []
         switch (type) {
             case FORUM_PAGES.SUPPORT:
-                response = await triggerGetDiscussionThreads().unwrap()
+                response = await triggerGetSupportRequests().unwrap()
                 dispatch(setDiscussionThreads(response))
                 break
-            case FORUM_PAGES.DISCUSSION:
-                response = await triggerGetSupportRequests().unwrap()
-                dispatch(setSupportRequests(response))
-                break
-            case FORUM_TYPE.BUG_REPORT:
+            case FORUM_PAGES.BUG_REPORT:
                 response = await triggerGetBugReport().unwrap()
                 dispatch(setBugReports(response))
+                break
+            case FORUM_PAGES.DISCUSSION:
+                response = await triggerGetDiscussionThreads().unwrap()
+                dispatch(setSupportRequests(response))
                 break
             default:
                 response = []
                 break
         }
+		} catch(e) {}
     }
     useEffect(() => {
         getRequests()
     }, [])
+
+    useEffect(() => {
+        let infoMessage = undefined
+        if (supportRequestsIsLoading) {
+            infoMessage = {
+                title: 'Fetching support requests',
+                description: 'Please wait as the system retrieves all support requests',
+                id: 'supportRequestsFetch',
+            }
+        } else {
+            dispatch(removeInfoMessage('supportRequestInfo'))
+        }
+        if (bugReportsIsLoading) {
+            infoMessage = {
+                title: 'Fetching bug reports',
+                description: 'Please wait as the system retrieves all bug reports',
+                id: 'bugReportsFetch',
+            }
+        } else {
+            dispatch(removeInfoMessage('bugReportInfo'))
+        }
+        if (discussionThreadsIsLoading) {
+            infoMessage = {
+                title: 'Fetching discussions',
+                description: 'Please wait as the system retrieves all discussions',
+                id: 'discussionThreadsFetch',
+            }
+        } else {
+            dispatch(removeInfoMessage('discussionThreadInfo'))
+        }
+        if (infoMessage) dispatch(addInfoMessage(infoMessage))
+    }, [supportRequestsIsLoading, bugReportsIsLoading, discussionThreadsIsLoading])
+
+    useEffect(() => {
+        let errorMessage = undefined
+        if (supportRequestsIsError) {
+            errorMessage = {
+                title: 'Failed to fetch support requests',
+                description: supportRequestsError.error,
+                id: 'supportRequestsFetchError',
+            }
+        }
+        if (bugReportsIsError) {
+            errorMessage = {
+                title: 'Failed to fetch bug reports',
+                description: bugReportsError.error,
+                id: 'bugReportsFetchError',
+            }
+        }
+        if (discussionThreadsIsError) {
+            errorMessage = {
+                title: 'Failed to fetch discussions',
+                description: discussionThreadsError.error,
+                id: 'discussionThreadsFetchError',
+            }
+        }
+        if (errorMessage) dispatch(addErrorMessage(errorMessage))
+    }, [supportRequestsIsError, bugReportsIsError, discussionThreadsIsError])
     return (
         <DiscussionComponent
             type={type}
             baseTitle={FORUM_PAGE_ITEMS[type].baseTitle(group)}
             data={
-                (type === FORUM_TYPE.SUPPORT && supportRequests) ||
-                (type === FORUM_TYPE.DISCUSSION && discussionThreads) ||
-                (type === FORUM_TYPE.BUG_REPORT && bugReports) ||
+                (type === FORUM_PAGES.SUPPORT && supportRequests) ||
+                (type === FORUM_PAGES.DISCUSSION && discussionThreads) ||
+                (type === FORUM_PAGES.BUG_REPORT && bugReports) ||
                 []
             }
             username={username}

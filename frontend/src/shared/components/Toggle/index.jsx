@@ -8,7 +8,7 @@ const Toggle = props => {
             {items.map(item => {
                 return (
                     <span
-                        className={`${(disabled && 'disabled') || (item.id === selectedItem.id && 'selected') || 'unselected'}`}
+                        className={`${(item.disabled && 'disabled') || (item.id === selectedItem.id && 'selected') || 'unselected'}`}
                         onClick={() => {
                             if (!item.disabled) {
                                 onChange(item)

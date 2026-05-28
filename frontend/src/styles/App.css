@@ -3,7 +3,7 @@
   height: 50px;
   text-align: top;
 }
-.subject {
+.description {
   width: 500px;
   height: 500px;
 }
@@ -21,11 +21,15 @@
 }
 
 .f-l {
-	float: left
+	float: left;
 }
 
 .f-r {
-	float: right
+	float: right;
+}
+
+.d-f {
+	display: flex;
 }
 
 .d-i {
@@ -34,6 +38,15 @@
 
 .d-ib {
     display: inline block;
+}
+
+.primary button {
+	color: #FF7D00;
+  border-radius: 50px;
+}
+.secondary button {
+	color: #CCCCCC;
+  border-radius: 50px;
 }
 
 /* All margin */

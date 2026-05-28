@@ -1,20 +1,38 @@
 import gamerParadiseApiSlice from '../../../redux/api/gamerParadiseApiSlice'
 
 export const requestsEndpoints = gamerParadiseApiSlice.injectEndpoints({
-    tagTypes: ['bugReport', 'supportRequest', 'discussionThreads', 'comments'],
+    tagTypes: [
+        'bugReports',
+        'supportRequests',
+        'discussionThreads',
+        'bugReport',
+        'supportRequest',
+        'discussionThread',
+    ],
     endpoints: builder => ({
         // Get APIs
-        getBugReports: builder.query({
-            query: ({ requestId }) => ({
-                url: '/bug-report',
-                param: {
-                    requestId,
-                },
+        getSupportRequests: builder.query({
+            query: () => ({
+                url: '/support-requests',
                 method: 'GET',
             }),
-            providesTags: ['bugReport'],
+            providesTags: ['supportRequests'],
         }),
-        getSupportRequests: builder.query({
+        getBugReports: builder.query({
+            query: () => ({
+                url: '/bug-reports',
+                method: 'GET',
+            }),
+            providesTags: ['bugReports'],
+        }),
+        getDiscussionThreads: builder.query({
+            query: () => ({
+                url: '/discussion-threads',
+                method: 'GET',
+            }),
+            providesTags: ['discussionThreads'],
+        }),
+        getDetailedSupportRequest: builder.query({
             query: ({ requestId }) => ({
                 url: '/support-request',
                 param: {
@@ -24,87 +42,126 @@ export const requestsEndpoints = gamerParadiseApiSlice.injectEndpoints({
             }),
             providesTags: ['supportRequest'],
         }),
-        getDiscussionThreads: builder.query({
+        getDetailedBugReport: builder.query({
             query: ({ requestId }) => ({
-                url: '/discussion-threads',
+                url: '/bug-report',
                 param: {
                     requestId,
                 },
                 method: 'GET',
             }),
-            providesTags: ['discussionThreads'],
+            providesTags: ['bugReport'],
         }),
-        getComments: builder.query({
-            query: ({ type, requestId }) => ({
-                url: '/comments',
+        getDetailedDiscussionThread: builder.query({
+            query: ({ requestId }) => ({
+                url: '/discussion-thread',
                 param: {
-                    type,
                     requestId,
                 },
                 method: 'GET',
             }),
-            providesTags: ['comments'],
+            providesTags: ['discussionThread'],
         }),
         // Post APIs
-        submitBugReport: builder.mutation({
-            query: ({ title, body, subject }) => ({
-                url: '/bug-report',
-                bod: { title, body, subject },
-                method: 'POST',
-            }),
-            invalidateTags: ['bugReport'],
-        }),
         submitSupportRequest: builder.mutation({
-            query: ({ title, body, subject }) => ({
+            query: ({ title, body }) => ({
                 url: '/support-request',
-                bod: { title, body, subject },
+                body: { title, body },
                 method: 'POST',
             }),
-            invalidateTags: ['supportRequest'],
+            invalidateTags: ['supportRequests'],
+        }),
+        submitBugReport: builder.mutation({
+            query: ({ title, body }) => ({
+                url: '/bug-report',
+                body: { title, body },
+                method: 'POST',
+            }),
+            invalidateTags: ['bugReports'],
         }),
         submitDiscussionThread: builder.mutation({
-            query: ({ title, body, subject }) => ({
+            query: ({ title, body }) => ({
                 url: '/discussion-threads',
-                bod: { title, body, subject },
+                body: { title, body },
                 method: 'POST',
             }),
             invalidateTags: ['discussionThreads'],
         }),
-        postComment: builder.query({
-            query: ({ type, requestId, comment }) => ({
-                url: '/post-comment',
-                bod: {
-                    type,
-                    requestId,
-                    comment,
-                },
+        submitSupportRequestComment: builder.mutation({
+            query: ({ threadId, description }) => ({
+                url: '/support-request/comment',
+                body: { threadId, description },
                 method: 'POST',
             }),
-            invalidateTags: ['comments'],
+            invalidateTags: ['supportRequest'],
         }),
-        editComment: builder.query({
-            query: ({ type, requestId, commentId, comment }) => ({
-                url: '/edit-comment',
-                bod: {
-                    type,
-                    requestId,
-                    commentId,
-                    comment,
-                },
+        submitBugReportComment: builder.mutation({
+            query: ({ threadId, description }) => ({
+                url: '/bug-report/comment',
+                body: { threadId, description },
                 method: 'POST',
             }),
-            invalidateTags: ['comments'],
+            invalidateTags: ['bugReport'],
+        }),
+        submitDiscussionThreadComment: builder.mutation({
+            query: ({ threadId, description }) => ({
+                url: '/discussion-thread/comment',
+                body: { threadId, description },
+                method: 'POST',
+            }),
+            invalidateTags: ['discussionThread'],
+        }),
+
+        closeSupportRequest: builder.mutation({
+            query: ({ threadId, description }) => ({
+                url: '/support-request/close',
+                body: { threadId, description },
+                method: 'POST',
+            }),
+            invalidateTags: ['supportRequests', 'supportRequest'],
+        }),
+        reopenSupportRequest: builder.mutation({
+            query: ({ threadId, description }) => ({
+                url: '/support-request/reopen',
+                body: { threadId, description },
+                method: 'POST',
+            }),
+            invalidateTags: ['supportRequests', 'supportRequest'],
+        }),
+        closeBugReport: builder.mutation({
+            query: ({ threadId, description }) => ({
+                url: '/bug-report/close',
+                body: { threadId, description },
+                method: 'POST',
+            }),
+            invalidateTags: ['bugReports', 'bugReport'],
+        }),
+        reopenBugReport: builder.mutation({
+            query: ({ threadId, description }) => ({
+                url: '/bug-report/reopen',
+                body: { threadId, description },
+                method: 'POST',
+            }),
+            invalidateTags: ['bugReports', 'bugReport'],
         }),
     }),
 })
 
 export const {
-    useLazyGetBugReportsQuery,
     useLazyGetSupportRequestsQuery,
+    useLazyGetBugReportsQuery,
     useLazyGetDiscussionThreadsQuery,
-    useLazyGetCommentsQuery,
-    useSubmitBugReportMutation,
+    useLazyGetDetailedSupportRequestQuery,
+    useLazyGetDetailedBugReportQuery,
+    useLazyGetDetailedDiscussionThreadQuery,
     useSubmitSupportRequestMutation,
+    useSubmitBugReportMutation,
     useSubmitDiscussionThreadMutation,
-    usePostCommentMutation,
+    useSubmitSupportRequestCommentMutation,
+    useSubmitBugReportCommentMutation,
+    useSubmitDiscussionThreadCommentMutation,
+    useCloseSupportRequestMutation,
+    useReopenSupportRequestMutation,
+    useCloseBugReportMutation,
+    useReopenBugReportMutation,
 } = requestsEndpoints

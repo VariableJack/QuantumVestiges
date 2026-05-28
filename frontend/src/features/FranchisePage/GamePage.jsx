@@ -76,7 +76,7 @@ const Game = () => {
         if (isLoading) {
             dispatch(
                 addInfoMessage({
-                    title: 'Fetching game...',
+                    title: 'Fetching game',
                     description: 'Please wait while the system retrieves this game',
                     id: messageId,
                 }),

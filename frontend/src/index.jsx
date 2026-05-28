@@ -37,6 +37,7 @@ import Account from './features/Account'
 import ForumPage from './features/Requests/ForumPage'
 import DiscussionWrapper from './features/Requests/DiscussionWrapper'
 import DiscussionWrapperCreate from './features/Requests/DiscussionWrapper/Create'
+import DiscussionWrapperDetailed from './features/Requests/DiscussionWrapper/Detailed'
 
 // Game Pages
 import FranchisePage from './features/FranchisePage'
@@ -127,35 +128,35 @@ const RouterWrapper = props => {
                 <Route path="/forums" element={<ForumPage />} />
 
                 <Route
-                    path="/bug-report/:bugReportId"
-                    element={<DiscussionWrapper type={FORUM_PAGES.BUG_REPORT} />}
+                    path="/bug-report/:requestId"
+                    element={<DiscussionWrapperDetailed type={FORUM_PAGES.BUG_REPORT} />}
                 />
                 <Route
-                    path="/support/:supportRequestId"
-                    element={<DiscussionWrapper type={FORUM_PAGES.SUPPORT} />}
+                    path="/support/:requestId"
+                    element={<DiscussionWrapperDetailed type={FORUM_PAGES.SUPPORT} />}
                 />
                 <Route
-                    path="/discussion/:supportRequestId"
-                    element={<DiscussionWrapper type={FORUM_PAGES.DISCUSSION} />}
+                    path="/discussion/:requestId"
+                    element={<DiscussionWrapperDetailed type={FORUM_PAGES.DISCUSSION} />}
                 />
 
+                <Route path="/support" element={<DiscussionWrapper type={FORUM_PAGES.SUPPORT} />} />
                 <Route
                     path="/bug-report"
                     element={<DiscussionWrapper type={FORUM_PAGES.BUG_REPORT} />}
                 />
-                <Route path="/support" element={<DiscussionWrapper type={FORUM_PAGES.SUPPORT} />} />
                 <Route
                     path="/discussion"
                     element={<DiscussionWrapper type={FORUM_PAGES.DISCUSSION} />}
                 />
 
                 <Route
-                    path="/bug-report/create"
-                    element={<DiscussionWrapperCreate type={FORUM_PAGES.BUG_REPORT} />}
-                />
-                <Route
                     path="/support/create"
                     element={<DiscussionWrapperCreate type={FORUM_PAGES.SUPPORT} />}
+                />
+                <Route
+                    path="/bug-report/create"
+                    element={<DiscussionWrapperCreate type={FORUM_PAGES.BUG_REPORT} />}
                 />
                 <Route
                     path="/discussion/create"
@@ -210,6 +211,7 @@ const App = () => {
     }, [])
     useEffect(() => {
         if (isError) {
+            console.debug(error)
             dispatch(
                 addErrorMessage({
                     title: 'Failed to fetch franchises',
