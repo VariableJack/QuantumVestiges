@@ -97,7 +97,7 @@ public class DiscussionsDAO {
         final Date startDate = new Date();
         logger.info("Fetching discussions");
         try {
-            return mapper.getDiscussions(username);
+            return mapper.getDiscussions();
         } catch (Exception e) {
             throw e;
         } finally {
