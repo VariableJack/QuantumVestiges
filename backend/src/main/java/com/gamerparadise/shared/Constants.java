@@ -1,7 +1,5 @@
 package com.gamerparadise.shared;
 
-import java.util.Date;
-
 public class Constants {
     public static long SECONDS_IN_MINUTE = 60;
     public static long MINUTES_IN_HOUR = 60;
