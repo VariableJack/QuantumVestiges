@@ -55,10 +55,10 @@ export class EcsStack extends Stack {
             taskDefinition,
             vpcSubnets: {
                 // subnetType: SubnetType.PRIVATE_WITH_EGRESS,
-				subnetType: SubnetType.PUBLIC,
+                subnetType: SubnetType.PUBLIC,
             },
             healthCheckGracePeriod: Duration.seconds(120),
-			minHealthyPercent: 100,
+            minHealthyPercent: 100,
         })
         this.ecsConnections = service.connections
     }

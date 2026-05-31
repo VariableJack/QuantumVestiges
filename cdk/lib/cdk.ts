@@ -4,6 +4,7 @@ import { App } from 'aws-cdk-lib'
 import { RdsStack } from './rds'
 import { EcsStack } from './ecs'
 import { IamStack } from './iam'
+import { S3Stack } from './s3'
 import { VpcStack } from './vpc'
 import { CloudWatchStack } from './cloudWatchStack'
 
@@ -22,6 +23,7 @@ const deploymentEnvironments: {
 const app = new App()
 deploymentEnvironments.forEach(deploymentEnvironment => {
     const { stage }: { stage: string } = deploymentEnvironment
+    const s3Stack = new S3Stack(app, `S3Stack-${stage}`, deploymentEnvironment)
     const iamStack = new IamStack(app, `IamStack-${stage}`, deploymentEnvironment)
     const vpcStack = new VpcStack(app, `VpcStack-${stage}`, deploymentEnvironment)
 
