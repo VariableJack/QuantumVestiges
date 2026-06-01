@@ -10,7 +10,7 @@ FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
 
 RUN mkdir /config
-COPY --from=build /app/src/main/java/resources/application-dev.properties /config/application.properties
+COPY --from=build /app/src/main/resources/application-dev.properties /config/application.properties
 COPY --from=build /app/target/*.jar app.jar
 
 EXPOSE 8080

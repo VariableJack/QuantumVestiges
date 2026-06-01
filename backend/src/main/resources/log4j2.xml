@@ -16,13 +16,19 @@
 
     <Loggers>
         <!-- Application-specific logging -->
-        <Logger name="com.example" level="debug" additivity="false">
+        <Logger name="com.gamerparadise" level="debug" additivity="false">
             <AppenderRef ref="Console"/>
             <AppenderRef ref="FileLogger"/>
         </Logger>
 
         <!-- Root logger -->
         <Root level="info">
+            <AppenderRef ref="Console"/>
+        </Root>
+        <Root level="warn">
+            <AppenderRef ref="Console"/>
+        </Root>
+        <Root level="error">
             <AppenderRef ref="Console"/>
         </Root>
     </Loggers>
