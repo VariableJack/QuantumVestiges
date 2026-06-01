@@ -15,7 +15,15 @@ export class S3Stack extends Stack {
             cors: [
                 {
                     allowedMethods: [HttpMethods.GET, HttpMethods.PUT],
-                    allowedOrigins: ['www.gamerparadise.com'],
+                    allowedOrigins: [
+                        'www.gamerparadise.com',
+                        'https://localhost:8080',
+                        'https://localhost:3000',
+                        'http://localhost:8080',
+                        'http://localhost:3000',
+                    ],
+                    allowedHeaders: ['*'],
+                    exposedHeaders: ['ETag'],
                 },
             ],
             encryption: BucketEncryption.S3_MANAGED,
