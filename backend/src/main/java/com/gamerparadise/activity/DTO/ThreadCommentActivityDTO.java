@@ -4,7 +4,11 @@ import java.util.List;
 import java.sql.Timestamp;
 import lombok.Builder;
 import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
+@AllArgsConstructor
+@NoArgsConstructor
 @Builder
 @Data
 public class ThreadCommentActivityDTO {
