@@ -32,11 +32,11 @@ public class FranchisesDAO {
         }
     }
 
-    public FranchiseDAODTO getFranchiseById(@NonNull Integer franchiseId) {
+    public FranchiseDAODTO getFranchiseByFilters(@NonNull FranchiseDAODTO franchiseFilters) {
         final Date startDate = new Date();
-        logger.info("Fetching franchise by franchiseId {}", franchiseId);
+        logger.info("Fetching franchise by franchiseFilters {}", franchiseFilters);
         try {
-            return mapper.getFranchiseById(franchiseId);
+            return mapper.getFranchiseByFilters(franchiseFilters);
         } catch (Exception e) {
             throw e;
         } finally {
@@ -44,11 +44,11 @@ public class FranchisesDAO {
         }
     }
     
-    public void insertFranchise(@NonNull FranchiseDAODTO franchise) {
+    public FranchiseDAODTO insertFranchise(@NonNull FranchiseDAODTO franchise) {
         final Date startDate = new Date();
         logger.info("Inserting franchise {}", franchise);
         try {
-            mapper.insertFranchise(franchise);
+            return mapper.insertFranchise(franchise);
         } catch (Exception e) {
             throw e;
         } finally {

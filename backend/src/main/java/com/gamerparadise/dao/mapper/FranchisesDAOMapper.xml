@@ -12,11 +12,21 @@
         SELECT * FROM franchise;
     </select>
 
-    <select id="getFranchiseById" parameterType="java.lang.Integer" resultMap="FranchiseResultMap">
-        SELECT * FROM franchise WHERE franchise_id = #{franchise_id};
+    <select id="getFranchiseByFilters" parameterType="FranchiseDAODTO" resultMap="FranchiseResultMap">
+        SELECT * FROM franchise
+		<where>
+        <if test="franchise.franchiseId != null">
+            AND franchise_id = #{franchise.franchiseId}
+        </if>
+        <if test="franchise.franchiseName != null">
+            AND franchise_name = #{franchise.franchiseName}
+        </if>
+        </where>
+		;
     </select>
 
-    <insert id="insertFranchise" parameterType="FranchiseDAODTO">
+    <insert id="insertFranchise" parameterType="FranchiseDAODTO"
+        useGeneratedKeys="true" keyColumn="franchise_id" keyProperty="franchiseId">
         INSERT INTO franchises(franchise_name) VALUES(#{franchise.franchiseName});
     </insert>
 </mapper>

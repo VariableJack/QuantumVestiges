@@ -18,16 +18,17 @@
         SELECT * FROM games
         <where>
         <if test="game.gameId != null">
-            AND game_id = #{gameId}
+            AND game_id = #{game.gameId}
         </if>
         <if test="game.gameName != null">
-            AND game_name = #{gameName}
+            AND game_name = #{game.gameName}
         </if>
         </where>
         ;
     </select>
 
-    <insert id="insertGame" parameterType="GameDAODTO">
+    <insert id="insertGame" parameterType="GameDAODTO"
+        useGeneratedKeys="true" keyColumn="game_id" keyProperty="gameId">
         INSERT INTO games(game_name, franchise_id, franchise_name) VALUES(#{game.gameName}, #{game.franchiseId}, #{game.franchiseName});
     </insert>
 </mapper>

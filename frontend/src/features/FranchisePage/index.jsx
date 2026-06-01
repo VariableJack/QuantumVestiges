@@ -2,10 +2,11 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useLocation } from 'react-router-dom'
 
-import '../../styles/App.css'
-
 import { useLazyGetGamesQuery } from '../../redux/api/mediaEndpoints'
 import { addErrorMessage } from '../../redux/api/globalSlice'
+import { CONNECTION_ERROR_MESSAGE } from '../../shared/constants'
+
+import '../../styles/App.css'
 
 const Franchise = () => {
     const dispatch = useDispatch()
@@ -37,12 +38,13 @@ const Franchise = () => {
         }
     }, [franchises])
     useEffect(() => {
+        const messageId = `gamesFetchError-${franchiseId}`
         if (isError) {
             dispatch(
                 addErrorMessage({
-                    title: `Failed to fetch games for ${franchiseId}`,
-                    description: error.data.error,
-                    id: 'gamesFetchError',
+                    title: `Failed to fetch games for ${franchise.franchiseName}`,
+                    description: get(error, 'data.error', CONNECTION_ERROR_MESSAGE),
+                    id: messageId,
                 }),
             )
         }
@@ -53,7 +55,7 @@ const Franchise = () => {
         if (isLoading) {
             dispatch(
                 addInfoMessage({
-                    title: 'Fetching game...',
+                    title: 'Fetching games...',
                     description: `Please wait while the system retrieves the games for ${franchise.franchiseName}`,
                     id: messageId,
                 }),

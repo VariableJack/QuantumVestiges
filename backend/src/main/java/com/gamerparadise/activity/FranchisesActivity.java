@@ -53,7 +53,7 @@ public class FranchisesActivity {
     @PostMapping(name="CreateFranchise",path="/franchises")
     public FranchiseActivityDTO createFranchise(@NonNull @RequestBody FranchiseActivityDTO input) {
         logger.info("Beginning to process createFranchise with input {}", input);
-        final FranchiseComponentDTO output = franchisesComponent.createFranchise(franchisesActivityConverter.convertFranchiseActivityDTOToComponentDTO(input));
+        final FranchiseComponentDTO output = franchisesComponent.insertFranchise(franchisesActivityConverter.convertFranchiseActivityDTOToComponentDTO(input));
         logger.info("Finished processing createFranchise");
         return franchisesActivityConverter.convertFranchiseComponentDTOToActivityDTO(output);
     }

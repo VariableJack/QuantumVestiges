@@ -25,7 +25,7 @@ public class FranchisesComponent {
     }
 
     public FranchiseComponentDTO getFranchiseById(@NonNull Integer franchiseId) {
-        final FranchiseComponentDTO output = franchisesBuilder.getFranchiseById(franchiseId);
+        final FranchiseComponentDTO output = franchisesBuilder.getFranchiseByFilters(FranchiseComponentDTO.builder().franchiseId(franchiseId).build());
         if (Objects.isNull(output)) {
             logger.warn("Franchise {} does not exist", franchiseId);
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Franchise at id %s does not exist", franchiseId));
@@ -33,9 +33,13 @@ public class FranchisesComponent {
         return output;
     }
 
-    public FranchiseComponentDTO createFranchise(@NonNull FranchiseComponentDTO input) {
-        // Validate uniqueness of name
-        // Insert & return
-        return FranchiseComponentDTO.builder().build();
+    public FranchiseComponentDTO insertFranchise(@NonNull FranchiseComponentDTO input) {
+        final String franchiseName = input.getFranchiseName();
+        final FranchiseComponentDTO output = franchisesBuilder.getFranchiseByFilters(input);
+        if (Objects.nonNull(output)) {
+            logger.warn("Franchise {} already exists", franchiseName);
+            throw new ResponseStatusException(HttpStatus.CONFLICT, String.format("Franchise with name %s already exists", franchiseName));
+        }
+        return franchisesBuilder.insertFranchise(input);
     }
 }

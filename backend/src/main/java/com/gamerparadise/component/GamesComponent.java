@@ -41,12 +41,12 @@ public class GamesComponent {
     public GameComponentDTO insertGame(@NonNull UploadGameInputComponentDTO input) {
         final String gameName = input.getGameName();
         final GameComponentDTO game = gamesBuilder.getGameByFilters(GameComponentDTO.builder().gameName(gameName).build());
-        if (Objects.isNull(game)) {
+        if (Objects.nonNull(game)) {
             logger.warn("Game {} already exists", gameName);
-            throw new ResponseStatusException(HttpStatus.CONFLICT, String.format("Game with name%s already exists", gameName));
+            throw new ResponseStatusException(HttpStatus.CONFLICT, String.format("Game with name %s already exists", gameName));
         }
         final Integer franchiseId = input.getFranchiseId();
-        final FranchiseComponentDTO franchise = franchisesBuilder.getFranchiseById(franchiseId);
+        final FranchiseComponentDTO franchise = franchisesBuilder.getFranchiseByFilters(FranchiseComponentDTO.builder().franchiseId(franchiseId).build());
         if (Objects.isNull(franchise)) {
             logger.warn("Franchise {} does not exist", franchiseId);
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Franchise at id %s does not exist", franchiseId));

@@ -26,14 +26,18 @@ public class FranchisesBuilder {
             .toList();
     }
 
-    public FranchiseComponentDTO getFranchiseById(@NonNull Integer franchiseId) {
-        final FranchiseDAODTO output = franchisesDAO.getFranchiseById(franchiseId);
+    public FranchiseComponentDTO getFranchiseByFilters(@NonNull FranchiseComponentDTO franchiseFilters) {
+        final FranchiseDAODTO output = franchisesDAO.getFranchiseByFilters(franchisesBuilderConverter
+            .convertFranchiseComponentDTOToDAODTO(franchiseFilters));
         if (Objects.isNull(output)) {
             return null;
         }
         return franchisesBuilderConverter.convertFranchiseDAODTOToComponentDTO(output);
     }
     
-    public void createFranchise(@NonNull FranchiseComponentDTO franchise) {
+    public FranchiseComponentDTO insertFranchise(@NonNull FranchiseComponentDTO franchise) {
+        final FranchiseDAODTO output = franchisesDAO.insertFranchise(franchisesBuilderConverter
+            .convertFranchiseComponentDTOToDAODTO(franchise));
+        return franchisesBuilderConverter.convertFranchiseDAODTOToComponentDTO(output);
     }
 }
