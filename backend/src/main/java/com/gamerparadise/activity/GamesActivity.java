@@ -18,8 +18,10 @@ import java.util.Objects;
 
 import com.gamerparadise.activity.converter.GamesActivityConverter;
 import com.gamerparadise.activity.dto.GameActivityDTO;
+import com.gamerparadise.activity.dto.UploadGameInputActivityDTO;
 import com.gamerparadise.component.GamesComponent;
 import com.gamerparadise.component.dto.GameComponentDTO;
+import com.gamerparadise.component.dto.UploadGameInputComponentDTO;
 
 @RestController
 public class GamesActivity {
@@ -53,11 +55,12 @@ public class GamesActivity {
     }
 
     @PostMapping(name="UploadGame",path="/games")
-    public GameActivityDTO uploadGame(@NonNull @RequestBody GameActivityDTO input) {
-        // TODO - file upload may be provided via a separate API
+    public GameActivityDTO uploadGame(@NonNull @RequestBody UploadGameInputActivityDTO input) {
         logger.info("Beginning to process uploadGame with input {}", input);
-        final GameComponentDTO output = gamesComponent.uploadGame(gamesActivityConverter.convertGameActivityDTOToComponentDTO(input));
-        logger.info("Finished processing uploadGame");
-        return gamesActivityConverter.convertGameComponentDTOToActivityDTO(output);
+        final UploadGameInputComponentDTO convertedInput = gamesActivityConverter.convertUploadGameActivityDTOToComponentDTO(input);
+        final GameComponentDTO output = gamesComponent.insertGame(convertedInput);
+        final GameActivityDTO convertedOutput = gamesActivityConverter.convertGameComponentDTOToActivityDTO(output);
+        logger.info("Finished processing uploadGame on {}", convertedOutput);
+        return convertedOutput;
     }
 }

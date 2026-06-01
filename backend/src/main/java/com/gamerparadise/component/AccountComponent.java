@@ -34,13 +34,15 @@ public class AccountComponent {
         final List<CartComponentDTO> existingCart = this.getCart(username);
         GameComponentDTO game;
         CartComponentDTO cartItem;
+        final Integer gameId = input.getGameId();
+        final GameComponentDTO gameFilter = GameComponentDTO.builder().gameId(gameId).build();
         switch(input.getAction()) {
             case "add":
-                if (existingCart.stream().filter((existingCartItem) -> existingCartItem.getGameId().equals(input.getGameId())).count() > 0) {
+                if (existingCart.stream().filter((existingCartItem) -> existingCartItem.getGameId().equals(gameId)).count() > 0) {
                     logger.warn("Item {} already in user's cart. Cannot add.", input);
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Warning: cannot add the same item to your cart");
                 }
-                game = gamesBuilder.getGameById(input.getGameId());
+                game = gamesBuilder.getGameByFilters(gameFilter);
                 logger.info("Adding {} to {} cart", game, username);
                 cartItem = CartComponentDTO.builder()
                     .username(username)
@@ -57,11 +59,11 @@ public class AccountComponent {
                 }
                 break;
             case "remove":
-                if (existingCart.stream().filter((existingCartItem) -> existingCartItem.getGameId().equals(input.getGameId())).count() == 0) {
+                if (existingCart.stream().filter((existingCartItem) -> existingCartItem.getGameId().equals(gameId)).count() == 0) {
                     logger.warn("Item {} not in user's cart. Cannot remove.", input);
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Warning: cannot remove an item that is not in your cart");
                 }
-                game = gamesBuilder.getGameById(input.getGameId());
+                game = gamesBuilder.getGameByFilters(gameFilter);
                 cartItem = CartComponentDTO.builder()
                     .username(username)
                     .gameId(game.getGameId())

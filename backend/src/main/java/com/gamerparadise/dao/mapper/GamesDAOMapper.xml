@@ -14,8 +14,17 @@
         SELECT * FROM games WHERE franchise_id = #{franchiseId};
     </select>
 
-    <select id="getGameById" parameterType="Integer" resultMap="GameResultMap">
-        SELECT * FROM games WHERE game_id = #{gameId};
+    <select id="getGameByFilters" parameterType="GameDAODTO" resultMap="GameResultMap">
+        SELECT * FROM games
+        <where>
+        <if test="game.gameId != null">
+            AND game_id = #{gameId}
+        </if>
+        <if test="game.gameName != null">
+            AND game_name = #{gameName}
+        </if>
+        </where>
+        ;
     </select>
 
     <insert id="insertGame" parameterType="GameDAODTO">

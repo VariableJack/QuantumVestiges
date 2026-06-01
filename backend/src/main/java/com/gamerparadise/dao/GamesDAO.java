@@ -33,11 +33,11 @@ public class GamesDAO {
         }
     }
 
-    public GameDAODTO getGameById(@NonNull Integer gameId) {
+    public GameDAODTO getGameByFilters(@NonNull GameDAODTO gameFilters) {
         final Date startDate = new Date();
-        logger.info("Fetching game by gameId {}", gameId);
+        logger.info("Fetching game by gameFilters {}", gameFilters);
         try {
-            return mapper.getGameById(gameId);
+            return mapper.getGameByFilters(gameFilters);
         } catch (Exception e) {
             throw e;
         } finally {
@@ -45,11 +45,11 @@ public class GamesDAO {
         }
     }
 
-    public void insertGame(@NonNull GameDAODTO game) {
+    public GameDAODTO insertGame(@NonNull GameDAODTO game) {
         final Date startDate = new Date();
         logger.info("Inserting game {}", game);
         try {
-            mapper.insertGame(game);
+            return mapper.insertGame(game);
         } catch (Exception e) {
             throw e;
         } finally {

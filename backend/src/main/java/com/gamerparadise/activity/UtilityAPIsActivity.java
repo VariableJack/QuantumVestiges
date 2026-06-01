@@ -41,15 +41,19 @@ public class UtilityAPIsActivity {
     private static final <T> boolean checkEntryInList(List<T> list, T entry) {
         return Objects.nonNull(entry) && list.contains(entry);
     }
-    
+
     @PostMapping(name="GeneratePresignedUrls",path="/presigned-urls")
-    public GeneratePresignedUrlsOutputActivityDTO generatePresignedUrls(@NonNull GeneratePresignedUrlsActivityDTO input) {
+    public GeneratePresignedUrlsOutputActivityDTO generatePresignedUrls(@RequestBody @NonNull GeneratePresignedUrlsActivityDTO input) {
         if (!checkEntryInList(validMethods, input.getMethod())
             || Objects.isNull(input.getFileNames()) || !checkEntryInList(validTypes, input.getType())) {
             logger.warn("generatePresignedUrls encounted invalid input\n" +
-                "Method must be non-null and must be either GET or PUT.\n" +
-                "List of file names must be non-null");
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Input is invalid");
+                "Method must be non-null and must be either PUT or GET.\n" +
+                "List of file names must be non-null.\n" +
+                "Type must be GAME");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid input:\n" +
+                "Method must be non-null and must be either PUT or GET.\n" +
+                "List of file names must be non-null.\n" +
+                "Type must be GAME");
         }
         logger.info("Beginning to process generatePresignedUrls for input {}", input);
         String bucketName;

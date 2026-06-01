@@ -4,7 +4,9 @@ import org.springframework.stereotype.Component;
 import lombok.NonNull;
 
 import com.gamerparadise.activity.dto.GameActivityDTO;
+import com.gamerparadise.activity.dto.UploadGameInputActivityDTO;
 import com.gamerparadise.component.dto.GameComponentDTO;
+import com.gamerparadise.component.dto.UploadGameInputComponentDTO;
 
 @Component
 public class GamesActivityConverter {
@@ -22,5 +24,12 @@ public class GamesActivityConverter {
             .franchiseId(input.getFranchiseId())
             .franchiseName(input.getFranchiseName())
             .build();
+    }
+
+    public UploadGameInputComponentDTO convertUploadGameActivityDTOToComponentDTO(@NonNull UploadGameInputActivityDTO input) {
+        return UploadGameInputComponentDTO.builder()
+        .gameName(input.getGameName())
+        .fileNames(input.getFileNames())
+        .build();
     }
 }

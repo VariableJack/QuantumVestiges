@@ -6,8 +6,9 @@ import lombok.Data;
 
 @Builder
 @Data
-public class GeneratePresignedUrlsComponentDTO {
+public class UploadGameInputComponentDTO {
+    private String gameName;
+    private Integer franchiseId;
+    private String franchiseName;
     private List<String> fileNames;
-    private String method;
-    private String bucketName;
 }

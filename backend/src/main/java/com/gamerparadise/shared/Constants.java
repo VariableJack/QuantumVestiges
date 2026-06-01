@@ -11,4 +11,6 @@ public class Constants {
     public static long SECONDS_IN_WEEK = SECONDS_IN_MINUTE * MINUTES_IN_HOUR * HOURS_IN_DAY * DAYS_IN_WEEK;
     public static long MINUTES_IN_DAY = MINUTES_IN_HOUR * HOURS_IN_DAY;
     public static long MINUTES_IN_WEEK = MINUTES_IN_HOUR * HOURS_IN_DAY * DAYS_IN_WEEK;
+
+    public static int S3_MAX_KEYS = 1000;
 }
