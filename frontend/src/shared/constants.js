@@ -95,4 +95,14 @@ const FORUM_PAGE_ITEMS = {
     },
 }
 
-export { hostname, port, menubarItems, ADMINISTRATOR_ITEMS, FORUM_PAGES, FORUM_PAGE_ITEMS }
+const DEFAULT_FRANCHISE = { franchiseId: -1, franchiseName: '-' }
+
+export {
+    hostname,
+    port,
+    menubarItems,
+    ADMINISTRATOR_ITEMS,
+    FORUM_PAGES,
+    FORUM_PAGE_ITEMS,
+    DEFAULT_FRANCHISE,
+}

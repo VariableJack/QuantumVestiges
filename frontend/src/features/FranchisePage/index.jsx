@@ -41,7 +41,7 @@ const Franchise = () => {
             dispatch(
                 addErrorMessage({
                     title: `Failed to fetch games for ${franchiseId}`,
-                    description: error.error,
+                    description: error.data.error,
                     id: 'gamesFetchError',
                 }),
             )

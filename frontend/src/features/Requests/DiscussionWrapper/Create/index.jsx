@@ -18,7 +18,8 @@ import {
     addErrorMessage,
 } from '../../../../redux/api/globalSlice'
 const DiscussionCreate = props => {
-    const { baseTitle, submitPageTitle, submitButtonText, recentText, submitAction, sidebarItems } = props
+    const { baseTitle, submitPageTitle, submitButtonText, recentText, submitAction, sidebarItems } =
+        props
     const [inputs, setInputs] = useState({
         title: '',
         description: '',
@@ -166,21 +167,21 @@ const DiscussionWrapperCreate = props => {
         if (supportRequestIsError) {
             errorMessage = {
                 title: 'Failed to create new support request',
-                description: supportRequestError.error,
+                description: supportRequestError.data.error,
                 id: 'supportRequestError',
             }
         }
         if (bugReportIsError) {
             errorMessage = {
                 title: 'Failed to create new bug report',
-                description: bugReportError.error,
+                description: bugReportError.data.error,
                 id: 'bugReportError',
             }
         }
         if (discussionThreadIsError) {
             errorMessage = {
                 title: 'Failed to create new discussion',
-                description: discussionThreadError.error,
+                description: discussionThreadError.data.error,
                 id: 'discussionThreadError',
             }
         }
@@ -269,7 +270,7 @@ const DiscussionWrapperCreate = props => {
             submitButtonText={FORUM_PAGE_ITEMS[type].submitButtonText()}
             recentText={FORUM_PAGE_ITEMS[type].recentText()}
             submitAction={handleSubmitAndSave}
-			sidebarItems={sidebarItems}
+            sidebarItems={sidebarItems}
         />
     )
 }

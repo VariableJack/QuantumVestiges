@@ -41,7 +41,9 @@ import DiscussionWrapperDetailed from './features/Requests/DiscussionWrapper/Det
 
 // Game Pages
 import FranchisePage from './features/FranchisePage'
-import GamePage from './features/FranchisePage/GamePage'
+import FranchisePageCreate from './features/FranchisePage/Create'
+import GamePage from './features/GamePage'
+import GamePageCreate from './features/GamePage/Create'
 
 // Auth
 import { AuthProvider } from 'react-oidc-context'
@@ -89,7 +91,7 @@ const RouterWrapper = props => {
             dispatch(
                 addErrorMessage({
                     title: 'Failed to fetch your cart',
-                    description: getCartError.error,
+                    description: getCartError.data.error,
                     id: 'cartFetch',
                 }),
             )
@@ -98,7 +100,7 @@ const RouterWrapper = props => {
             dispatch(
                 addErrorMessage({
                     title: 'Failed to fetch your list of purchased items',
-                    description: getPurchasedItemsError.error,
+                    description: getPurchasedItemsError.data.error,
                     id: 'purchasedItemsFetch',
                 }),
             )
@@ -108,7 +110,6 @@ const RouterWrapper = props => {
         if (auth.isAuthenticated) {
             const username = auth.user.profile['cognito:username']
             const accessToken = auth.user.access_token
-            console.debug(accessToken)
             const groups = auth.user.profile['cognito:groups']
             dispatch(setUsername(username))
             if (groups.length) dispatch(setGroup(groups[0]))
@@ -126,6 +127,7 @@ const RouterWrapper = props => {
                 <Route path="/franchise" element={<FranchisePage />} />
                 <Route path="/game" element={<GamePage />} />
                 <Route path="/forums" element={<ForumPage />} />
+                <Route path="/game/create" element={<GamePageCreate />} />
 
                 <Route
                     path="/bug-report/:requestId"
@@ -211,11 +213,10 @@ const App = () => {
     }, [])
     useEffect(() => {
         if (isError) {
-            console.debug(error)
             dispatch(
                 addErrorMessage({
                     title: 'Failed to fetch franchises',
-                    description: error.error,
+                    description: error.data.error,
                     id: 'franchiseFetchError',
                 }),
             )

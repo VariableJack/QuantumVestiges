@@ -55,7 +55,7 @@ const Game = () => {
             dispatch(
                 addErrorMessage({
                     title: 'Failed to fetch game',
-                    description: getGameError.error,
+                    description: getGameError.data.error,
                     id: `gameFetchError-${game.gameId}`,
                 }),
             )
@@ -64,7 +64,7 @@ const Game = () => {
             dispatch(
                 addErrorMessage({
                     title: `Failed to ${(isPresentInCart && 'remove item from') || 'add item to'} your cart`,
-                    description: updateCartError.error,
+                    description: updateCartError.data.error,
                     id: `updateCartError-${(isPresentInCart && 'remove') || 'add'}-${game.gameId}`,
                 }),
             )

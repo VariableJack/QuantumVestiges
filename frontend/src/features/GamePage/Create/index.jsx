@@ -1,0 +1,239 @@
+import React, { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+
+import {
+    useLazyGetGamePresignedUrlsQuery,
+    useCreateGameMutation,
+} from '../../../redux/api/mediaEndpoints'
+import {
+    addSuccessMessage,
+    addInfoMessage,
+    removeInfoMessage,
+    addErrorMessage,
+} from '../../../redux/api/globalSlice'
+import { Select } from '../../../shared/components'
+import { DEFAULT_FRANCHISE } from '../../../shared/constants'
+const getFileNamesFromFiles = files => {
+    return files.map(file => file.webkitRelativePath)
+}
+
+const generateSelectItems = items => {
+    return items.map(item => ({
+        id: item.franchiseId,
+        label: item.franchiseName,
+        disabled: item.disabled,
+    }))
+}
+
+const GamePageCreate = () => {
+    const dispatch = useDispatch()
+    const { username, group } = useSelector(state => state.userReducer)
+    const { franchises } = useSelector(state => state.globalReducer)
+    //if (group !== 'admin') {
+    //	return (<div><h1>Unauthorized</h1></div>)
+    //}
+    const [
+        triggerGetGamePresignedUrls,
+        {
+            isLoading: getGamePresignedUrlsIsLoading,
+            isError: getGamePresignedUrlsIsError,
+            error: getGamePresignedUrlsError,
+            isSuccess: getGamePresignedUrlsIsSuccess,
+        },
+    ] = useLazyGetGamePresignedUrlsQuery()
+    const [
+        triggerCreateGame,
+        {
+            isLoading: createGameIsLoading,
+            isError: createGameIsError,
+            error: createGameError,
+            isSuccess: createGameIsSuccess,
+        },
+    ] = useCreateGameMutation()
+    const [files, setFiles] = useState([])
+    const [gameName, setGameName] = useState('')
+    const [selectedFranchise, setSelectedFranchise] = useState(DEFAULT_FRANCHISE)
+    const [isUploadingFiles, setIsUploadingFiles] = useState(false)
+    useEffect(() => {
+        if (getGamePresignedUrlsIsLoading) {
+            dispatch(
+                addInfoMessage({
+                    title: 'Generating presigned URLs',
+                    description:
+                        'Please wait as the system generates and returns all of the presigned URLs',
+                    id: 'presignedURLFetch',
+                }),
+            )
+        } else {
+            dispatch(removeInfoMessage('presignedURLFetch'))
+        }
+    }, [getGamePresignedUrlsIsLoading])
+
+    useEffect(() => {
+        if (getGamePresignedUrlsIsError) {
+            console.debug(getGamePresignedUrlsError)
+            dispatch(
+                addErrorMessage({
+                    title: 'Failed to generate presigned URLs',
+                    description: getGamePresignedUrlsError.data.error,
+                    id: 'presignedURLFetchError',
+                }),
+            )
+        }
+    }, [getGamePresignedUrlsIsError])
+
+    useEffect(() => {
+        if (getGamePresignedUrlsIsSuccess) {
+            dispatch(
+                addSuccessMessage({
+                    title: 'Successfully to generate presigned URLs',
+                    description: `All ${files.length} presigned URLs successfully generated`,
+                    id: 'presignedURLFetchSuccess',
+                }),
+            )
+        }
+    }, [getGamePresignedUrlsIsSuccess])
+
+    useEffect(() => {
+        if (createGameIsLoading) {
+            dispatch(
+                addInfoMessage({
+                    title: 'Creating game',
+                    description: 'Please wait as the system finalizes the game',
+                    id: 'createGame',
+                }),
+            )
+        } else {
+            dispatch(removeInfoMessage('presignedURLFetch'))
+        }
+    }, [createGameIsLoading])
+
+    useEffect(() => {
+        if (createGameIsError) {
+            dispatch(
+                addErrorMessage({
+                    title: 'Failed to finalize game',
+                    description: createGameError.data.error,
+                    id: 'createGameError',
+                }),
+            )
+        }
+    }, [getGamePresignedUrlsIsError])
+
+    useEffect(() => {
+        if (createGameIsSuccess) {
+            dispatch(
+                addSuccessMessage({
+                    title: 'Successfully finalized game',
+                    description: 'Game has been successfully created',
+                    id: 'createGameSuccess',
+                }),
+            )
+        }
+    }, [createGameIsSuccess])
+
+    useEffect(() => {
+        if (isUploadingFiles) {
+            dispatch(
+                addInfoMessage({
+                    title: 'Uploading files',
+                    description: 'Please wait as the files are being uploaded',
+                    id: 'uploadFilesInfo',
+                }),
+            )
+        } else {
+            dispatch(removeInfoMessage('uploadFilesInfo'))
+        }
+    }, [isUploadingFiles])
+
+    const handleUpload = async () => {
+        const { presignedUrls } = await triggerGetGamePresignedUrls({
+            fileNames: getFileNamesFromFiles(files),
+            method: 'PUT',
+        }).unwrap()
+        setIsUploadingFiles(true)
+        console.debug(presignedUrls)
+        const filesSucceeded = []
+        const filesFailed = []
+        files.forEach(async file => {
+            console.debug(
+                `saving file ${file.webkitRelativePath} to ${presignedUrls[file.webkitRelativePath]}`,
+            )
+            try {
+                await fetch(presignedUrls[file.webkitRelativePath], {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: file,
+                })
+                filesSucceeded.push(file)
+            } catch (e) {
+                filesFailed.push(file)
+            }
+        })
+        if (filesFailed.length) {
+            dispatch(
+                addErrorMessage({
+                    title: 'Failed to upload files',
+                    description: `${filesFailed.length} files failed to be uploaded`,
+                    id: 'uploadFilesError',
+                }),
+            )
+        }
+        setIsUploadingFiles(false)
+        if (getGamePresignedUrlsIsSuccess) {
+            try {
+                const game = triggerCreateGame({
+                    gameName,
+                    franchiseId: selectedFranchise.franchiseId,
+                    fileNames: getFileNamesFromFiles(files),
+                })
+            } catch (e) {}
+        }
+    }
+
+    return (
+        <div className="ph-xs">
+            <h1>Upload folder here</h1>
+            <input
+                type="file"
+                multiple
+                webkitdirectory=""
+                directory=""
+                onChange={event => {
+                    setFiles(Array.from(event.target.files))
+                    const firstFile = event.target.files[0]
+                    setGameName(
+                        firstFile.webkitRelativePath.substring(
+                            0,
+                            firstFile.webkitRelativePath.indexOf('/'),
+                        ),
+                    )
+                }}
+            />
+            <h3>Select franchise to create game under</h3>
+            <Select
+                items={generateSelectItems([
+                    ...franchises.map(franchise => ({ ...franchise, disabled: false })),
+                    { ...DEFAULT_FRANCHISE, disabled: true },
+                ])}
+                selectedItem={{
+                    id: selectedFranchise.franchiseId,
+                    label: selectedFranchise.franchiseName,
+                }}
+                onChange={item => setSelectedFranchise(item)}
+            />
+            {(files.length && <div className="pv-xs">Detected game name {gameName}</div>) || <></>}
+            <div>
+                <button
+                    onClick={() => {
+                        handleUpload()
+                    }}
+                >
+                    Finalize and upload
+                </button>
+            </div>
+        </div>
+    )
+}
+
+export default GamePageCreate

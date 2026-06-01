@@ -139,7 +139,7 @@ const DiscussionComponent = props => {
 }
 
 const DiscussionWrapper = props => {
-	const dispatch = useDispatch()
+    const dispatch = useDispatch()
     const { username, type } = props
     const { group } = useSelector(state => state.userReducer)
     const { supportRequests, bugReports, discussionThreads } = useSelector(
@@ -166,26 +166,26 @@ const DiscussionWrapper = props => {
         },
     ] = useLazyGetDiscussionThreadsQuery()
     const getRequests = async () => {
-		try {
-        let response = []
-        switch (type) {
-            case FORUM_PAGES.SUPPORT:
-                response = await triggerGetSupportRequests().unwrap()
-                dispatch(setDiscussionThreads(response))
-                break
-            case FORUM_PAGES.BUG_REPORT:
-                response = await triggerGetBugReport().unwrap()
-                dispatch(setBugReports(response))
-                break
-            case FORUM_PAGES.DISCUSSION:
-                response = await triggerGetDiscussionThreads().unwrap()
-                dispatch(setSupportRequests(response))
-                break
-            default:
-                response = []
-                break
-        }
-		} catch(e) {}
+        try {
+            let response = []
+            switch (type) {
+                case FORUM_PAGES.SUPPORT:
+                    response = await triggerGetSupportRequests().unwrap()
+                    dispatch(setDiscussionThreads(response))
+                    break
+                case FORUM_PAGES.BUG_REPORT:
+                    response = await triggerGetBugReport().unwrap()
+                    dispatch(setBugReports(response))
+                    break
+                case FORUM_PAGES.DISCUSSION:
+                    response = await triggerGetDiscussionThreads().unwrap()
+                    dispatch(setSupportRequests(response))
+                    break
+                default:
+                    response = []
+                    break
+            }
+        } catch (e) {}
     }
     useEffect(() => {
         getRequests()
@@ -228,21 +228,21 @@ const DiscussionWrapper = props => {
         if (supportRequestsIsError) {
             errorMessage = {
                 title: 'Failed to fetch support requests',
-                description: supportRequestsError.error,
+                description: supportRequestsError.data.error,
                 id: 'supportRequestsFetchError',
             }
         }
         if (bugReportsIsError) {
             errorMessage = {
                 title: 'Failed to fetch bug reports',
-                description: bugReportsError.error,
+                description: bugReportsError.data.error,
                 id: 'bugReportsFetchError',
             }
         }
         if (discussionThreadsIsError) {
             errorMessage = {
                 title: 'Failed to fetch discussions',
-                description: discussionThreadsError.error,
+                description: discussionThreadsError.data.error,
                 id: 'discussionThreadsFetchError',
             }
         }

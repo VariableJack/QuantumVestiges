@@ -1,13 +1,14 @@
 import gamerParadiseApiSlice from './gamerParadiseApiSlice'
 
 export const mediaEndpoints = gamerParadiseApiSlice.injectEndpoints({
-    tagTypes: ['account-details', 'cart'],
+    tagTypes: ['account-details', 'cart', 'games', 'franchises'],
     endpoints: builder => ({
         getFranchises: builder.query({
             query: () => ({
                 url: `/franchises`,
                 method: 'GET',
             }),
+            providesTags: ['franchises'],
         }),
         getFranchiseById: builder.query({
             query: ({ franchise }) => ({
@@ -17,9 +18,10 @@ export const mediaEndpoints = gamerParadiseApiSlice.injectEndpoints({
         }),
         getGames: builder.query({
             query: ({ franchise }) => ({
-                url: `/games?franchiseId=${franchise}${game && `&gameId=${game}`}`,
+                url: `/games?franchiseId=${franchise}}`,
                 method: 'GET',
             }),
+            providesTags: ['games'],
         }),
         getGameById: builder.query({
             query: ({ game }) => ({
@@ -60,6 +62,40 @@ export const mediaEndpoints = gamerParadiseApiSlice.injectEndpoints({
             }),
             invalidateTags: ['account-details', 'cart'],
         }),
+        // Admin
+        createFranchise: builder.mutation({
+            query: ({ franchiseName }) => ({
+                url: '/franchises',
+                method: 'POST',
+                body: {
+                    franchiseName,
+                },
+            }),
+            invalidateTags: ['franchises'],
+        }),
+        getGamePresignedUrls: builder.query({
+            query: ({ fileNames, method }) => ({
+                url: '/presigned-urls',
+                method: 'POST',
+                body: {
+                    fileNames,
+                    method,
+                    type: 'GAME',
+                },
+            }),
+        }),
+        createGame: builder.mutation({
+            query: ({ gameName, franchiseId, fileNames }) => ({
+                url: '/games',
+                method: 'POST',
+                body: {
+                    gameName,
+                    franchiseId,
+                    fileNames,
+                },
+            }),
+            invalidateTags: ['games'],
+        }),
     }),
 })
 
@@ -72,9 +108,12 @@ export const {
     useLazyGetGamesQuery,
     useGetGameByIdQuery,
     useLazyGetGameByIdQuery,
+    useLazyGetGamePresignedUrlsQuery,
 
     useLazyGetPurchasedItemsQuery,
     useLazyGetCartQuery,
     useUpdateCartMutation,
     useCheckoutCartMutation,
+    useCreateFranchiseMutation,
+    useCreateGameMutation,
 } = mediaEndpoints

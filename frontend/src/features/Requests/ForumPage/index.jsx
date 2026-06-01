@@ -12,11 +12,7 @@ import {
     removeInfoMessage,
     addErrorMessage,
 } from '../../../redux/api/globalSlice'
-import {
-    setSupportRequests,
-    setBugReports,
-    setDiscussionThreads,
-} from '../api/requestsSlice'
+import { setSupportRequests, setBugReports, setDiscussionThreads } from '../api/requestsSlice'
 
 const getThreadHeaders = data => {
     return data.map(singleItem => (
@@ -58,22 +54,22 @@ const ForumPage = () => {
         },
     ] = useLazyGetDiscussionThreadsQuery()
     const getRequests = async () => {
-		try {
-        const supportRequestResponse = await triggerGetSupportRequests().unwrap()
-        dispatch(setSupportRequests(supportRequestResponse))
-		} catch (e) {}
-		try {
-        const bugReportsResponse = await triggerGetBugReport().unwrap()
-        dispatch(setBugReports(bugReportsResponse))
-		} catch (e) {}
-		try {
-        const discussionThreadsResponse= await triggerGetDiscussionThreads().unwrap()
-        dispatch(setDiscussionThreads(discussionThreadsResponse))
-		} catch (e) {
-			        dispatch(setDiscussionThreads([]))
-			        dispatch(setBugReports([]))
-			        dispatch(setDiscussionThreads([]))
-		}
+        try {
+            const supportRequestResponse = await triggerGetSupportRequests().unwrap()
+            dispatch(setSupportRequests(supportRequestResponse))
+        } catch (e) {}
+        try {
+            const bugReportsResponse = await triggerGetBugReport().unwrap()
+            dispatch(setBugReports(bugReportsResponse))
+        } catch (e) {}
+        try {
+            const discussionThreadsResponse = await triggerGetDiscussionThreads().unwrap()
+            dispatch(setDiscussionThreads(discussionThreadsResponse))
+        } catch (e) {
+            dispatch(setDiscussionThreads([]))
+            dispatch(setBugReports([]))
+            dispatch(setDiscussionThreads([]))
+        }
     }
     useEffect(() => {
         getRequests()
@@ -116,21 +112,21 @@ const ForumPage = () => {
         if (supportRequestsIsError) {
             errorMessage = {
                 title: 'Failed to fetch support requests',
-                description: supportRequestsError.error,
+                description: supportRequestsError.data.error,
                 id: 'supportRequestsFetchError',
             }
         }
         if (bugReportsIsError) {
             errorMessage = {
                 title: 'Failed to fetch bug reports',
-                description: bugReportsError.error,
+                description: bugReportsError.data.error,
                 id: 'bugReportsFetchError',
             }
         }
         if (discussionThreadsIsError) {
             errorMessage = {
                 title: 'Failed to fetch discussions',
-                description: discussionThreadsError.error,
+                description: discussionThreadsError.data.error,
                 id: 'discussionThreadsFetchError',
             }
         }

@@ -235,21 +235,21 @@ const DiscussionWrapperDetailed = props => {
         if (supportRequestIsError) {
             errorMessage = {
                 title: 'Failed to fetch support request',
-                description: supportRequestError.error,
+                description: supportRequestError.data.error,
                 id: 'supportRequestFetchError',
             }
         }
         if (bugReportIsError) {
             errorMessage = {
                 title: 'Failed to fetch bug report',
-                description: bugReportError.error,
+                description: bugReportError.data.error,
                 id: 'bugReportFetchError',
             }
         }
         if (discussionThreadIsError) {
             errorMessage = {
                 title: 'Failed to fetch discussion',
-                description: discussionThreadError.error,
+                description: discussionThreadError.data.error,
                 id: 'discussionThreadFetchError',
             }
         }
@@ -300,7 +300,7 @@ const DiscussionWrapperDetailed = props => {
         if (supportRequestCommentIsError) {
             errorMessage = {
                 title: 'Failed to add comment to support request',
-                description: supportRequestCommentError.error,
+                description: supportRequestCommentError.data.error,
                 id: 'supportRequestCommentSubmitError',
             }
             setGetDataErrorStatusCode(supportRequestCommentError.statusCode)
@@ -308,7 +308,7 @@ const DiscussionWrapperDetailed = props => {
         if (bugReportCommentIsError) {
             errorMessage = {
                 title: 'Failed to add comment to bug report',
-                description: bugReportCommentError.error,
+                description: bugReportCommentError.data.error,
                 id: 'bugReportCommentSubmitError',
             }
             setGetDataErrorStatusCode(bugReportCommentError.statusCode)
@@ -316,7 +316,7 @@ const DiscussionWrapperDetailed = props => {
         if (discussionThreadCommentIsError) {
             errorMessage = {
                 title: 'Failed to add comment to discussion',
-                description: discussionThreadCommentError.error,
+                description: discussionThreadCommentError.data.error,
                 id: 'discussionThreadCommentSubmitError',
             }
             setGetDataErrorStatusCode(discussionThreadCommentError.statusCode)
