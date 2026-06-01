@@ -17,7 +17,8 @@ public class GlobalCorsConfig {
                         .allowedOrigins("http://localhost:3000","https://localhost:3000") // Or specify: "https://example.com"
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
-                        .exposedHeaders("Access-Control-Allow-Origin");
+                        .exposedHeaders("Access-Control-Allow-Origin", "Access-Control-Allow-Credentials")
+                        .allowCredentials(true);
             }
         };
     }
