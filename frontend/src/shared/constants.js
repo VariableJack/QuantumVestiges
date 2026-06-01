@@ -96,6 +96,7 @@ const FORUM_PAGE_ITEMS = {
 }
 
 const DEFAULT_FRANCHISE = { franchiseId: -1, franchiseName: '-' }
+const CONNECTION_ERROR_MESSAGE = 'Connection error'
 
 export {
     hostname,
@@ -105,4 +106,5 @@ export {
     FORUM_PAGES,
     FORUM_PAGE_ITEMS,
     DEFAULT_FRANCHISE,
+    CONNECTION_ERROR_MESSAGE,
 }

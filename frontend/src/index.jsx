@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom/client'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { useSelector, useDispatch, Provider } from 'react-redux'
 import { createStore, applyMiddleware } from 'redux'
+import { get } from 'lodash'
+
 import { store } from './redux/api'
 import {
     useLazyGetFranchisesQuery,
@@ -23,7 +25,14 @@ import {
 import { Flashbar, Menubar } from './shared/components'
 
 // Constants
-import { hostname, port, menubarItems, ADMINISTRATOR_ITEMS, FORUM_PAGES } from './shared/constants'
+import {
+    hostname,
+    port,
+    menubarItems,
+    ADMINISTRATOR_ITEMS,
+    FORUM_PAGES,
+    CONNECTION_ERROR_MESSAGE,
+} from './shared/constants'
 
 import { getConfig } from './shared/utils'
 // Base pages
@@ -91,21 +100,27 @@ const RouterWrapper = props => {
             dispatch(
                 addErrorMessage({
                     title: 'Failed to fetch your cart',
-                    description: getCartError.data.error,
+                    description: get(getCartError, 'data.error', CONNECTION_ERROR_MESSAGE),
                     id: 'cartFetch',
                 }),
             )
         }
+    }, [getCartIsError])
+    useEffect(() => {
         if (getPurchasedItemsIsError) {
             dispatch(
                 addErrorMessage({
                     title: 'Failed to fetch your list of purchased items',
-                    description: getPurchasedItemsError.data.error,
+                    description: get(
+                        getPurchasedItemsError,
+                        'data.error',
+                        CONNECTION_ERROR_MESSAGE,
+                    ),
                     id: 'purchasedItemsFetch',
                 }),
             )
         }
-    }, [getCartIsError, getPurchasedItemsIsError])
+    }, [getPurchasedItemsIsError])
     useEffect(() => {
         if (auth.isAuthenticated) {
             const username = auth.user.profile['cognito:username']
@@ -216,7 +231,7 @@ const App = () => {
             dispatch(
                 addErrorMessage({
                     title: 'Failed to fetch franchises',
-                    description: error.data.error,
+                    description: get(error, 'data.error', CONNECTION_ERROR_MESSAGE),
                     id: 'franchiseFetchError',
                 }),
             )

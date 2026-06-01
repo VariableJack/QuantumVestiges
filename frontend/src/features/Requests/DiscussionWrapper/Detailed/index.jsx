@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { FORUM_PAGES, FORUM_PAGE_ITEMS } from '../../../../shared/constants'
-import { Modal, ThreadHeader } from '../../../../shared/components'
 import { useLocation } from 'react-router-dom'
+import { get } from 'lodash'
 
 import {
     useLazyGetDetailedSupportRequestQuery,
@@ -22,6 +21,13 @@ import {
     removeInfoMessage,
     addErrorMessage,
 } from '../../../../redux/api/globalSlice'
+import { Modal, ThreadHeader } from '../../../../shared/components'
+import {
+    FORUM_PAGES,
+    FORUM_PAGE_ITEMS,
+    CONNECTION_ERROR_MESSAGE,
+} from '../../../../shared/constants'
+
 const DiscussionDetailed = props => {
     const { data, type, submitAction, closeAction, reopenAction } = props
     const [inputDescription, setInputDescription] = useState('')
@@ -235,21 +241,21 @@ const DiscussionWrapperDetailed = props => {
         if (supportRequestIsError) {
             errorMessage = {
                 title: 'Failed to fetch support request',
-                description: supportRequestError.data.error,
+                description: get(supportRequestError, 'data.error', CONNECTION_ERROR_MESSAGE),
                 id: 'supportRequestFetchError',
             }
         }
         if (bugReportIsError) {
             errorMessage = {
                 title: 'Failed to fetch bug report',
-                description: bugReportError.data.error,
+                description: get(bugReportError, 'data.error', CONNECTION_ERROR_MESSAGE),
                 id: 'bugReportFetchError',
             }
         }
         if (discussionThreadIsError) {
             errorMessage = {
                 title: 'Failed to fetch discussion',
-                description: discussionThreadError.data.error,
+                description: get(discussionThreadError, 'data.error', CONNECTION_ERROR_MESSAGE),
                 id: 'discussionThreadFetchError',
             }
         }

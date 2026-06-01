@@ -1,11 +1,12 @@
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { get } from 'lodash'
+
 import {
     useLazyGetBugReportsQuery,
     useLazyGetDiscussionThreadsQuery,
     useLazyGetSupportRequestsQuery,
 } from '../api/requestsEndpoints'
-import { FORUM_PAGES, FORUM_PAGE_ITEMS } from '../../../shared/constants'
 import {
     addSuccessMessage,
     addInfoMessage,
@@ -13,6 +14,7 @@ import {
     addErrorMessage,
 } from '../../../redux/api/globalSlice'
 import { setSupportRequests, setBugReports, setDiscussionThreads } from '../api/requestsSlice'
+import { FORUM_PAGES, FORUM_PAGE_ITEMS, CONNECTION_ERROR_MESSAGE } from '../../../shared/constants'
 
 const getThreadHeaders = data => {
     return data.map(singleItem => (
@@ -112,21 +114,21 @@ const ForumPage = () => {
         if (supportRequestsIsError) {
             errorMessage = {
                 title: 'Failed to fetch support requests',
-                description: supportRequestsError.data.error,
+                description: get(supportRequestsError, 'data.error', CONNECTION_ERROR_MESSAGE),
                 id: 'supportRequestsFetchError',
             }
         }
         if (bugReportsIsError) {
             errorMessage = {
                 title: 'Failed to fetch bug reports',
-                description: bugReportsError.data.error,
+                description: get(bugReportsError, 'data.error', CONNECTION_ERROR_MESSAGE),
                 id: 'bugReportsFetchError',
             }
         }
         if (discussionThreadsIsError) {
             errorMessage = {
                 title: 'Failed to fetch discussions',
-                description: discussionThreadsError.data.error,
+                description: get(discussionThreadsError, 'data.error', CONNECTION_ERROR_MESSAGE),
                 id: 'discussionThreadsFetchError',
             }
         }

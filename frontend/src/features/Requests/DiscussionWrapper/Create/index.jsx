@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { get } from 'lodash'
 
-import '../../../../styles/App.css'
-import Sidebar from '../../../../shared/components/Sidebar'
-import { hostname, port, FORUM_PAGES, FORUM_PAGE_ITEMS } from '../../../../shared/constants'
 import { getUrl } from '../../../../shared/utils'
 import {
     useSubmitSupportRequestMutation,
@@ -17,6 +15,17 @@ import {
     removeInfoMessage,
     addErrorMessage,
 } from '../../../../redux/api/globalSlice'
+import { Sidebar } from '../../../../shared/components'
+import {
+    hostname,
+    port,
+    FORUM_PAGES,
+    FORUM_PAGE_ITEMS,
+    CONNECTION_ERROR_MESSAGE,
+} from '../../../../shared/constants'
+
+import '../../../../styles/App.css'
+
 const DiscussionCreate = props => {
     const { baseTitle, submitPageTitle, submitButtonText, recentText, submitAction, sidebarItems } =
         props
@@ -167,21 +176,21 @@ const DiscussionWrapperCreate = props => {
         if (supportRequestIsError) {
             errorMessage = {
                 title: 'Failed to create new support request',
-                description: supportRequestError.data.error,
+                description: get(supportRequestError, 'data.error', CONNECTION_ERROR_MESSAGE),
                 id: 'supportRequestError',
             }
         }
         if (bugReportIsError) {
             errorMessage = {
                 title: 'Failed to create new bug report',
-                description: bugReportError.data.error,
+                description: get(bugReportError, 'data.error', CONNECTION_ERROR_MESSAGE),
                 id: 'bugReportError',
             }
         }
         if (discussionThreadIsError) {
             errorMessage = {
                 title: 'Failed to create new discussion',
-                description: discussionThreadError.data.error,
+                description: get(discussionThreadError, 'data.error', CONNECTION_ERROR_MESSAGE),
                 id: 'discussionThreadError',
             }
         }

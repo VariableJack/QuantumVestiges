@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { isUndefined } from 'lodash'
+import { get, isUndefined } from 'lodash'
 
-import '../../../styles/App.css'
-import { FORUM_PAGES, FORUM_PAGE_ITEMS } from '../../../shared/constants'
-import { Dropdown, ThreadHeader, Toggle } from '../../../shared/components'
 import {
     addSuccessMessage,
     addInfoMessage,
     removeInfoMessage,
     addErrorMessage,
 } from '../../../redux/api/globalSlice'
+import { Dropdown, ThreadHeader, Toggle } from '../../../shared/components'
+import { FORUM_PAGES, FORUM_PAGE_ITEMS, CONNECTION_ERROR_MESSAGE } from '../../../shared/constants'
+
+import '../../../styles/App.css'
 
 import {
     useLazyGetBugReportsQuery,
@@ -228,21 +229,21 @@ const DiscussionWrapper = props => {
         if (supportRequestsIsError) {
             errorMessage = {
                 title: 'Failed to fetch support requests',
-                description: supportRequestsError.data.error,
+                description: get(supportRequestsError, 'data.error', CONNECTION_ERROR_MESSAGE),
                 id: 'supportRequestsFetchError',
             }
         }
         if (bugReportsIsError) {
             errorMessage = {
                 title: 'Failed to fetch bug reports',
-                description: bugReportsError.data.error,
+                description: get(bugReportsError, 'data.error', CONNECTION_ERROR_MESSAGE),
                 id: 'bugReportsFetchError',
             }
         }
         if (discussionThreadsIsError) {
             errorMessage = {
                 title: 'Failed to fetch discussions',
-                description: discussionThreadsError.data.error,
+                description: get(discussionThreadsError, 'data.error', CONNECTION_ERROR_MESSAGE),
                 id: 'discussionThreadsFetchError',
             }
         }

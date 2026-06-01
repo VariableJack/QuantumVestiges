@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { get } from 'lodash'
 
 import {
     useLazyGetGamePresignedUrlsQuery,
@@ -12,7 +13,10 @@ import {
     addErrorMessage,
 } from '../../../redux/api/globalSlice'
 import { Select } from '../../../shared/components'
-import { DEFAULT_FRANCHISE } from '../../../shared/constants'
+import { DEFAULT_FRANCHISE, CONNECTION_ERROR_MESSAGE } from '../../../shared/constants'
+
+import '../../../styles/App.css'
+
 const getFileNamesFromFiles = files => {
     return files.map(file => file.webkitRelativePath)
 }
@@ -29,9 +33,6 @@ const GamePageCreate = () => {
     const dispatch = useDispatch()
     const { username, group } = useSelector(state => state.userReducer)
     const { franchises } = useSelector(state => state.globalReducer)
-    //if (group !== 'admin') {
-    //	return (<div><h1>Unauthorized</h1></div>)
-    //}
     const [
         triggerGetGamePresignedUrls,
         {
@@ -75,7 +76,11 @@ const GamePageCreate = () => {
             dispatch(
                 addErrorMessage({
                     title: 'Failed to generate presigned URLs',
-                    description: getGamePresignedUrlsError.data.error,
+                    description: get(
+                        getGamePresignedUrlsError,
+                        'data.error',
+                        CONNECTION_ERROR_MESSAGE,
+                    ),
                     id: 'presignedURLFetchError',
                 }),
             )
@@ -113,7 +118,7 @@ const GamePageCreate = () => {
             dispatch(
                 addErrorMessage({
                     title: 'Failed to finalize game',
-                    description: createGameError.data.error,
+                    description: get(createGameError, 'data.error', CONNECTION_ERROR_MESSAGE),
                     id: 'createGameError',
                 }),
             )
@@ -192,47 +197,55 @@ const GamePageCreate = () => {
     }
 
     return (
-        <div className="ph-xs">
-            <h1>Upload folder here</h1>
-            <input
-                type="file"
-                multiple
-                webkitdirectory=""
-                directory=""
-                onChange={event => {
-                    setFiles(Array.from(event.target.files))
-                    const firstFile = event.target.files[0]
-                    setGameName(
-                        firstFile.webkitRelativePath.substring(
-                            0,
-                            firstFile.webkitRelativePath.indexOf('/'),
-                        ),
-                    )
-                }}
-            />
-            <h3>Select franchise to create game under</h3>
-            <Select
-                items={generateSelectItems([
-                    ...franchises.map(franchise => ({ ...franchise, disabled: false })),
-                    { ...DEFAULT_FRANCHISE, disabled: true },
-                ])}
-                selectedItem={{
-                    id: selectedFranchise.franchiseId,
-                    label: selectedFranchise.franchiseName,
-                }}
-                onChange={item => setSelectedFranchise(item)}
-            />
-            {(files.length && <div className="pv-xs">Detected game name {gameName}</div>) || <></>}
+        (group !== 'admin' && (
             <div>
-                <button
-                    onClick={() => {
-                        handleUpload()
-                    }}
-                >
-                    Finalize and upload
-                </button>
+                <h1>Unauthorized</h1>
             </div>
-        </div>
+        )) || (
+            <div className="ph-xs">
+                <h1>Upload folder here</h1>
+                <input
+                    type="file"
+                    multiple
+                    webkitdirectory=""
+                    directory=""
+                    onChange={event => {
+                        setFiles(Array.from(event.target.files))
+                        const firstFile = event.target.files[0]
+                        setGameName(
+                            firstFile.webkitRelativePath.substring(
+                                0,
+                                firstFile.webkitRelativePath.indexOf('/'),
+                            ),
+                        )
+                    }}
+                />
+                <h3>Select franchise to create game under</h3>
+                <Select
+                    items={generateSelectItems([
+                        ...franchises.map(franchise => ({ ...franchise, disabled: false })),
+                        { ...DEFAULT_FRANCHISE, disabled: true },
+                    ])}
+                    selectedItem={{
+                        id: selectedFranchise.franchiseId,
+                        label: selectedFranchise.franchiseName,
+                    }}
+                    onChange={item => setSelectedFranchise(item)}
+                />
+                {(files.length && <div className="pv-xs">Detected game name {gameName}</div>) || (
+                    <></>
+                )}
+                <div>
+                    <button
+                        onClick={() => {
+                            handleUpload()
+                        }}
+                    >
+                        Finalize and upload
+                    </button>
+                </div>
+            </div>
+        )
     )
 }
 

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
+import { get } from 'lodash'
 
 import { useLocation } from 'react-router-dom'
 
@@ -10,6 +11,7 @@ import {
     removeInfoMessage,
     addErrorMessage,
 } from '../../redux/api/globalSlice'
+import { CONNECTION_ERROR_MESSAGE } from '../../shared/constants'
 
 import '../../styles/App.css'
 
@@ -55,7 +57,7 @@ const Game = () => {
             dispatch(
                 addErrorMessage({
                     title: 'Failed to fetch game',
-                    description: getGameError.data.error,
+                    description: get(getGameError, 'data.error', CONNECTION_ERROR_MESSAGE),
                     id: `gameFetchError-${game.gameId}`,
                 }),
             )
@@ -64,7 +66,7 @@ const Game = () => {
             dispatch(
                 addErrorMessage({
                     title: `Failed to ${(isPresentInCart && 'remove item from') || 'add item to'} your cart`,
-                    description: updateCartError.data.error,
+                    description: get(updateCartError, 'data.error', CONNECTION_ERROR_MESSAGE),
                     id: `updateCartError-${(isPresentInCart && 'remove') || 'add'}-${game.gameId}`,
                 }),
             )
