@@ -43,11 +43,11 @@ const ADMINISTRATOR_ITEMS = [
         elements: [
             {
                 menubarHeader: 'Create new franchise',
-                path: '/',
+                path: '/franchise/create',
             },
             {
                 menubarHeader: 'Upload Game',
-                path: '/',
+                path: '/game/create',
             },
         ],
     },

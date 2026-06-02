@@ -60,8 +60,7 @@ const GamePageCreate = () => {
             dispatch(
                 addInfoMessage({
                     title: 'Generating presigned URLs',
-                    description:
-                        'Please wait as the system generates and returns all of the presigned URLs',
+                    description: 'Please wait as the system generates all of the presigned URLs',
                     id: 'presignedURLFetch',
                 }),
             )
@@ -72,7 +71,6 @@ const GamePageCreate = () => {
 
     useEffect(() => {
         if (getGamePresignedUrlsIsError) {
-            console.debug(getGamePresignedUrlsError)
             dispatch(
                 addErrorMessage({
                     title: 'Failed to generate presigned URLs',
@@ -91,11 +89,18 @@ const GamePageCreate = () => {
         if (getGamePresignedUrlsIsSuccess) {
             dispatch(
                 addSuccessMessage({
-                    title: 'Successfully to generate presigned URLs',
+                    title: 'Successfully generated presigned URLs',
                     description: `All ${files.length} presigned URLs successfully generated`,
                     id: 'presignedURLFetchSuccess',
                 }),
             )
+            try {
+                const game = triggerCreateGame({
+                    gameName,
+                    franchiseId: selectedFranchise.franchiseId,
+                    fileNames: getFileNamesFromFiles(files),
+                })
+            } catch (e) {}
         }
     }, [getGamePresignedUrlsIsSuccess])
 
@@ -105,11 +110,11 @@ const GamePageCreate = () => {
                 addInfoMessage({
                     title: 'Creating game',
                     description: 'Please wait as the system finalizes the game',
-                    id: 'createGame',
+                    id: 'createGameInfo',
                 }),
             )
         } else {
-            dispatch(removeInfoMessage('presignedURLFetch'))
+            dispatch(removeInfoMessage('createGameInfo'))
         }
     }, [createGameIsLoading])
 
@@ -152,29 +157,27 @@ const GamePageCreate = () => {
     }, [isUploadingFiles])
 
     const handleUpload = async () => {
-        const { presignedUrls } = await triggerGetGamePresignedUrls({
-            fileNames: getFileNamesFromFiles(files),
-            method: 'PUT',
-        }).unwrap()
         setIsUploadingFiles(true)
-        console.debug(presignedUrls)
         const filesSucceeded = []
         const filesFailed = []
-        files.forEach(async file => {
-            console.debug(
-                `saving file ${file.webkitRelativePath} to ${presignedUrls[file.webkitRelativePath]}`,
-            )
-            try {
-                await fetch(presignedUrls[file.webkitRelativePath], {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: file,
-                })
-                filesSucceeded.push(file)
-            } catch (e) {
-                filesFailed.push(file)
-            }
-        })
+        try {
+            const { presignedUrls } = await triggerGetGamePresignedUrls({
+                fileNames: getFileNamesFromFiles(files),
+                method: 'PUT',
+            }).unwrap()
+            files.forEach(async file => {
+                try {
+                    await fetch(presignedUrls[file.webkitRelativePath], {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: file,
+                    })
+                    filesSucceeded.push(file)
+                } catch (e) {
+                    filesFailed.push(file)
+                }
+            })
+        } catch (e) {}
         if (filesFailed.length) {
             dispatch(
                 addErrorMessage({
@@ -185,15 +188,6 @@ const GamePageCreate = () => {
             )
         }
         setIsUploadingFiles(false)
-        if (getGamePresignedUrlsIsSuccess) {
-            try {
-                const game = triggerCreateGame({
-                    gameName,
-                    franchiseId: selectedFranchise.franchiseId,
-                    fileNames: getFileNamesFromFiles(files),
-                })
-            } catch (e) {}
-        }
     }
 
     return (

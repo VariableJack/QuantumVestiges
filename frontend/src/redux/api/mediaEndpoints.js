@@ -31,7 +31,7 @@ export const mediaEndpoints = gamerParadiseApiSlice.injectEndpoints({
         }),
         getPurchasedItems: builder.query({
             query: ({ accessToken }) => ({
-                url: `/purchased-games`,
+                url: '/purchased-games',
                 method: 'GET',
                 headers: { Authorization: accessToken },
             }),
@@ -39,14 +39,14 @@ export const mediaEndpoints = gamerParadiseApiSlice.injectEndpoints({
         }),
         getCart: builder.query({
             query: () => ({
-                url: `/cart`,
+                url: '/cart',
                 method: 'GET',
             }),
             providesTags: ['cart'],
         }),
         updateCart: builder.mutation({
             query: ({ action, gameId }) => ({
-                url: `/update-cart`,
+                url: '/update-cart',
                 method: 'POST',
                 body: {
                     action,
@@ -57,7 +57,7 @@ export const mediaEndpoints = gamerParadiseApiSlice.injectEndpoints({
         }),
         checkoutCart: builder.mutation({
             query: () => ({
-                url: `/checkout-cart`,
+                url: '/checkout-cart',
                 method: 'POST',
             }),
             invalidateTags: ['account-details', 'cart'],
@@ -82,6 +82,12 @@ export const mediaEndpoints = gamerParadiseApiSlice.injectEndpoints({
                     method,
                     type: 'GAME',
                 },
+            }),
+        }),
+        getInstaller: builder.query({
+            query: () => ({
+                url: '/installer',
+                method: 'GET',
             }),
         }),
         createGame: builder.mutation({
@@ -109,6 +115,7 @@ export const {
     useGetGameByIdQuery,
     useLazyGetGameByIdQuery,
     useLazyGetGamePresignedUrlsQuery,
+    useLazyGetInstallerQuery,
 
     useLazyGetPurchasedItemsQuery,
     useLazyGetCartQuery,

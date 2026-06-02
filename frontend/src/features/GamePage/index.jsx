@@ -33,7 +33,6 @@ const Game = () => {
             isSuccess: updateCartIsSuccess,
         },
     ] = useUpdateCartMutation()
-
     const [game, setGame] = useState({
         gameId: -1,
         gameName: '',
@@ -52,6 +51,7 @@ const Game = () => {
             getGame()
         }
     }, [])
+
     useEffect(() => {
         if (getGameIsError) {
             dispatch(
@@ -62,16 +62,7 @@ const Game = () => {
                 }),
             )
         }
-        if (updateCartIsError) {
-            dispatch(
-                addErrorMessage({
-                    title: `Failed to ${(isPresentInCart && 'remove item from') || 'add item to'} your cart`,
-                    description: get(updateCartError, 'data.error', CONNECTION_ERROR_MESSAGE),
-                    id: `updateCartError-${(isPresentInCart && 'remove') || 'add'}-${game.gameId}`,
-                }),
-            )
-        }
-    }, [getGameIsError, updateCartIsError])
+    }, [getGameIsError])
 
     useEffect(() => {
         const messageId = `gameFetchInfo-${game.gameId}`
@@ -105,6 +96,19 @@ const Game = () => {
             dispatch(removeInfoMessage(messageId))
         }
     }, [isUpdating])
+
+    useEffect(() => {
+        if (updateCartIsError) {
+            dispatch(
+                addErrorMessage({
+                    title: `Failed to ${(isPresentInCart && 'remove item from') || 'add item to'} your cart`,
+                    description: get(updateCartError, 'data.error', CONNECTION_ERROR_MESSAGE),
+                    id: `updateCartError-${(isPresentInCart && 'remove') || 'add'}-${game.gameId}`,
+                }),
+            )
+        }
+    }, [updateCartIsError])
+
     useEffect(() => {
         if (updateCartIsSuccess) {
             dispatch(
@@ -116,6 +120,25 @@ const Game = () => {
             )
         }
     }, [updateCartIsSuccess])
+
+    const onDownloadClick = () => {
+        const appProtocol = 'myapp://open' // Your custom protocol
+        const fallbackUrl = '/download'
+
+        let timeoutId
+
+        // Try to open the app
+        window.location.href = appProtocol
+
+        // If the app isn't installed, redirect to download after delay
+        timeoutId = setTimeout(() => {
+            window.location.href = fallbackUrl
+        }, 1500) // 1.5s delay is usually enough
+
+        // Cleanup timeout if user leaves page
+        return () => clearTimeout(timeoutId)
+    }
+
     return (
         <div>
             {game.franchiseName} - {game.gameName}
@@ -149,7 +172,7 @@ const Game = () => {
                 )) || (
                     <div>
                         <br />
-                        <button disabled>You already own this game</button>
+                        <button onClick={onDownloadClick}>Download the game</button>
                     </div>
                 )}
         </div>

@@ -53,6 +53,7 @@ import FranchisePage from './features/FranchisePage'
 import FranchisePageCreate from './features/FranchisePage/Create'
 import GamePage from './features/GamePage'
 import GamePageCreate from './features/GamePage/Create'
+import DownloadInstaller from './features/DownloadInstaller'
 
 // Auth
 import { AuthProvider } from 'react-oidc-context'
@@ -142,7 +143,9 @@ const RouterWrapper = props => {
                 <Route path="/franchise" element={<FranchisePage />} />
                 <Route path="/game" element={<GamePage />} />
                 <Route path="/forums" element={<ForumPage />} />
+                <Route path="/franchise/create" element={<FranchisePageCreate />} />
                 <Route path="/game/create" element={<GamePageCreate />} />
+                <Route path="/download" element={<DownloadInstaller />} />
 
                 <Route
                     path="/bug-report/:requestId"
@@ -249,7 +252,19 @@ const App = () => {
                             errorMessages={errorMessages}
                             dispatch={dispatch}
                         />
-                        <Menubar url={`${hostname}:${port}`} items={finalItemsToDisplay} />
+                        <Menubar
+                            url={`${hostname}:${port}`}
+                            items={finalItemsToDisplay}
+                            actionButtons={[
+                                {
+                                    label: 'Download now',
+                                    onClick: () => {
+                                        window.location.href = '/download'
+                                    },
+                                    type: 'download',
+                                },
+                            ]}
+                        />
                     </div>
                     <RouterWrapper />
                 </AuthProvider>

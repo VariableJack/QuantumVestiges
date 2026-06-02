@@ -45,7 +45,7 @@ const Dropdown = ({ url, title, elements, index }) => {
 }
 
 const Menubar = props => {
-    const { items, url } = props
+    const { items, url, actionButtons } = props
 
     return (
         <div>
@@ -54,6 +54,15 @@ const Menubar = props => {
                     <Dropdown url={url} title={item.title} elements={item.elements} index={index} />
                 )
             })}
+            <div className="f-r">
+                {actionButtons.map(({ label, onClick, type }) => {
+                    return (
+                        <button className={`action-button-${type}`} onClick={onClick}>
+                            {label}
+                        </button>
+                    )
+                })}
+            </div>
         </div>
     )
 }

@@ -43,7 +43,21 @@
 }
 
 /* Change color of dropdown links on hover */
-/* .dropdown-content a:hover {background-color: #ddd;} /* */
+.dropdown-content a:hover {background-color: #dddddd;}
 
 /* Show the dropdown menu (use JS to add this class to the .dropdown-content container when the user clicks on the dropdown button) */
 .show {display:block;}
+
+.action-button-download {
+  font-size: 12px;
+  font-weight: bold;
+  width: 130px;
+  height: 35px;
+  border-radius: 25px;
+  margin-right: 5px;
+  background-color: #F2EB27;
+}
+
+.action-button-download:hover {
+	background-color: #DAD410;
+}
