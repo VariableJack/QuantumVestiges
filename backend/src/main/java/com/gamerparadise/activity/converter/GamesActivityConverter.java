@@ -5,8 +5,10 @@ import lombok.NonNull;
 
 import com.gamerparadise.activity.dto.GameActivityDTO;
 import com.gamerparadise.activity.dto.UploadGameInputActivityDTO;
+import com.gamerparadise.activity.dto.GetFileNamesForGameOutputActivityDTO;
 import com.gamerparadise.component.dto.GameComponentDTO;
 import com.gamerparadise.component.dto.UploadGameInputComponentDTO;
+import com.gamerparadise.component.dto.GetFileNamesForGameOutputComponentDTO;
 
 @Component
 public class GamesActivityConverter {
@@ -28,8 +30,14 @@ public class GamesActivityConverter {
 
     public UploadGameInputComponentDTO convertUploadGameActivityDTOToComponentDTO(@NonNull UploadGameInputActivityDTO input) {
         return UploadGameInputComponentDTO.builder()
-        .gameName(input.getGameName())
-        .fileNames(input.getFileNames())
-        .build();
+            .gameName(input.getGameName())
+            .fileNames(input.getFileNames())
+            .build();
+    }
+
+    public GetFileNamesForGameOutputActivityDTO convertGetFileNamesForGameOutputActivityDTOToComponentDTO(@NonNull GetFileNamesForGameOutputComponentDTO input) {
+        return GetFileNamesForGameOutputActivityDTO.builder()
+            .fileNames(input.getFileNames())
+            .build();
     }
 }

@@ -16,6 +16,7 @@ import com.gamerparadise.builder.FranchisesBuilder;
 import com.gamerparadise.component.dto.GameComponentDTO;
 import com.gamerparadise.component.dto.FranchiseComponentDTO;
 import com.gamerparadise.component.dto.UploadGameInputComponentDTO;
+import com.gamerparadise.component.dto.GetFileNamesForGameOutputComponentDTO;
 
 @Component
 public class GamesComponent {
@@ -62,5 +63,11 @@ public class GamesComponent {
         }
         logger.info("Finished validating that the files have been uploaded");
         return gamesBuilder.insertGame(input, franchise.getFranchiseName());
+    }
+
+    public GetFileNamesForGameOutputComponentDTO getFileNamesForGame(@NonNull Integer gameId) {
+        final GameComponentDTO game = gamesBuilder.getGameByFilters(GameComponentDTO.builder().gameId(gameId).build());
+        final List<String> uploadedFileNames = gamesBuilder.getFileNamesForGame(game.getGameName());
+        return GetFileNamesForGameOutputComponentDTO.builder().fileNames(uploadedFileNames).build();
     }
 }

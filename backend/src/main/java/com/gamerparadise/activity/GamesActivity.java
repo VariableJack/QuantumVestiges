@@ -19,9 +19,11 @@ import java.util.Objects;
 import com.gamerparadise.activity.converter.GamesActivityConverter;
 import com.gamerparadise.activity.dto.GameActivityDTO;
 import com.gamerparadise.activity.dto.UploadGameInputActivityDTO;
+import com.gamerparadise.activity.dto.GetFileNamesForGameOutputActivityDTO;
 import com.gamerparadise.component.GamesComponent;
 import com.gamerparadise.component.dto.GameComponentDTO;
 import com.gamerparadise.component.dto.UploadGameInputComponentDTO;
+import com.gamerparadise.component.dto.GetFileNamesForGameOutputComponentDTO;
 
 @RestController
 public class GamesActivity {
@@ -46,12 +48,11 @@ public class GamesActivity {
 
     @GetMapping(name="GetGameById",path="/game")
     public GameActivityDTO getGameById(@RequestParam(name="gameId",required=true) Integer gameId) {
-        logger.info("Beginning to process getGames for franchise ID {}{}", gameId.toString());
+        logger.info("Beginning to process getGames for game ID {}", gameId.toString());
         final GameComponentDTO getGamesComponentOutput = gamesComponent.getGameById(gameId);
         final GameActivityDTO convertedOutput = gamesActivityConverter.convertGameComponentDTOToActivityDTO(getGamesComponentOutput);
         logger.info("Finished fetching game {}", convertedOutput);
         return convertedOutput;
-
     }
 
     @PostMapping(name="UploadGame",path="/games")
@@ -61,6 +62,15 @@ public class GamesActivity {
         final GameComponentDTO output = gamesComponent.insertGame(convertedInput);
         final GameActivityDTO convertedOutput = gamesActivityConverter.convertGameComponentDTOToActivityDTO(output);
         logger.info("Finished processing uploadGame on {}", convertedOutput);
+        return convertedOutput;
+    }
+
+    @GetMapping(name="GetFileNamesForGame",path="/game/files")
+    public GetFileNamesForGameOutputActivityDTO getFileNamesForGame(@RequestParam(name="gameId",required=true) Integer gameId) {
+        logger.info("Beginning to process getFileNamesForGame for gameId {}", gameId);
+        final GetFileNamesForGameOutputComponentDTO output = gamesComponent.getFileNamesForGame(gameId);
+        final GetFileNamesForGameOutputActivityDTO convertedOutput = gamesActivityConverter.convertGetFileNamesForGameOutputActivityDTOToComponentDTO(output);
+        logger.info("Finished processing getFileNamesForGame on {}", convertedOutput);
         return convertedOutput;
     }
 }
