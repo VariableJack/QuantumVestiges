@@ -14,7 +14,7 @@
 
     <select id="getFranchiseByFilters" parameterType="FranchiseDAODTO" resultMap="FranchiseResultMap">
         SELECT * FROM franchise
-		<where>
+        <where>
         <if test="franchise.franchiseId != null">
             AND franchise_id = #{franchise.franchiseId}
         </if>
@@ -22,7 +22,7 @@
             AND franchise_name = #{franchise.franchiseName}
         </if>
         </where>
-		;
+        ;
     </select>
 
     <insert id="insertFranchise" parameterType="FranchiseDAODTO"

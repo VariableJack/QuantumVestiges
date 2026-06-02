@@ -23,9 +23,9 @@ import java.util.Date;
 import java.util.Objects;
 import java.util.ArrayList;
 import java.util.List;
-import java.time.Duration;
 
 import static com.gamerparadise.shared.Constants.S3_MAX_KEYS;
+import static com.gamerparadise.shared.Constants.PRESIGNED_URL_DURATION;
 
 @Component
 public class S3Accessor {
@@ -36,7 +36,6 @@ public class S3Accessor {
     private static final Logger logger = LogManager.getLogger(S3Accessor.class);
 
     public String generatePresignedUrl(@NonNull String fileName, @NonNull String method, @NonNull String bucketName) {
-        final Duration signatureDuration = Duration.ofHours(1);
         switch (method) {
             case "GET":
                 final GetObjectRequest getObjectRequest = GetObjectRequest.builder()
@@ -45,7 +44,7 @@ public class S3Accessor {
                     .build();
                 final GetObjectPresignRequest getObjectPresignRequest = GetObjectPresignRequest.builder()
                     .getObjectRequest(getObjectRequest)
-                    .signatureDuration(signatureDuration)
+                    .signatureDuration(PRESIGNED_URL_DURATION)
                     .build();
                 final PresignedGetObjectRequest presignedGetObjectRequest = s3Presigner.presignGetObject(getObjectPresignRequest);
                 return presignedGetObjectRequest.url().toString();
@@ -56,7 +55,7 @@ public class S3Accessor {
                     .build();
                 final PutObjectPresignRequest putObjectPresignRequest = PutObjectPresignRequest.builder()
                     .putObjectRequest(putObjectRequest)
-                    .signatureDuration(signatureDuration)
+                    .signatureDuration(PRESIGNED_URL_DURATION)
                     .build();
                 final PresignedPutObjectRequest presignedPutObjectRequest = s3Presigner.presignPutObject(putObjectPresignRequest);
                 return presignedPutObjectRequest.url().toString();
@@ -65,7 +64,6 @@ public class S3Accessor {
                 return "";
         }
     }
-
 
     public List<String> getFileNames(@NonNull String folder, @NonNull String bucketName) {
         String continuationToken = null;

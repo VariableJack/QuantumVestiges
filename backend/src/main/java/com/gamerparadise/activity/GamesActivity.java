@@ -20,10 +20,12 @@ import com.gamerparadise.activity.converter.GamesActivityConverter;
 import com.gamerparadise.activity.dto.GameActivityDTO;
 import com.gamerparadise.activity.dto.UploadGameInputActivityDTO;
 import com.gamerparadise.activity.dto.GetFileNamesForGameOutputActivityDTO;
+import com.gamerparadise.activity.dto.GetInstallerOutputActivityDTO;
 import com.gamerparadise.component.GamesComponent;
 import com.gamerparadise.component.dto.GameComponentDTO;
 import com.gamerparadise.component.dto.UploadGameInputComponentDTO;
 import com.gamerparadise.component.dto.GetFileNamesForGameOutputComponentDTO;
+import com.gamerparadise.component.dto.GetInstallerOutputComponentDTO;
 
 @RestController
 public class GamesActivity {
@@ -71,6 +73,15 @@ public class GamesActivity {
         final GetFileNamesForGameOutputComponentDTO output = gamesComponent.getFileNamesForGame(gameId);
         final GetFileNamesForGameOutputActivityDTO convertedOutput = gamesActivityConverter.convertGetFileNamesForGameOutputActivityDTOToComponentDTO(output);
         logger.info("Finished processing getFileNamesForGame on {}", convertedOutput);
+        return convertedOutput;
+    }
+
+    @GetMapping(name="GetInstaller",path="/installer")
+    public GetInstallerOutputActivityDTO getInstaller() {
+        logger.info("Beginning to process getInstaller");
+        final GetInstallerOutputComponentDTO output = gamesComponent.getInstaller();
+        final GetInstallerOutputActivityDTO convertedOutput = gamesActivityConverter.convertGetInstallerOutputComponentDTOToActivityDTO(output);
+        logger.info("Finished processing getInstaller on {}", convertedOutput);
         return convertedOutput;
     }
 }

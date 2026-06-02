@@ -6,9 +6,11 @@ import lombok.NonNull;
 import com.gamerparadise.activity.dto.GameActivityDTO;
 import com.gamerparadise.activity.dto.UploadGameInputActivityDTO;
 import com.gamerparadise.activity.dto.GetFileNamesForGameOutputActivityDTO;
+import com.gamerparadise.activity.dto.GetInstallerOutputActivityDTO;
 import com.gamerparadise.component.dto.GameComponentDTO;
 import com.gamerparadise.component.dto.UploadGameInputComponentDTO;
 import com.gamerparadise.component.dto.GetFileNamesForGameOutputComponentDTO;
+import com.gamerparadise.component.dto.GetInstallerOutputComponentDTO;
 
 @Component
 public class GamesActivityConverter {
@@ -38,6 +40,12 @@ public class GamesActivityConverter {
     public GetFileNamesForGameOutputActivityDTO convertGetFileNamesForGameOutputActivityDTOToComponentDTO(@NonNull GetFileNamesForGameOutputComponentDTO input) {
         return GetFileNamesForGameOutputActivityDTO.builder()
             .fileNames(input.getFileNames())
+            .build();
+    }
+
+    public GetInstallerOutputActivityDTO convertGetInstallerOutputComponentDTOToActivityDTO(@NonNull GetInstallerOutputComponentDTO input) {
+        return GetInstallerOutputActivityDTO.builder()
+            .installer(input.getInstaller())
             .build();
     }
 }

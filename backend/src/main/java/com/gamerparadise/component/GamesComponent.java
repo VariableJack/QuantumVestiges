@@ -17,6 +17,7 @@ import com.gamerparadise.component.dto.GameComponentDTO;
 import com.gamerparadise.component.dto.FranchiseComponentDTO;
 import com.gamerparadise.component.dto.UploadGameInputComponentDTO;
 import com.gamerparadise.component.dto.GetFileNamesForGameOutputComponentDTO;
+import com.gamerparadise.component.dto.GetInstallerOutputComponentDTO;
 
 @Component
 public class GamesComponent {
@@ -52,8 +53,8 @@ public class GamesComponent {
             logger.warn("Franchise {} does not exist", franchiseId);
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Franchise at id %s does not exist", franchiseId));
         }
-        final List<String> uploadedFileNames = gamesBuilder.getFileNamesForGame(gameName);
-        if (!uploadedFileNames.equals(input.getFileNames())) {
+        final GetFileNamesForGameOutputComponentDTO uploadedFileNames = gamesBuilder.getFileNamesForGame(gameName);
+        if (!uploadedFileNames.getFileNames().equals(input.getFileNames())) {
             /* This case should never happen.
              * A valid flow would have "insertGame" called after the set of files has been uploaded,
              * but this is just in case the "insertGame" API is attempted to be called w/o uploading the files
@@ -67,7 +68,10 @@ public class GamesComponent {
 
     public GetFileNamesForGameOutputComponentDTO getFileNamesForGame(@NonNull Integer gameId) {
         final GameComponentDTO game = gamesBuilder.getGameByFilters(GameComponentDTO.builder().gameId(gameId).build());
-        final List<String> uploadedFileNames = gamesBuilder.getFileNamesForGame(game.getGameName());
-        return GetFileNamesForGameOutputComponentDTO.builder().fileNames(uploadedFileNames).build();
+        return gamesBuilder.getFileNamesForGame(game.getGameName());
+    }
+
+    public GetInstallerOutputComponentDTO getInstaller() {
+        return gamesBuilder.getInstaller();
     }
 }

@@ -12,8 +12,12 @@ import com.gamerparadise.accessor.S3Accessor;
 import com.gamerparadise.builder.converter.GamesBuilderConverter;
 import com.gamerparadise.component.dto.GameComponentDTO;
 import com.gamerparadise.component.dto.UploadGameInputComponentDTO;
+import com.gamerparadise.component.dto.GetFileNamesForGameOutputComponentDTO;
+import com.gamerparadise.component.dto.GetInstallerOutputComponentDTO;
 import com.gamerparadise.dao.GamesDAO;
 import com.gamerparadise.dao.dto.GameDAODTO;
+
+import static com.gamerparadise.shared.Constants.INSTALLER_FILE_NAME;
 
 @Component
 public class GamesBuilder {
@@ -49,7 +53,11 @@ public class GamesBuilder {
         return output;
     }
 
-    public List<String> getFileNamesForGame(@NonNull String gameName) {
-        return s3Accessor.getFileNames(gameName, gameS3BucketName);
+    public GetFileNamesForGameOutputComponentDTO getFileNamesForGame(@NonNull String gameName) {
+        return GetFileNamesForGameOutputComponentDTO.builder().fileNames(s3Accessor.getFileNames(gameName, gameS3BucketName)).build();
+    }
+
+    public GetInstallerOutputComponentDTO getInstaller() {
+        return GetInstallerOutputComponentDTO.builder().installer(s3Accessor.generatePresignedUrl(INSTALLER_FILE_NAME, "GET", gameS3BucketName)).build();
     }
 }
