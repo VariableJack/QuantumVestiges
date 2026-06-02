@@ -104,7 +104,7 @@ const DiscussionComponent = props => {
                             disabled: false,
                         }),
                     )}
-                    selectedPage={selectedPage}
+                    selectedItem={selectedPage}
                     onChange={item => {
                         setSelectedPage(item)
                         setPagination({

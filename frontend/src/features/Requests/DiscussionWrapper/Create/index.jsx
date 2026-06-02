@@ -90,8 +90,13 @@ const DiscussionCreate = props => {
                 <div>
                     <button
                         onClick={() => {
-                            if (!errors.title && !errors.description) {
-                                submitAction(input)
+                            const newErrors = {
+                                title: inputs.title.length === 0,
+                                description: inputs.description.length === 0,
+                            }
+                            setErrors(newErrors)
+                            if (inputs.title && inputs.description) {
+                                submitAction(inputs)
                             }
                         }}
                     >
@@ -168,7 +173,7 @@ const DiscussionWrapperCreate = props => {
         } else {
             dispatch(removeInfoMessage('discussionThreadInfo'))
         }
-        if (infoMessage) dispatch(setInfoMessage(infoMessage))
+        if (infoMessage) dispatch(addInfoMessage(infoMessage))
     }, [supportRequestIsSubmitting, bugReportIsSubmitting, discussionThreadIsSubmitting])
 
     useEffect(() => {
@@ -206,6 +211,7 @@ const DiscussionWrapperCreate = props => {
                 description: `Your support request has been successfully created and can be accessed ${(<a href={createdLink}>'here'</a>)}`,
                 id: 'supportRequestSuccess',
             }
+            dispatch(setSupportRequests([response, ...supportRequests]))
         }
         if (bugReportIsSuccess) {
             const createdLink = `/bug-report/requestId=${supportRequests[0].threadId}`
@@ -214,6 +220,7 @@ const DiscussionWrapperCreate = props => {
                 description: `Your bug report has been successfully created and can be accessed ${(<a href={createdLink}>'here'</a>)}`,
                 id: 'bugReportSuccess',
             }
+            dispatch(setBugReports([response, ...bugReports]))
         }
         if (discussionThreadIsSuccess) {
             const createdLink = `/discussion/requestId=${discussionThreads[0].threadId}`
@@ -222,6 +229,7 @@ const DiscussionWrapperCreate = props => {
                 description: `Your discussion has been successfully created and can be accessed ${(<a href={createdLink}>'here'</a>)}`,
                 id: 'discussionThreadSuccess',
             }
+            dispatch(setDiscussionThreads([response, ...discussionThreads]))
         }
         if (successMessage) dispatch(addSuccessMessage(successMessage))
     }, [supportRequestIsSuccess, bugReportIsSuccess, discussionThreadIsSuccess])
@@ -258,27 +266,14 @@ const DiscussionWrapperCreate = props => {
         } catch (e) {}
         return response
     }
-    const handleSubmitAndSave = input => {
-        const response = submitAction(input)
-        switch (type) {
-            case FORUM_PAGES.SUPPORT:
-                dispatch(setSupportRequests([response, ...supportRequests]))
-                break
-            case FORUM_PAGES.BUG_REPORT:
-                dispatch(setBugReports([response, ...bugReports]))
-                break
-            case FORUM_PAGES.DISCUSSION:
-                dispatch(setDiscussionThreads([response, ...discussionThreads]))
-                break
-        }
-    }
+
     return (
         <DiscussionCreate
             baseTitle={FORUM_PAGE_ITEMS[type].baseTitle(group)}
             submitPageTitle={FORUM_PAGE_ITEMS[type].submitPageTitle()}
             submitButtonText={FORUM_PAGE_ITEMS[type].submitButtonText()}
             recentText={FORUM_PAGE_ITEMS[type].recentText()}
-            submitAction={handleSubmitAndSave}
+            submitAction={submitAction}
             sidebarItems={sidebarItems}
         />
     )

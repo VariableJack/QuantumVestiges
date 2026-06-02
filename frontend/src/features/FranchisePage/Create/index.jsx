@@ -14,6 +14,7 @@ import { CONNECTION_ERROR_MESSAGE } from '../../../shared/constants'
 import '../../../styles/App.css'
 
 const FranchisePageCreate = () => {
+    const dispatch = useDispatch()
     const { username, group } = useSelector(state => state.userReducer)
     const [
         triggerCreateFranchise,
@@ -49,7 +50,7 @@ const FranchisePageCreate = () => {
                 }),
             )
         }
-    }, [getFranchisePresignedUrlsIsError])
+    }, [createFranchiseIsError])
 
     useEffect(() => {
         if (createFranchiseIsSuccess) {
@@ -61,7 +62,7 @@ const FranchisePageCreate = () => {
                 }),
             )
         }
-    }, [createGameIsSuccess])
+    }, [createFranchiseIsSuccess])
     return (
         (group !== 'admin' && (
             <div>
@@ -69,7 +70,13 @@ const FranchisePageCreate = () => {
             </div>
         )) || (
             <>
-                <h1>Create Franchise (*Required*)</h1>
+                <h1>Create Franchise</h1>
+                <div className="textarea-header">
+                    Please enter a title{' '}
+                    <b>
+                        <i>(*Required*)</i>
+                    </b>
+                </div>
                 <textarea
                     className={`title ${(error && 'error-text') || 'no-error-text'}`}
                     value={franchiseName}

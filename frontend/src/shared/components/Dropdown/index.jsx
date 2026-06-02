@@ -2,7 +2,7 @@ import React from 'react'
 import '../../../styles/App.css'
 
 const Dropdown = props => {
-    const { items, onChange } = props
+    const { items, selectedItem, onChange } = props
     return (
         <div style={{ width: '50px' }}>
             {items.map(item => {
@@ -10,7 +10,9 @@ const Dropdown = props => {
                     <span
                         className={`${(item.disabled && 'disabled') || ''} ${(item.id === selectedItem.id && 'selected') || ''}`}
                         onClick={() => {
-                            if (!item.disabled) onChange(item)
+                            if (!item.disabled) {
+                                onChange(item)
+                            }
                         }}
                     >
                         {item.title}

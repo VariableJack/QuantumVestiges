@@ -64,25 +64,25 @@ export const requestsEndpoints = gamerParadiseApiSlice.injectEndpoints({
         }),
         // Post APIs
         submitSupportRequest: builder.mutation({
-            query: ({ title, body }) => ({
+            query: ({ title, description }) => ({
                 url: '/support-request',
-                body: { title, body },
+                body: { title, description },
                 method: 'POST',
             }),
             invalidateTags: ['supportRequests'],
         }),
         submitBugReport: builder.mutation({
-            query: ({ title, body }) => ({
+            query: ({ title, description }) => ({
                 url: '/bug-report',
-                body: { title, body },
+                body: { title, description },
                 method: 'POST',
             }),
             invalidateTags: ['bugReports'],
         }),
         submitDiscussionThread: builder.mutation({
-            query: ({ title, body }) => ({
+            query: ({ title, description }) => ({
                 url: '/discussion-threads',
-                body: { title, body },
+                body: { title, description },
                 method: 'POST',
             }),
             invalidateTags: ['discussionThreads'],

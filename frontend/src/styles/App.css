@@ -49,14 +49,6 @@
   border-radius: 50px;
 }
 
-.selected {
-  background-color: #E0E0E0
-}
-
-.disabled {
-  background-color: #999999
-}
-
 /* All margin */
 .m-xl { margin: 50px; }
 .m-l  { margin: 40px; }

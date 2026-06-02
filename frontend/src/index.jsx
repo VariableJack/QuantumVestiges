@@ -221,7 +221,6 @@ const App = () => {
                         }
                     }),
                 },
-                ...((group === 'admin' && ADMINISTRATOR_ITEMS) || []),
             ])
             dispatch(setFranchises(response))
         } catch (e) {}
@@ -240,7 +239,11 @@ const App = () => {
             )
         }
     }, [isError])
-
+    useEffect(() => {
+        if (group === 'admin') {
+            setFinalItemsToDisplay([...finalItemsToDisplay, ...ADMINISTRATOR_ITEMS])
+        }
+    }, [group])
     return (
         <div>
             <React.StrictMode>
