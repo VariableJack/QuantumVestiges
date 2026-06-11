@@ -7,6 +7,7 @@ import { IamStack } from './iam'
 import { S3Stack } from './s3'
 import { VpcStack } from './vpc'
 import { CloudWatchStack } from './cloudWatchStack'
+import { FoundationalStack } from './foundationalStack'
 
 const deploymentEnvironments: {
     stage: string
@@ -26,12 +27,20 @@ deploymentEnvironments.forEach(deploymentEnvironment => {
     const s3Stack = new S3Stack(app, `S3Stack-${stage}`, deploymentEnvironment)
     const iamStack = new IamStack(app, `IamStack-${stage}`, deploymentEnvironment)
     const vpcStack = new VpcStack(app, `VpcStack-${stage}`, deploymentEnvironment)
+    const foundationalStack = new FoundationalStack(
+        app,
+        `FoundationalStack-${stage}`,
+        deploymentEnvironment,
+    )
 
     const { ecsExecutionRole } = iamStack
+    const { backendLogGroup, frontendLogGroup } = foundationalStack
     const { vpc } = vpcStack
     const ecsStack = new EcsStack(app, `EcsStack-${stage}`, {
         ...deploymentEnvironment,
         ecsExecutionRole,
+        backendLogGroup,
+        frontendLogGroup,
         vpc,
     })
     ecsStack.addDependency(iamStack)

@@ -8,9 +8,7 @@
 
         <!-- File Appender -->
         <File name="FileLogger" fileName="logs/app.log" append="true">
-            <PatternLayout>
-                <Pattern>%d{yyyy-MM-dd HH:mm:ss} [%t] %-5level %logger{36} - %msg%n</Pattern>
-            </PatternLayout>
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} [%t] %-5level %logger{36} - %msg%n"/>
         </File>
     </Appenders>
 
@@ -23,12 +21,6 @@
 
         <!-- Root logger -->
         <Root level="info">
-            <AppenderRef ref="Console"/>
-        </Root>
-        <Root level="warn">
-            <AppenderRef ref="Console"/>
-        </Root>
-        <Root level="error">
             <AppenderRef ref="Console"/>
         </Root>
     </Loggers>

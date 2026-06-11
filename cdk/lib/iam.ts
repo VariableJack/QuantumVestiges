@@ -26,6 +26,8 @@ export class IamStack extends Stack {
                             's3:PutObject',
                             'logs:CreateLogStream',
                             'logs:PutLogEvents',
+                            'servicediscovery:GetNamespace',
+                            'ecr:GetAuthorizationToken',
                         ],
                         resources: ['*'],
                     }),

@@ -1,9 +1,10 @@
+import { get } from 'lodash'
 import config from '../../configurations/config.json'
 import { FORUM_PAGES } from '../constants'
 
 const getConfig = key => {
-    const env = process.env.NODE_ENV
-    return config[env][key]
+    const env = process.env.REACT_APP_STAGE
+    return get(config, 'env.key', 'No value')
 }
 
 const getUrl = urlType => {

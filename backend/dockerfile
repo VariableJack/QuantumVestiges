@@ -1,4 +1,8 @@
+ARG stage
+
 FROM maven:3.8.7 AS build
+
+ARG stage
 
 WORKDIR /app
 COPY pom.xml .
@@ -9,10 +13,13 @@ RUN mvn clean package -DskipTests
 FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
 
+ARG stage
+ENV stage=${stage}
+
 RUN mkdir /config
-COPY --from=build /app/src/main/resources/application-dev.properties /config/application.properties
+COPY --from=build /app/src/main/resources/application-${stage}.properties /config/application.properties
 COPY --from=build /app/target/*.jar app.jar
 
-EXPOSE 8080
+EXPOSE 80
 
 CMD ["java", "-jar", "app.jar", "--spring.config.location=file:/config/application.properties"]

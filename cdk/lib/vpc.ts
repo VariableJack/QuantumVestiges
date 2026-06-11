@@ -11,7 +11,7 @@ export class VpcStack extends Stack {
         const { stage } = props
         this.vpc = new Vpc(this, `vpc-${stage}`, {
             ipAddresses: IpAddresses.cidr('10.0.0.0/16'),
-            maxAzs: 1,
+            maxAzs: 2,
             subnetConfiguration: [
                 {
                     name: 'GamerParadiseVPCPublicSubnet',

@@ -4,7 +4,7 @@ import { fetchBaseQuery } from '@reduxjs/toolkit/query'
 export default createApi({
     reducerPath: 'gamerParadiseReducer',
     baseQuery: fetchBaseQuery({
-        baseUrl: 'http://localhost:8080',
+        baseUrl: '/api',
         credentials: 'include',
         prepareHeaders: headers => {
             const token = localStorage.getItem('accessToken')

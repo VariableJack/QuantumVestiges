@@ -33,7 +33,6 @@ done
 
 rm -rf .env
 
-cp -r src bin/
 cdk synth
 
 read -p "Press any key to continue" x
