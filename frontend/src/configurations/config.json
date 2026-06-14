@@ -1,12 +1,34 @@
 {
-    "development": {
-        "region": "us-west-1",
-        "userPoolId": "us-west-1_U8YRON4G4",
-        "clientId": "abh6e3f1j5o0kq5fcssq0k7ka"
+    "local": {
+        "region": "us-west-2",
+        "userPoolId": "us-west-2_A9tCE18yj",
+        "clientId": "4scl48210u7hq1mha2j1vbcqe9",
+        "hostname": "https://localhost:3000",
+        "backend": "https://devo.quantumvestiges.com",
+        "cognitoDomain": "devo-quantumvestiges.auth.us-west-2.amazoncognito.com"
+    },
+    "devo": {
+        "region": "us-west-2",
+        "userPoolId": "us-west-2_A9tCE18yj",
+        "clientId": "4scl48210u7hq1mha2j1vbcqe9",
+        "hostname": "https://devo.quantumvestiges.com",
+        "backend": "https://devo.quantumvestiges.com",
+        "cognitoDomain": "devo-quantumvestiges.auth.us-west-2.amazoncognito.com"
+    },
+    "pre-prod": {
+        "region": "us-west-2",
+        "userPoolId": "",
+        "clientId": "",
+        "hostname": "https://pre-prod.quantumvestiges.com",
+        "backend": "https://pre-prod.quantumvestiges.com",
+        "cognitoDomain": "pre-prod-quantumvestiges.auth.us-west-2.amazoncognito.com"
     },
     "prod": {
-        "region": "us-west-1",
+        "region": "us-west-2",
         "userPoolId": "",
-        "clientId": ""
+        "clientId": "",
+        "hostname": "https://quantumvestiges.com",
+        "backend": "https://quantumvestiges.com",
+        "cognitoDomain": "quantumvestiges.auth.us-west-2.amazoncognito.com"
     }
 }

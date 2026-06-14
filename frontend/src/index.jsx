@@ -26,8 +26,6 @@ import { Flashbar, Menubar } from './shared/components'
 
 // Constants
 import {
-    hostname,
-    port,
     menubarItems,
     ADMINISTRATOR_ITEMS,
     FORUM_PAGES,
@@ -59,11 +57,19 @@ import DownloadInstaller from './features/DownloadInstaller'
 import { AuthProvider } from 'react-oidc-context'
 
 const cognitoAuthConfig = {
-    authority: `https://cognito-idp.us-west-1.amazonaws.com/${getConfig('userPoolId')}`,
+    authority: `https://cognito-idp.${getConfig('region')}.amazonaws.com/${getConfig('userPoolId')}`,
     client_id: getConfig('clientId'),
     response_type: 'code',
-    redirect_uri: `${hostname}:${port}`,
-    scope: 'email openid phone aws.cognito.signin.user.admin',
+    redirect_uri: getConfig('hostname'),
+    scope: 'aws.cognito.signin.user.admin email openid profile',
+    metadata: {
+        issuer: `https://cognito-idp.${getConfig('region')}.amazonaws.com/${getConfig('userPoolId')}`,
+        authorization_endpoint: `https://${getConfig('cognitoDomain')}/oauth2/authorize`,
+        token_endpoint: `https://${getConfig('cognitoDomain')}/oauth2/token`,
+        userinfo_endpoint: `https://${getConfig('cognitoDomain')}/oauth2/userInfo`,
+        end_session_endpoint: `https://${getConfig('cognitoDomain')}/logout`,
+        jwks_uri: `https://cognito-idp.${getConfig('region')}.amazonaws.com/${getConfig('userPoolId')}/.well-known/jwks.json`,
+    },
 }
 
 import { useAuth } from 'react-oidc-context'
@@ -128,7 +134,11 @@ const RouterWrapper = props => {
             const accessToken = auth.user.access_token
             const groups = auth.user.profile['cognito:groups']
             dispatch(setUsername(username))
-            if (groups.length) dispatch(setGroup(groups[0]))
+            if (groups && groups.length) {
+                dispatch(setGroup(groups[0]))
+            } else {
+                dispatch(setGroup('user'))
+            }
             localStorage.setItem('accessToken', accessToken)
 
             getDetails(auth)
@@ -256,7 +266,7 @@ const App = () => {
                             dispatch={dispatch}
                         />
                         <Menubar
-                            url={`${hostname}:${port}`}
+                            url={getConfig('hostname')}
                             items={finalItemsToDisplay}
                             actionButtons={[
                                 {

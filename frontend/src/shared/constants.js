@@ -1,6 +1,3 @@
-const hostname = 'https://localhost'
-const port = '3000'
-
 const menubarItems = [
     {
         title: 'Website info',
@@ -99,8 +96,6 @@ const DEFAULT_FRANCHISE = { franchiseId: -1, franchiseName: '-' }
 const CONNECTION_ERROR_MESSAGE = 'Connection error'
 
 export {
-    hostname,
-    port,
     menubarItems,
     ADMINISTRATOR_ITEMS,
     FORUM_PAGES,

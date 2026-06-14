@@ -1,6 +1,8 @@
 import { App, Stack, StackProps, RemovalPolicy } from 'aws-cdk-lib'
 import { LogGroup, RetentionDays } from 'aws-cdk-lib/aws-logs'
 
+import { SERVICE_PREFIX } from './shared/constants'
+
 interface FoundationalProps extends StackProps {
     stage: string
 }
@@ -11,12 +13,12 @@ export class FoundationalStack extends Stack {
         super(scope, id, props)
         const { stage } = props
         this.backendLogGroup = new LogGroup(this, `BackendLogGroup-${stage}`, {
-            logGroupName: `/ecs/GamerParadise-backend-${stage}`,
+            logGroupName: `/ecs/${SERVICE_PREFIX}-backend-${stage}`,
             removalPolicy: RemovalPolicy.DESTROY,
             retention: RetentionDays.THREE_MONTHS,
         })
         this.frontendLogGroup = new LogGroup(this, `FrontendLogGroup-${stage}`, {
-            logGroupName: `/ecs/GamerParadise-frontend-${stage}`,
+            logGroupName: `/ecs/${SERVICE_PREFIX}-frontend-${stage}`,
             removalPolicy: RemovalPolicy.DESTROY,
             retention: RetentionDays.THREE_MONTHS,
         })

@@ -1,6 +1,6 @@
 import { App, Stack, StackProps, RemovalPolicy } from 'aws-cdk-lib'
 import { Bucket, BucketEncryption, BlockPublicAccess, HttpMethods } from 'aws-cdk-lib/aws-s3'
-
+import { DOMAIN_NAME } from './shared/constants'
 interface S3Props extends StackProps {
     stage: string
 }
@@ -16,7 +16,7 @@ export class S3Stack extends Stack {
                 {
                     allowedMethods: [HttpMethods.GET, HttpMethods.PUT],
                     allowedOrigins: [
-                        'www.gamerparadise.com',
+                        `${stage}.${DOMAIN_NAME}`,
                         'https://localhost:8080',
                         'https://localhost:3000',
                         'http://localhost:8080',

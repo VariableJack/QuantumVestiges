@@ -95,7 +95,7 @@ const DownloadInstaller = () => {
                     const url = window.URL.createObjectURL(blob)
                     const link = document.createElement('a')
                     link.href = url
-                    link.download = 'GamerParadise-Installer.exe'
+                    link.download = 'QuantumVestiges-Installer.exe'
                     link.click()
                     setDownloadState({
                         isLoading: false,

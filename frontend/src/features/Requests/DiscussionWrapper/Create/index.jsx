@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { get } from 'lodash'
 
-import { getUrl } from '../../../../shared/utils'
+import { getConfig, getUrl } from '../../../../shared/utils'
 import {
     useSubmitSupportRequestMutation,
     useSubmitBugReportMutation,
@@ -17,8 +17,6 @@ import {
 } from '../../../../redux/api/globalSlice'
 import { Sidebar } from '../../../../shared/components'
 import {
-    hostname,
-    port,
     FORUM_PAGES,
     FORUM_PAGE_ITEMS,
     CONNECTION_ERROR_MESSAGE,
@@ -104,7 +102,7 @@ const DiscussionCreate = props => {
                     </button>
                 </div>
             </div>
-            <Sidebar url={`${hostname}:${port}`} title={recentText} items={sidebarItems} />
+            <Sidebar url={getConfig('hostname')} title={recentText} items={sidebarItems} />
         </div>
     )
 }

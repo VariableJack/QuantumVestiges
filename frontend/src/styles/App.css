@@ -23,19 +23,15 @@
 .f-l {
   float: left;
 }
-
 .f-r {
   float: right;
 }
-
 .d-f {
   display: flex;
 }
-
 .d-i {
   display: inline;
 }
-
 .d-ib {
   display: inline block;
 }
@@ -47,6 +43,10 @@
 .secondary button {
   color: #CCCCCC;
   border-radius: 50px;
+}
+
+.checkbox-border {
+  border: 5px solid;
 }
 
 /* All margin */

@@ -15,8 +15,7 @@ import {
     MysqlEngineVersion,
     StorageType,
 } from 'aws-cdk-lib/aws-rds'
-
-import { TABLES } from './shared/constants'
+import { SERVICE_PREFIX } from './shared/constants'
 
 interface RdsProps extends StackProps {
     stage: string
@@ -33,7 +32,7 @@ export class RdsStack extends Stack {
             instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.NANO),
             subnetSelection: { subnetType: SubnetType.PUBLIC },
         })
-        const rdsInstance = new DatabaseInstance(this, `GamerParadiseRDSInstance-${stage}`, {
+        const rdsInstance = new DatabaseInstance(this, `${SERVICE_PREFIX}RDSInstance-${stage}`, {
             engine: DatabaseInstanceEngine.mysql({
                 version: MysqlEngineVersion.VER_8_4_8,
             }),
@@ -43,19 +42,8 @@ export class RdsStack extends Stack {
             vpc,
             vpcSubnets: { subnetType: SubnetType.PRIVATE_ISOLATED },
             credentials: Credentials.fromGeneratedSecret('admin'),
-            instanceIdentifier: `gamerparadise-${stage}`,
+            instanceIdentifier: `${SERVICE_PREFIX.toLowerCase()}-${stage}`,
         })
-        //const tables: TableV2[] = []
-        //TABLES.forEach(tableDef => {
-        //    const table = new TableV2(this, `${tableDef.tableName}-${stage}`, {
-        //        ...tableDef,
-        //        tableName: `${tableDef.tableName}-${stage}`,
-        //        deletionProtection: true,
-        //        contributorInsights: true,
-        //        pointInTimeRecovery: true,
-        //    })
-        //    tables.push(table)
-        //})
         rdsInstance.connections.allowDefaultPortFrom(ecsConnections)
         rdsInstance.connections.allowDefaultPortFrom(bastion)
     }

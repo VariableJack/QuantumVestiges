@@ -3,8 +3,8 @@ import config from '../../configurations/config.json'
 import { FORUM_PAGES } from '../constants'
 
 const getConfig = key => {
-    const env = process.env.REACT_APP_STAGE
-    return get(config, 'env.key', 'No value')
+    const env = get(process.env, '.REACT_APP_STAGE', 'local')
+    return get(config, [env, key], 'No value')
 }
 
 const getUrl = urlType => {

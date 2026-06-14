@@ -1,5 +1,6 @@
 import { App, Stack, StackProps } from 'aws-cdk-lib'
 import { Vpc, IpAddresses, SubnetType } from 'aws-cdk-lib/aws-ec2'
+import { SERVICE_PREFIX } from './shared/constants'
 
 interface VpcProps extends StackProps {
     stage: string
@@ -14,15 +15,15 @@ export class VpcStack extends Stack {
             maxAzs: 2,
             subnetConfiguration: [
                 {
-                    name: 'GamerParadiseVPCPublicSubnet',
+                    name: `${SERVICE_PREFIX}VPCPublicSubnet`,
                     subnetType: SubnetType.PUBLIC,
                 },
                 {
-                    name: 'GamerParadiseVPCPrivateSubnet',
+                    name: `${SERVICE_PREFIX}VPCPrivateSubnet`,
                     subnetType: SubnetType.PRIVATE_WITH_EGRESS,
                 },
                 {
-                    name: 'GamerParadiseVPCIsolatedSubnet',
+                    name: `${SERVICE_PREFIX}VPCIsolatedSubnet`,
                     subnetType: SubnetType.PRIVATE_ISOLATED,
                 },
             ],
