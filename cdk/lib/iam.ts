@@ -29,6 +29,7 @@ export class IamStack extends Stack {
                             'servicediscovery:GetNamespace',
                             'ecr:GetAuthorizationToken',
                             'secretsmanager:GetSecretValue',
+                            'cognito-idp:AdminListGroupsForUser',
                         ],
                         resources: ['*'],
                     }),
