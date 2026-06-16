@@ -96,9 +96,9 @@ const GamePageCreate = () => {
             )
             try {
                 const game = triggerCreateGame({
-                    gameName,
+                    productName: gameName,
                     franchiseId: selectedFranchise.franchiseId,
-                    fileNames: getFileNamesFromFiles(files),
+                    price: 5,
                 })
             } catch (e) {}
         }

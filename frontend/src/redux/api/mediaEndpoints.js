@@ -95,9 +95,10 @@ export const mediaEndpoints = gamerParadiseApiSlice.injectEndpoints({
                 url: '/games',
                 method: 'POST',
                 body: {
-                    gameName,
+                    productName,
+                    type: 'GAME',
                     franchiseId,
-                    fileNames,
+                    price,
                 },
             }),
             invalidateTags: ['games'],

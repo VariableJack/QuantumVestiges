@@ -5,9 +5,9 @@ const Modal = props => {
     const { header, children, footer } = props
 
     return (
-        <div>
+        <div className="modal">
             {header}
-            {children}
+            <div className="modal-content">{children}</div>
             {footer}
         </div>
     )

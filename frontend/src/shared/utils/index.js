@@ -3,7 +3,7 @@ import config from '../../configurations/config.json'
 import { FORUM_PAGES } from '../constants'
 
 const getConfig = key => {
-    const env = get(process.env, '.REACT_APP_STAGE', 'local')
+    const env = get(process.env, 'REACT_APP_STAGE', 'local')
     return get(config, [env, key], 'No value')
 }
 

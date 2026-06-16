@@ -46,9 +46,20 @@
 }
 
 .checkbox-border {
-  border: 5px solid;
+  border: 2px solid;
 }
-
+.checkbox-border-error {
+  border: 2px solid #FF0000;
+}
+button.account {
+  font-size: 14px;
+  font-weight: bold;
+  width: 130px;
+  height: 35px;
+  border-radius: 25px;
+  margin-right: 5px;
+  background-color: #F2EB27;
+}
 /* All margin */
 .m-xl { margin: 50px; }
 .m-l  { margin: 40px; }

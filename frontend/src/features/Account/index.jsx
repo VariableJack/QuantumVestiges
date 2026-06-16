@@ -22,11 +22,11 @@ const Account = props => {
     const [updateCart, { isLoading: isUpdating }] = useUpdateCartMutation()
     const [checkoutCart, { isLoading: isCheckingOut }] = useCheckoutCartMutation()
     const [areCheckboxesChecked, setAreCheckboxesChecked] = useState({
-        eula: false,
+        privacyPolicy: false,
         tos: false,
     })
     const [showModal, setShowModal] = useState({
-        eula: false,
+        privacyPolicy: false,
         tos: false,
     })
     const [submitAgreement, setSubmitAgreement] = useState(false)
@@ -37,7 +37,7 @@ const Account = props => {
     })
 
     useEffect(() => {
-        if (submitAgreement && areCheckboxesChecked.eula && areCheckboxesChecked.tos)
+        if (submitAgreement && areCheckboxesChecked.privacyPolicy && areCheckboxesChecked.tos)
             auth.signinRedirect()
     }, [submitAgreement])
     const handleTabChange = item => {
@@ -47,7 +47,7 @@ const Account = props => {
             `https://${getConfig('cognitoDomain')}/${item.id}`,
         )
         setAreCheckboxesChecked({
-            eula: false,
+            privacyPolicy: false,
             tos: false,
         })
         setSubmitAgreement(false)
@@ -110,95 +110,104 @@ const Account = props => {
             </div>
         )
     }
-    const generateSpecificModal = type => {
-        return (
-            <div>
-                <button onClick={() => setShowModal({ ...showModal, [type]: true })}>
-                    View {type.toUpperCase()}
-                </button>
-                {(get(showModal, type) && (
-                    <Modal
-                        header={<h1>End User License Agreement</h1>}
-                        footer={
-                            <button
-                                className="primary f-r"
-                                onClick={() => setShowModal({ ...showModal, [type]: false })}
-                            >
-                                Close
-                            </button>
-                        }
-                    >
-                        {type.toUpperCase()}
-                    </Modal>
-                )) || <></>}
-
-                <br />
-            </div>
-        )
-    }
     const generateSpecificCheckbox = type => {
-        return (
-            <span>
-                <span
-                    className={`${(!get(areCheckboxesChecked, type) && submitAgreement && 'error-text') || ''} checkbox-border p-n s-n`}
-                >
-                    <input
-                        type="checkbox"
-                        checked={get(areCheckboxesChecked, type)}
-                        onChange={() => {
-                            //No-op, onChange only provided to stop console warnings for type="checkbox"
-                        }}
-                        onClick={() => {
-                            setAreCheckboxesChecked({
-                                ...areCheckboxesChecked,
-                                [type]: !get(areCheckboxesChecked, type),
-                            })
-                            setSubmitAgreement(false)
-                        }}
-                    />
-                </span>
-                <b className="required">*</b>
-                <label>Agree to {type.toUpperCase()}</label>
-            </span>
-        )
+        return
     }
     return (
         <div>
             {(pageState.id === 'login' && (
-                <button onClick={() => auth.signinRedirect()}>Sign in</button>
+                <div>
+                    <h2>Welcome! Please sign in to view your account</h2>
+                    <button className="account" onClick={() => auth.signinRedirect()}>
+                        Sign in
+                    </button>
+                </div>
             )) || (
                 <div>
                     <h2>
-                        By creating an account with us, you agree to our EULA and our TOS. Please
-                        review and confirm
+                        By creating an account with us, you agree to our Privacy Policy and our TOS.
+                        Please review and confirm
                     </h2>
-                    {generateSpecificModal('eula')}
-                    {generateSpecificModal('tos')}
-                    <input
-                        type="checkbox"
-                        checked={areCheckboxesChecked.eula && areCheckboxesChecked.tos}
-                        onChange={() => {
-                            //No-op, onChange only provided to stop console warnings for type="checkbox"
-                        }}
+                    <span
                         onClick={() => {
                             const setValue = !(
-                                areCheckboxesChecked.eula && areCheckboxesChecked.tos
+                                areCheckboxesChecked.privacyPolicy && areCheckboxesChecked.tos
                             )
                             setAreCheckboxesChecked({
-                                eula: setValue,
+                                privacyPolicy: setValue,
                                 tos: setValue,
                             })
                             setSubmitAgreement(false)
                         }}
-                    />
-                    <label>Agree to all</label>
-                    {generateSpecificCheckbox('eula')}
-                    {generateSpecificCheckbox('tos')}
+                    >
+                        <div className="checkbox-border p-n mh-xs mv-n d-i">
+                            <input
+                                className="p-n m-n"
+                                type="checkbox"
+                                checked={
+                                    areCheckboxesChecked.privacyPolicy && areCheckboxesChecked.tos
+                                }
+                                onChange={() => {
+                                    //No-op, onChange only provided to stop console warnings for type="checkbox"
+                                }}
+                            />
+                        </div>
+                        <label>Agree to all</label>
+                    </span>
+                    <span
+                        onClick={() => {
+                            setAreCheckboxesChecked({
+                                ...areCheckboxesChecked,
+                                privacyPolicy: !get(areCheckboxesChecked, 'privacyPolicy'),
+                            })
+                            setSubmitAgreement(false)
+                        }}
+                    >
+                        <div
+                            className={`checkbox-border${(!get(areCheckboxesChecked, 'privacyPolicy') && submitAgreement && '-error') || ''} p-n mh-xs mv-n d-i`}
+                        >
+                            <input
+                                className="p-n m-n"
+                                type="checkbox"
+                                checked={get(areCheckboxesChecked, 'privacyPolicy')}
+                                onChange={() => {
+                                    //No-op, onChange only provided to stop console warnings for type="checkbox"
+                                }}
+                            />
+                        </div>
+                        <b className="required">*</b>
+                        <label>Agree to Privacy Policy</label>
+                    </span>
+                    <span
+                        onClick={() => {
+                            setAreCheckboxesChecked({
+                                ...areCheckboxesChecked,
+                                tos: !get(areCheckboxesChecked, 'tos'),
+                            })
+                            setSubmitAgreement(false)
+                        }}
+                    >
+                        <div
+                            className={`checkbox-border${(!get(areCheckboxesChecked, 'tos') && submitAgreement && '-error') || ''} p-n mh-xs mv-n d-i`}
+                        >
+                            <input
+                                className="p-n m-n"
+                                type="checkbox"
+                                checked={get(areCheckboxesChecked, 'tos')}
+                                onChange={() => {
+                                    //No-op, onChange only provided to stop console warnings for type="checkbox"
+                                }}
+                            />
+                        </div>
+                        <b className="required">*</b>
+                        <label>Agree to ToS</label>
+                    </span>
                     <br />
                     <button
                         onClick={() => {
                             setSubmitAgreement(true)
                         }}
+                        className="account"
                     >
                         Go to account creation
                     </button>
