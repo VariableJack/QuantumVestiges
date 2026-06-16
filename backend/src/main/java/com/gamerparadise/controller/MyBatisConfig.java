@@ -7,6 +7,10 @@ import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import javax.sql.DataSource;
 import java.beans.PropertyVetoException;
 import java.util.Map;
@@ -23,28 +27,31 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class MyBatisConfig {
     @Autowired
     private SecretsManagerClient secretsManagerClient;
+    @Value("${rds.secret}")
+    private String rdsSecretId;
+    private static final Logger logger = LogManager.getLogger(MyBatisConfig.class);
+
+    @Bean
+    public TransactionTemplate transactionTemplate(DataSource dataSource) {
+        return new TransactionTemplate(new DataSourceTransactionManager(dataSource));
+    }
 
     @Bean
     public DataSource dataSource() {
         final ComboPooledDataSource ds = new ComboPooledDataSource();
         final ObjectMapper mapper = new ObjectMapper();
-        //final GetSecretValueRequest request = GetSecretValueRequest.builder()
-        //    .secretId("GamerParadiseRDSDevo")
-        //    .build();
-        //
-        //final GetSecretValueResponse response = secretsManagerClient.getSecretValue(request);
-        //final String secretData = response.secretString();
-        //final Map<String, Object> resultMap = mapper.readValue(secretData, Map.class);
-        final Map<String, String> resultMap = Map.of(
-            "databaseUrl", "jdbc:mysql://gamerparadise-devo.crm0i0a40wfp.us-west-1.rds.amazonaws.com:3306/gamerparadise",
-            "username", "admin",
-            "password", "password"
-        );
+        final GetSecretValueRequest request = GetSecretValueRequest.builder()
+            .secretId(rdsSecretId)
+            .build();
+        final GetSecretValueResponse response = secretsManagerClient.getSecretValue(request);
+        final String secretData = response.secretString();
         try {
-            ds.setJdbcUrl(resultMap.get("databaseUrl"));
-            ds.setUser(resultMap.get("username"));
-            ds.setPassword(resultMap.get("password"));
+            final Map<String, Object> resultMap = mapper.readValue(secretData, Map.class);
+            ds.setJdbcUrl(String.format("jdbc:mysql://%s/quantumvestiges", resultMap.get("host").toString()));
+            ds.setUser(resultMap.get("username").toString());
+            ds.setPassword(resultMap.get("password").toString());
             ds.setDriverClass("com.mysql.cj.jdbc.Driver");
+        } catch (JsonProcessingException e) {
         } catch (PropertyVetoException e) {
         }
         return ds;
@@ -54,8 +61,7 @@ public class MyBatisConfig {
     public SqlSessionFactory sqlSessionFactory(DataSource dataSource) throws Exception {
         SqlSessionFactoryBean factoryBean = new SqlSessionFactoryBean();
         factoryBean.setDataSource(dataSource);
-        // factoryBean.setMapperLocations(new PathMatchingResourcePatternResolver()
-        //        .getResources("classpath:mappers/*.xml"));
+        factoryBean.setTypeAliasesPackage("com.gamerparadise.dao.dto");
         return factoryBean.getObject();
     }
 

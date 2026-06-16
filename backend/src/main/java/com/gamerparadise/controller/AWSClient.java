@@ -21,7 +21,7 @@ class AWSClient {
     @Bean
     public SecretsManagerClient secretsManagerClient() {
         return SecretsManagerClient.builder()
-            .region(Region.US_WEST_1)
+            .region(Region.US_WEST_2)
             .build();
     }
 
@@ -29,14 +29,14 @@ class AWSClient {
     public S3Client S3Client() {
         return S3Client
             .builder()
-            .region(Region.US_WEST_1)
+            .region(Region.US_WEST_2)
             .build();
     }
 
     @Bean
     public S3Presigner s3Presigner() {
         return S3Presigner.builder()
-        .region(Region.US_WEST_1)
-        .build();
+            .region(Region.US_WEST_2)
+            .build();
     }
 }
