@@ -28,6 +28,7 @@ export class IamStack extends Stack {
                             'logs:PutLogEvents',
                             'servicediscovery:GetNamespace',
                             'ecr:GetAuthorizationToken',
+                            'secretsmanager:GetSecretValue',
                         ],
                         resources: ['*'],
                     }),

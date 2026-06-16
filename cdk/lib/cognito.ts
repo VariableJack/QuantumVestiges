@@ -36,7 +36,7 @@ export class CognitoStack extends Stack {
                 requireSymbols: true,
             },
             accountRecovery: AccountRecovery.EMAIL_ONLY,
-			removalPolicy: RemovalPolicy.DESTROY,
+            removalPolicy: RemovalPolicy.DESTROY,
         })
         userPool.addDomain(`${SERVICE_PREFIX}.toLowerCase()-cognitodomain-${stage}`, {
             cognitoDomain: {

@@ -66,6 +66,7 @@ export class EcsStack extends Stack {
                 cpu: 256,
                 memoryLimitMiB: 512,
                 executionRole: ecsExecutionRole,
+                taskRole: ecsExecutionRole,
             },
         )
         const backendTaskContainer = backendTaskDefinition.addContainer(

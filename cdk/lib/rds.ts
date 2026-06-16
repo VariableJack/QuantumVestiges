@@ -41,7 +41,9 @@ export class RdsStack extends Stack {
             storageType: StorageType.GP3,
             vpc,
             vpcSubnets: { subnetType: SubnetType.PRIVATE_ISOLATED },
-            credentials: Credentials.fromGeneratedSecret('admin'),
+            credentials: Credentials.fromGeneratedSecret('admin', {
+                secretName: `${SERVICE_PREFIX}-${stage}`,
+            }),
             instanceIdentifier: `${SERVICE_PREFIX.toLowerCase()}-${stage}`,
         })
         rdsInstance.connections.allowDefaultPortFrom(ecsConnections)
