@@ -39,15 +39,15 @@ public class ProductsActivity {
     private CognitoAccessor cognitoAccessor;
     private static final Logger logger = LogManager.getLogger(ProductsActivity.class);
 
-    @GetMapping(name="GetGames",path="/games")
-    public List<ProductActivityDTO> getGames(@RequestParam(name="franchiseId",required=true) Integer franchiseId) {
-        logger.info("Beginning to process getGames for franchise ID {}", franchiseId.toString());
+    @GetMapping(name="GetProducts",path="/products")
+    public List<ProductActivityDTO> getProducts(@RequestParam(name="franchiseId",required=true) Integer franchiseId) {
+        logger.info("Beginning to process getProducts for franchise ID {}", franchiseId.toString());
         final List<ProductComponentDTO> getProductsComponentOutput = productsComponent.getProducts(franchiseId);
         final List<ProductActivityDTO> convertedOutput = getProductsComponentOutput
             .stream()
             .map((game) -> productsActivityConverter.convertProductComponentDTOToActivityDTO(game))
             .toList();
-        logger.info("Finished fetching {} games(s)", convertedOutput.size());
+        logger.info("Finished fetching {} products(s)", convertedOutput.size());
         return convertedOutput;
 
     }
@@ -61,7 +61,7 @@ public class ProductsActivity {
         return convertedOutput;
     }
 
-    @PostMapping(name="UploadProduct",path="/games")
+    @PostMapping(name="UploadProduct",path="/products")
     public ProductActivityDTO uploadProduct(@NonNull @RequestHeader(HttpHeaders.AUTHORIZATION) String accessToken, @NonNull @RequestBody ProductActivityDTO input) {
         final Map<String, String> auth = cognitoAccessor.getUserDetailsFromAccessToken(accessToken);
         final String username = auth.get("username");
@@ -78,7 +78,7 @@ public class ProductsActivity {
         return convertedOutput;
     }
 
-    @GetMapping(name="GetFileNamesForProduct",path="/game/files")
+    @GetMapping(name="GetFileNamesForProduct",path="/products/files")
     public GetFileNamesForGameOutputActivityDTO getFileNamesForProduct(@RequestParam(name="productId",required=true) Integer productId) {
         logger.info("Beginning to process getFileNamesForProduct for productId {}", productId);
         final GetFileNamesForGameOutputComponentDTO output = productsComponent.getFileNamesForProduct(productId);

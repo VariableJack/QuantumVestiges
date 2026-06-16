@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { get } from 'lodash'
 
 import {
-    useLazyGetGamePresignedUrlsQuery,
+    useLazyGetProductPresignedUrlsQuery,
     useCreateGameMutation,
 } from '../../../redux/api/mediaEndpoints'
 import {
@@ -29,34 +29,35 @@ const generateSelectItems = items => {
     }))
 }
 
-const GamePageCreate = () => {
+const ProductPageCreate = () => {
     const dispatch = useDispatch()
     const { username, group } = useSelector(state => state.userReducer)
     const { franchises } = useSelector(state => state.globalReducer)
     const [
-        triggerGetGamePresignedUrls,
+        triggerGetProductPresignedUrls,
         {
-            isLoading: getGamePresignedUrlsIsLoading,
-            isError: getGamePresignedUrlsIsError,
-            error: getGamePresignedUrlsError,
-            isSuccess: getGamePresignedUrlsIsSuccess,
+            isLoading: getProductPresignedUrlsIsLoading,
+            isError: getProductPresignedUrlsIsError,
+            error: getProductPresignedUrlsError,
+            isSuccess: getProductPresignedUrlsIsSuccess,
         },
-    ] = useLazyGetGamePresignedUrlsQuery()
+    ] = useLazyGetProductPresignedUrlsQuery()
     const [
-        triggerCreateGame,
+        triggerCreateProduct,
         {
-            isLoading: createGameIsLoading,
-            isError: createGameIsError,
-            error: createGameError,
-            isSuccess: createGameIsSuccess,
+            isLoading: createProductIsLoading,
+            isError: createProductIsError,
+            error: createProductError,
+            isSuccess: createProductIsSuccess,
         },
     ] = useCreateGameMutation()
     const [files, setFiles] = useState([])
-    const [gameName, setGameName] = useState('')
+    const [productName, setProductName] = useState('')
     const [selectedFranchise, setSelectedFranchise] = useState(DEFAULT_FRANCHISE)
     const [isUploadingFiles, setIsUploadingFiles] = useState(false)
+    const [isUploadingFilesSuccess, setIsUploadingFilesSuccess] = useState(false)
     useEffect(() => {
-        if (getGamePresignedUrlsIsLoading) {
+        if (getProductPresignedUrlsIsLoading) {
             dispatch(
                 addInfoMessage({
                     title: 'Generating presigned URLs',
@@ -67,15 +68,15 @@ const GamePageCreate = () => {
         } else {
             dispatch(removeInfoMessage('presignedURLFetch'))
         }
-    }, [getGamePresignedUrlsIsLoading])
+    }, [getProductPresignedUrlsIsLoading])
 
     useEffect(() => {
-        if (getGamePresignedUrlsIsError) {
+        if (getProductPresignedUrlsIsError) {
             dispatch(
                 addErrorMessage({
                     title: 'Failed to generate presigned URLs',
                     description: get(
-                        getGamePresignedUrlsError,
+                        getProductPresignedUrlsError,
                         'data.error',
                         CONNECTION_ERROR_MESSAGE,
                     ),
@@ -83,10 +84,10 @@ const GamePageCreate = () => {
                 }),
             )
         }
-    }, [getGamePresignedUrlsIsError])
+    }, [getProductPresignedUrlsIsError])
 
     useEffect(() => {
-        if (getGamePresignedUrlsIsSuccess) {
+        if (getProductPresignedUrlsIsSuccess) {
             dispatch(
                 addSuccessMessage({
                     title: 'Successfully generated presigned URLs',
@@ -94,53 +95,46 @@ const GamePageCreate = () => {
                     id: 'presignedURLFetchSuccess',
                 }),
             )
-            try {
-                const game = triggerCreateGame({
-                    productName: gameName,
-                    franchiseId: selectedFranchise.franchiseId,
-                    price: 5,
-                })
-            } catch (e) {}
         }
-    }, [getGamePresignedUrlsIsSuccess])
+    }, [getProductPresignedUrlsIsSuccess])
 
     useEffect(() => {
-        if (createGameIsLoading) {
+        if (createProductIsLoading) {
             dispatch(
                 addInfoMessage({
-                    title: 'Creating game',
-                    description: 'Please wait as the system finalizes the game',
-                    id: 'createGameInfo',
+                    title: 'Creating product',
+                    description: 'Please wait as the system finalizes the product',
+                    id: 'createProductInfo',
                 }),
             )
         } else {
-            dispatch(removeInfoMessage('createGameInfo'))
+            dispatch(removeInfoMessage('createProductInfo'))
         }
-    }, [createGameIsLoading])
+    }, [createProductIsLoading])
 
     useEffect(() => {
-        if (createGameIsError) {
+        if (createProductIsError) {
             dispatch(
                 addErrorMessage({
-                    title: 'Failed to finalize game',
-                    description: get(createGameError, 'data.error', CONNECTION_ERROR_MESSAGE),
-                    id: 'createGameError',
+                    title: 'Failed to finalize product',
+                    description: get(createProductError, 'data.error', CONNECTION_ERROR_MESSAGE),
+                    id: 'createProductError',
                 }),
             )
         }
-    }, [getGamePresignedUrlsIsError])
+    }, [createProductIsError])
 
     useEffect(() => {
-        if (createGameIsSuccess) {
+        if (createProductIsSuccess) {
             dispatch(
                 addSuccessMessage({
-                    title: 'Successfully finalized game',
-                    description: 'Game has been successfully created',
-                    id: 'createGameSuccess',
+                    title: 'Successfully finalized product',
+                    description: 'Product has been successfully created',
+                    id: 'createProductSuccess',
                 }),
             )
         }
-    }, [createGameIsSuccess])
+    }, [createProductIsSuccess])
 
     useEffect(() => {
         if (isUploadingFiles) {
@@ -156,12 +150,32 @@ const GamePageCreate = () => {
         }
     }, [isUploadingFiles])
 
+	useEffect(() => {
+		if (isUploadingFilesSuccess) {
+            dispatch(
+                addSuccessMessage({
+                    title: 'Files successfully uploaded',
+                    description: `All ${files.length} successfully uploaded`,
+                    id: 'presignedURLUploadSuccess',
+                }),
+            )
+            try {
+                const product = triggerCreateProduct({
+                    productName,
+                    franchiseId: selectedFranchise.franchiseId,
+                    price: 5,
+                })
+            } catch (e) {}
+	}
+	}, [isUploadingFilesSuccess])
+
     const handleUpload = async () => {
         setIsUploadingFiles(true)
+		setIsUploadingFilesSuccess(false)
         const filesSucceeded = []
         const filesFailed = []
         try {
-            const { presignedUrls } = await triggerGetGamePresignedUrls({
+            const { presignedUrls } = await triggerGetProductPresignedUrls({
                 fileNames: getFileNamesFromFiles(files),
                 method: 'PUT',
             }).unwrap()
@@ -186,7 +200,9 @@ const GamePageCreate = () => {
                     id: 'uploadFilesError',
                 }),
             )
-        }
+        } else {
+			setIsUploadingFilesSuccess(true)
+		}
         setIsUploadingFiles(false)
     }
 
@@ -206,7 +222,7 @@ const GamePageCreate = () => {
                     onChange={event => {
                         setFiles(Array.from(event.target.files))
                         const firstFile = event.target.files[0]
-                        setGameName(
+                        setProductName(
                             firstFile.webkitRelativePath.substring(
                                 0,
                                 firstFile.webkitRelativePath.indexOf('/'),
@@ -214,21 +230,26 @@ const GamePageCreate = () => {
                         )
                     }}
                 />
-                <h3>Select franchise to create game under</h3>
+                <h3>Select franchise to create product under</h3>
                 <Select
                     items={generateSelectItems([
-                        ...franchises.map(franchise => ({ ...franchise, disabled: false })),
                         { ...DEFAULT_FRANCHISE, disabled: true },
+                        ...franchises.map(franchise => ({ ...franchise, disabled: false })),
                     ])}
                     selectedItem={{
                         id: selectedFranchise.franchiseId,
                         label: selectedFranchise.franchiseName,
                     }}
-                    onChange={item => setSelectedFranchise(item)}
+                    onChange={item => {
+                        setSelectedFranchise({
+                            franchiseId: item.id,
+                            franchiseName: item.label,
+                        })
+                    }}
                 />
-                {(files.length && <div className="pv-xs">Detected game name {gameName}</div>) || (
-                    <></>
-                )}
+                {(files.length && (
+                    <div className="pv-xs">Detected product name {productName}</div>
+                )) || <></>}
                 <div>
                     <button
                         onClick={() => {
@@ -243,4 +264,4 @@ const GamePageCreate = () => {
     )
 }
 
-export default GamePageCreate
+export default ProductPageCreate

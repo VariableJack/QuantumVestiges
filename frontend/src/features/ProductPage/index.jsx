@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { get } from 'lodash'
 
 import { useLocation } from 'react-router-dom'
 
-import { useUpdateCartMutation, useLazyGetGameByIdQuery } from '../../redux/api/mediaEndpoints'
+import { useUpdateCartMutation, useLazyGetProductByIdQuery } from '../../redux/api/mediaEndpoints'
 import {
     addSuccessMessage,
     addInfoMessage,
@@ -16,14 +16,14 @@ import { CONNECTION_ERROR_MESSAGE } from '../../shared/constants'
 import '../../styles/App.css'
 
 const Game = () => {
+	const dispatch = useDispatch()
     const { cart, purchasedGames } = useSelector(state => state.userReducer)
     const { search } = useLocation()
     const params = new URLSearchParams(search)
-    const franchiseId = params.get('franchiseId')
-    const gameId = params.get('gameId')
+    const productId = params.get('productId')
 
-    const [triggerGetGame, { isLoading, isError: getGameIsError, error: getGameError }] =
-        useLazyGetGameByIdQuery()
+    const [triggerGetProduct, { isLoading, isError: getProductIsError, error: getProductError }] =
+        useLazyGetProductByIdQuery()
     const [
         updateCart,
         {
@@ -33,44 +33,44 @@ const Game = () => {
             isSuccess: updateCartIsSuccess,
         },
     ] = useUpdateCartMutation()
-    const [game, setGame] = useState({
-        gameId: -1,
-        gameName: '',
+    const [product, setProduct] = useState({
+        productId: -1,
+        productName: '',
         franchiseId: -1,
         franchiseName: '',
     })
-    const getGame = async () => {
-        const response = await triggerGetGame({ game: gameId }).unwrap()
-        setGame(response)
+    const getProduct = async () => {
+        const response = await triggerGetProduct({ productId }).unwrap()
+        setProduct(response)
     }
-    const isPresentInCart = cart.find(cartItem => cartItem.gameId === game.gameId)
+    const isPresentInCart = cart.find(cartItem => cartItem.productId === product.productId)
     useEffect(() => {
-        if (!franchiseId || !gameId) {
+        if (!productId) {
             window.location.href('/not-found')
         } else {
-            getGame()
+            getProduct()
         }
     }, [])
 
     useEffect(() => {
-        if (getGameIsError) {
+        if (getProductIsError) {
             dispatch(
                 addErrorMessage({
-                    title: 'Failed to fetch game',
-                    description: get(getGameError, 'data.error', CONNECTION_ERROR_MESSAGE),
-                    id: `gameFetchError-${game.gameId}`,
+                    title: 'Failed to fetch product',
+                    description: get(getProductError, 'data.error', CONNECTION_ERROR_MESSAGE),
+                    id: `productFetchError-${product.productId}`,
                 }),
             )
         }
-    }, [getGameIsError])
+    }, [getProductIsError])
 
     useEffect(() => {
-        const messageId = `gameFetchInfo-${game.gameId}`
+        const messageId = `productFetchInfo-${product.productId}`
         if (isLoading) {
             dispatch(
                 addInfoMessage({
-                    title: 'Fetching game',
-                    description: 'Please wait while the system retrieves this game',
+                    title: 'Fetching product',
+                    description: 'Please wait while the system retrieves this product',
                     id: messageId,
                 }),
             )
@@ -80,7 +80,7 @@ const Game = () => {
     }, [isLoading])
 
     useEffect(() => {
-        const messageId = `updateCartInfo-${(isPresentInCart && 'remove') || 'add'}-${game.gameId}`
+        const messageId = `updateCartInfo-${(isPresentInCart && 'remove') || 'add'}-${product.productId}`
         if (isUpdating) {
             dispatch(
                 addInfoMessage({
@@ -103,7 +103,7 @@ const Game = () => {
                 addErrorMessage({
                     title: `Failed to ${(isPresentInCart && 'remove item from') || 'add item to'} your cart`,
                     description: get(updateCartError, 'data.error', CONNECTION_ERROR_MESSAGE),
-                    id: `updateCartError-${(isPresentInCart && 'remove') || 'add'}-${game.gameId}`,
+                    id: `updateCartError-${(isPresentInCart && 'remove') || 'add'}-${product.productId}`,
                 }),
             )
         }
@@ -115,40 +115,34 @@ const Game = () => {
                 addSuccessMessage({
                     title: (isPresentInCart && 'Removed item from cart') || 'Added item to cart',
                     description: `The system has successfully ${(isPresentInCart && 'removed the item from') || 'added the item to'} your cart`,
-                    id: `updateCartSuccess-${(isPresentInCart && 'remove') || 'add'}-${game.gameId}`,
+                    id: `updateCartSuccess-${(isPresentInCart && 'remove') || 'add'}-${product.productId}`,
                 }),
             )
         }
     }, [updateCartIsSuccess])
 
     const onDownloadClick = () => {
-        const appProtocol = 'myapp://open' // Your custom protocol
+        const appProtocol = 'myapp://open'
         const fallbackUrl = '/download'
 
         let timeoutId
-
-        // Try to open the app
         window.location.href = appProtocol
-
-        // If the app isn't installed, redirect to download after delay
         timeoutId = setTimeout(() => {
             window.location.href = fallbackUrl
-        }, 1500) // 1.5s delay is usually enough
-
-        // Cleanup timeout if user leaves page
+        }, 1500)
         return () => clearTimeout(timeoutId)
     }
 
     return (
         <div>
-            {game.franchiseName} - {game.gameName}
+            {product.franchiseName} - {product.productName}
             {(isPresentInCart && (
                 <div>
                     <br />
                     {(!isUpdating && (
                         <button
                             onClick={() => {
-                                updateCart({ action: 'remove', gameId: game.gameId })
+                                updateCart({ action: 'remove', productId: product.productId })
                             }}
                         >
                             Remove from Cart
@@ -156,13 +150,13 @@ const Game = () => {
                     )) || <b>Removing from cart...</b>}
                 </div>
             )) ||
-                (!purchasedGames.find(purchasedGame => purchasedGame.gameId === game.gameId) && (
+                (!purchasedGames.find(purchasedGame => purchasedGame.productId === product.productId) && (
                     <div>
                         <br />
                         {(!isUpdating && (
                             <button
                                 onClick={() => {
-                                    updateCart({ action: 'add', gameId: game.gameId })
+                                    updateCart({ action: 'add', productId: product.productId })
                                 }}
                             >
                                 Add to Cart
@@ -172,7 +166,7 @@ const Game = () => {
                 )) || (
                     <div>
                         <br />
-                        <button onClick={onDownloadClick}>Download the game</button>
+                        <button onClick={onDownloadClick}>Download the product</button>
                     </div>
                 )}
         </div>

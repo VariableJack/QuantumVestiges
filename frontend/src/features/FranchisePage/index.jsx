@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useLocation } from 'react-router-dom'
 import { get } from 'lodash'
 
-import { useLazyGetGamesQuery } from '../../redux/api/mediaEndpoints'
+import { useLazyGetProductsQuery } from '../../redux/api/mediaEndpoints'
 import { addInfoMessage, removeInfoMessage, addErrorMessage } from '../../redux/api/globalSlice'
 import { CONNECTION_ERROR_MESSAGE } from '../../shared/constants'
 
@@ -23,27 +23,27 @@ const Franchise = () => {
         }
     }, [])
 
-    const [triggerGetGames, { isLoading, isError, error }] = useLazyGetGamesQuery()
+    const [triggerGetProducts, { isLoading, isError, error }] = useLazyGetProductsQuery()
 
-    const [games, setGames] = useState([])
-    const getGames = async () => {
+    const [products, setProducts] = useState([])
+    const getProducts = async () => {
         try {
-            const response = await triggerGetGames({ franchise: franchiseId }).unwrap()
-            setGames([...response])
+            const response = await triggerGetProducts({ franchiseId }).unwrap()
+            setProducts([...response])
         } catch (e) {}
     }
     useEffect(() => {
         if (franchises.length) {
             setFranchise(franchises.find(franchise => franchise.franchiseId === franchiseId))
-            getGames()
+            getProducts()
         }
     }, [franchises])
     useEffect(() => {
-        const messageId = `gamesFetchError-${franchiseId}`
+        const messageId = `productsFetchError-${franchiseId}`
         if (isError) {
             dispatch(
                 addErrorMessage({
-                    title: `Failed to fetch games for ${franchise.franchiseName}`,
+                    title: `Failed to fetch products for ${franchise.franchiseName}`,
                     description: get(error, 'data.error', CONNECTION_ERROR_MESSAGE),
                     id: messageId,
                 }),
@@ -52,12 +52,12 @@ const Franchise = () => {
     }, [isError])
 
     useEffect(() => {
-        const messageId = `gamesFetchInfo-${franchiseId}`
+        const messageId = `productsFetchInfo-${franchiseId}`
         if (isLoading) {
             dispatch(
                 addInfoMessage({
-                    title: 'Fetching games...',
-                    description: `Please wait while the system retrieves the games for ${franchise.franchiseName}`,
+                    title: 'Fetching products...',
+                    description: `Please wait while the system retrieves the products for ${franchise.franchiseName}`,
                     id: messageId,
                 }),
             )
@@ -70,17 +70,17 @@ const Franchise = () => {
             {franchise.franchiseName}
             <br />
             {(isLoading && <h2>Loading...</h2>) || <></>}
-            {games && (
+            {products && (
                 <div>
-                    <b>Games:</b>
-                    {games.map(game => (
+                    <b>Products:</b>
+                    {products.map(product => (
                         <div>
-                            Game {game.game_id}&nbsp;
-                            <a href={`/game?&gameId=${game.gameId}`}>{game.gameName}</a>
+                            Product {product.productId}&nbsp;
+                            <a href={`/product?&productId=${product.productId}`}>{product.productName}</a>
                         </div>
                     ))}
                 </div>
-            )}
+            ) || <></>}
         </div>
     )
 }

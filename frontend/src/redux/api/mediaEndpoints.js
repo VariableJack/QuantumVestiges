@@ -1,7 +1,7 @@
 import gamerParadiseApiSlice from './gamerParadiseApiSlice'
 
 export const mediaEndpoints = gamerParadiseApiSlice.injectEndpoints({
-    tagTypes: ['account-details', 'cart', 'games', 'franchises'],
+    tagTypes: ['account-details', 'cart', 'products', 'franchises'],
     endpoints: builder => ({
         getFranchises: builder.query({
             query: () => ({
@@ -11,21 +11,21 @@ export const mediaEndpoints = gamerParadiseApiSlice.injectEndpoints({
             providesTags: ['franchises'],
         }),
         getFranchiseById: builder.query({
-            query: ({ franchise }) => ({
-                url: `/franchise?franchiseId=${franchise}`,
+            query: ({ franchiseId }) => ({
+                url: `/franchise?franchiseId=${franchiseId}`,
                 method: 'GET',
             }),
         }),
-        getGames: builder.query({
-            query: ({ franchise }) => ({
-                url: `/games?franchiseId=${franchise}`,
+        getProducts: builder.query({
+            query: ({ franchiseId }) => ({
+                url: `/products?franchiseId=${franchiseId}`,
                 method: 'GET',
             }),
-            providesTags: ['games'],
+            providesTags: ['products'],
         }),
-        getGameById: builder.query({
-            query: ({ game }) => ({
-                url: `/game?gameId=${game}}`,
+        getProductById: builder.query({
+            query: ({ productId }) => ({
+                url: `/product?productId=${productId}`,
                 method: 'GET',
             }),
         }),
@@ -73,7 +73,7 @@ export const mediaEndpoints = gamerParadiseApiSlice.injectEndpoints({
             }),
             invalidateTags: ['franchises'],
         }),
-        getGamePresignedUrls: builder.query({
+        getProductPresignedUrls: builder.query({
             query: ({ fileNames, method }) => ({
                 url: '/presigned-urls',
                 method: 'POST',
@@ -91,17 +91,17 @@ export const mediaEndpoints = gamerParadiseApiSlice.injectEndpoints({
             }),
         }),
         createGame: builder.mutation({
-            query: ({ gameName, franchiseId, fileNames }) => ({
-                url: '/games',
+            query: ({ productName, franchiseId, price }) => ({
+                url: '/products',
                 method: 'POST',
                 body: {
                     productName,
-                    type: 'GAME',
+                    productType: 'GAME',
                     franchiseId,
                     price,
                 },
             }),
-            invalidateTags: ['games'],
+            invalidateTags: ['products'],
         }),
     }),
 })
@@ -111,11 +111,11 @@ export const {
     useLazyGetFranchisesQuery,
     useGetFranchiseByIdQuery,
     useLazyGetFranchiseByIdQuery,
-    useGetGamesQuery,
-    useLazyGetGamesQuery,
-    useGetGameByIdQuery,
-    useLazyGetGameByIdQuery,
-    useLazyGetGamePresignedUrlsQuery,
+    useGetProductsQuery,
+    useLazyGetProductsQuery,
+    useGetProductByIdQuery,
+    useLazyGetProductByIdQuery,
+    useLazyGetProductPresignedUrlsQuery,
     useLazyGetInstallerQuery,
 
     useLazyGetPurchasedItemsQuery,

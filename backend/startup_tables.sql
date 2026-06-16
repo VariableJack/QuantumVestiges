@@ -67,7 +67,7 @@ create table franchises (
 create table products (
   product_id SERIAL primary key,
   product_name VARCHAR(64) Not null unique,
-  parent_product_id BIGINT UNSIGNED Not null references product_id ON DELETE RESTRICT,
+  parent_product_id BIGINT UNSIGNED default null references product_id ON DELETE RESTRICT,
   product_type VARCHAR(16) Not null,
   franchise_id INT Not null references franchises.franchise_id ON DELETE RESTRICT,
   franchise_name VARCHAR(32) Not null references franchises.franchise_name ON DELETE RESTRICT,

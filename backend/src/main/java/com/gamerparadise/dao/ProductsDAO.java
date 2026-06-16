@@ -50,7 +50,7 @@ public class ProductsDAO {
         logger.info("Inserting product {}", product);
         try {
             mapper.insertProduct(product);
-			return mapper.getProductByFilters(product);
+            return mapper.getProductByFilters(product);
         } catch (Exception e) {
             throw e;
         } finally {

@@ -43,18 +43,12 @@ const ADMINISTRATOR_ITEMS = [
                 path: '/franchise/create',
             },
             {
-                menubarHeader: 'Upload Game',
-                path: '/game/create',
+                menubarHeader: 'Upload Product',
+                path: '/product/create',
             },
         ],
     },
 ]
-/*
-{
-    menubarHeader: '',
-    path: '/',
-},
-*/
 
 const FORUM_PAGES = {
     SUPPORT: 'SUPPORT',

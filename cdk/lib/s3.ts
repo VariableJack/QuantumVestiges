@@ -16,7 +16,7 @@ export class S3Stack extends Stack {
                 {
                     allowedMethods: [HttpMethods.GET, HttpMethods.PUT],
                     allowedOrigins: [
-                        `${stage}.${DOMAIN_NAME}`,
+                        `https://${stage}.${DOMAIN_NAME}`,
                         'https://localhost:8080',
                         'https://localhost:3000',
                         'http://localhost:8080',

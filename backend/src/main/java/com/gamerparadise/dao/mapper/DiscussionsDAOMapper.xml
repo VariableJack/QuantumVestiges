@@ -24,16 +24,16 @@
     <!-- Support Requests -->
     <select id="getSupportRequests" parameterType="String" resultMap="ThreadResultMap">
         SELECT support_requests.*, users.username FROM support_requests
-		JOIN users ON support_requests.user_id = users.user_id
-		WHERE username = #{username}
-		ORDER BY create_time DESC;
+        JOIN users ON support_requests.user_id = users.user_id
+        WHERE username = #{username}
+        ORDER BY create_time DESC;
     </select>
 
     <select id="getDetailedSupportRequest" parameterType="Integer" resultMap="ThreadResultMap">
         SELECT support_requests.*, users.username, support_request_comments.*, users.username FROM support_requests
-		JOIN users ON support_requests.user_id = users.user_id
-		JOIN support_request_comments ON support_requests.thread_id = support_request_comments.thread_id
-		WHERE thread_id = #{threadId};
+        JOIN users ON support_requests.user_id = users.user_id
+        JOIN support_request_comments ON support_requests.thread_id = support_request_comments.thread_id
+        WHERE thread_id = #{threadId};
     </select>
 
     <insert id="createSupportRequest" parameterType="ThreadDAODTO"
@@ -60,15 +60,15 @@
     <!-- "Standard" discussion threads -->
     <select id="getDiscussions" resultMap="ThreadResultMap">
         SELECT discussions.*, users.username FROM discussions
-		JOIN users ON discussions.user_id = users.user_id
-		ORDER BY create_time DESC;
+        JOIN users ON discussions.user_id = users.user_id
+        ORDER BY create_time DESC;
     </select>
 
     <select id="getDetailedDiscussion" parameterType="Integer" resultMap="ThreadResultMap">
         SELECT discussions.*, user.username, discussion_comments.*, users.username FROM discussions
-		JOIN users ON discussions.user_id = users.user_id
-		JOIN discussion_comments ON discussions.thread_id = discussion_comments.thread_id
-		WHERE thread_id = #{threadId};
+        JOIN users ON discussions.user_id = users.user_id
+        JOIN discussion_comments ON discussions.thread_id = discussion_comments.thread_id
+        WHERE thread_id = #{threadId};
     </select>
 
     <insert id="createDiscussion" parameterType="ThreadDAODTO"
@@ -94,9 +94,9 @@
 
     <select id="getDetailedBugReport" parameterType="Integer" resultMap="ThreadResultMap">
         SELECT bug_reports.*, user.username, bug_reports.*, users.username FROM bug_reports
-		JOIN users ON bug_reports.user_id = users.user_id
-		JOIN bug_reports ON bug_reports.thread_id = bug_report_comments.thread_id
-		WHERE thread_id = #{threadId};
+        JOIN users ON bug_reports.user_id = users.user_id
+        JOIN bug_reports ON bug_reports.thread_id = bug_report_comments.thread_id
+        WHERE thread_id = #{threadId};
     </select>
 
     <insert id="createBugReport" parameterType="ThreadDAODTO"

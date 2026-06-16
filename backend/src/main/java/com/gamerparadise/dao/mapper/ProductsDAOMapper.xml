@@ -3,7 +3,7 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.gamerparadise.dao.mapper.ProductsDAOMapper">
-    <resultMap id="GameResultMap" type="ProductDAODTO">
+    <resultMap id="ProductResultMap" type="ProductDAODTO">
         <id property="productId" column="product_id"/>
         <result property="productName" column="product_name"/>
         <result property="parentProductId" column="parent_product_id"/>
@@ -13,25 +13,26 @@
         <result property="price" column="price"/>
     </resultMap>
 
-    <select id="getProducts" parameterType="ProductDAODTO" resultMap="GameResultMap">
+    <select id="getProducts" parameterType="ProductDAODTO" resultMap="ProductResultMap">
         SELECT * FROM products WHERE franchise_id = #{franchiseId};
     </select>
 
-    <select id="getProductByFilters" parameterType="ProductDAODTO" resultMap="GameResultMap">
+    <select id="getProductByFilters" parameterType="ProductDAODTO" resultMap="ProductResultMap">
         SELECT * FROM products
         <where>
-        <if test="game.gameId != null">
+        <if test="product.productId != null">
             AND product_id = #{product.productId}
         </if>
-        <if test="game.gameName != null">
+        <if test="product.productName != null">
             AND product_name = #{product.productName}
         </if>
         </where>
         ;
     </select>
 
-    <insert id="insertGame" parameterType="ProductDAODTO"
-        useGeneratedKeys="true" keyColumn="game_id" keyProperty="gameId">
-        INSERT INTO products(game_name, franchise_id, franchise_name) VALUES(#{game.gameName}, #{game.franchiseId}, #{game.franchiseName});
+    <insert id="insertProduct" parameterType="ProductDAODTO"
+        useGeneratedKeys="true" keyColumn="product_id" keyProperty="productId">
+        INSERT INTO products(product_name, parent_product_id, product_type, franchise_id, franchise_name, price)
+        VALUES(#{product.productName}, #{product.parentProductId}, #{product.productType}, #{product.franchiseId}, #{product.franchiseName}, #{product.price});
     </insert>
 </mapper>

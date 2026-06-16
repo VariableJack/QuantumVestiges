@@ -49,8 +49,8 @@ import DiscussionWrapperDetailed from './features/Requests/DiscussionWrapper/Det
 // Game Pages
 import FranchisePage from './features/FranchisePage'
 import FranchisePageCreate from './features/FranchisePage/Create'
-import GamePage from './features/GamePage'
-import GamePageCreate from './features/GamePage/Create'
+import ProductPage from './features/ProductPage'
+import ProductPageCreate from './features/ProductPage/Create'
 import DownloadInstaller from './features/DownloadInstaller'
 
 // Auth
@@ -151,10 +151,10 @@ const RouterWrapper = props => {
                 <Route path="/contact-us" element={<ContactUs />} />
                 <Route path="/account" element={<Account auth={auth} />} />
                 <Route path="/franchise" element={<FranchisePage />} />
-                <Route path="/game" element={<GamePage />} />
+                <Route path="/product" element={<ProductPage />} />
                 <Route path="/forums" element={<ForumPage />} />
                 <Route path="/franchise/create" element={<FranchisePageCreate />} />
-                <Route path="/game/create" element={<GamePageCreate />} />
+                <Route path="/product/create" element={<ProductPageCreate />} />
                 <Route path="/download" element={<DownloadInstaller />} />
 
                 <Route
