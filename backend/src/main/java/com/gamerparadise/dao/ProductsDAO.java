@@ -11,21 +11,21 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
-import com.gamerparadise.dao.mapper.GamesDAOMapper;
-import com.gamerparadise.dao.dto.GameDAODTO;
+import com.gamerparadise.dao.mapper.ProductsDAOMapper;
+import com.gamerparadise.dao.dto.ProductDAODTO;
 import com.gamerparadise.shared.Utility;
 
 @Component
-public class GamesDAO {
+public class ProductsDAO {
     @Autowired
-    private GamesDAOMapper mapper;
-    private static final Logger logger = LogManager.getLogger(GamesDAO.class);
+    private ProductsDAOMapper mapper;
+    private static final Logger logger = LogManager.getLogger(ProductsDAO.class);
 
-    public List<GameDAODTO> getGames(@NonNull Integer franchiseId) {
+    public List<ProductDAODTO> getProducts(@NonNull Integer franchiseId) {
         final Date startDate = new Date();
-        logger.info("Fetching games by franchiseId {}", franchiseId);
+        logger.info("Fetching products by franchiseId {}", franchiseId);
         try {
-            return mapper.getGames(franchiseId);
+            return mapper.getProducts(franchiseId);
         } catch (Exception e) {
             throw e;
         } finally {
@@ -33,11 +33,11 @@ public class GamesDAO {
         }
     }
 
-    public GameDAODTO getGameByFilters(@NonNull GameDAODTO gameFilters) {
+    public ProductDAODTO getProductByFilters(@NonNull ProductDAODTO productFilters) {
         final Date startDate = new Date();
-        logger.info("Fetching game by gameFilters {}", gameFilters);
+        logger.info("Fetching game by productFilters {}", productFilters);
         try {
-            return mapper.getGameByFilters(gameFilters);
+            return mapper.getProductByFilters(productFilters);
         } catch (Exception e) {
             throw e;
         } finally {
@@ -45,11 +45,11 @@ public class GamesDAO {
         }
     }
 
-    public GameDAODTO insertGame(@NonNull GameDAODTO game) {
+    public ProductDAODTO insertProduct(@NonNull ProductDAODTO product) {
         final Date startDate = new Date();
-        logger.info("Inserting game {}", game);
+        logger.info("Inserting product {}", product);
         try {
-            return mapper.insertGame(game);
+            return mapper.insertProduct(product);
         } catch (Exception e) {
             throw e;
         } finally {

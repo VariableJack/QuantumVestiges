@@ -6,7 +6,7 @@ import lombok.Data;
 @Builder
 @Data
 public class UpdateCartComponentInputDTO {
-    private Integer gameId;
-    private String gameName;
+    private Integer orderId;
+    private Integer productId;
     private String action;
 }

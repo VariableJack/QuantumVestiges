@@ -10,7 +10,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @Data
 public class PurchasedItemActivityDTO {
-    private Integer id;
-    private String name;
-    private String type;
+    private String username;
+    private long productId;
+    private String productName;
+    private String productType;
 }

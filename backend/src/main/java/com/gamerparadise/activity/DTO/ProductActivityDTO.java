@@ -1,6 +1,5 @@
 package com.gamerparadise.activity.dto;
 
-import java.util.List;
 import lombok.Builder;
 import lombok.Data;
 import lombok.AllArgsConstructor;
@@ -10,8 +9,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @Data
-public class UploadGameInputActivityDTO {
-    private String gameName;
+public class ProductActivityDTO {
+    private Integer productId;
+    private String productName;
+    private Integer parentProductId;
+    private String productType;
     private Integer franchiseId;
-    private List<String> fileNames;
+    private String franchiseName;
+    private Integer price;
 }

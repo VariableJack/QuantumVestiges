@@ -3,51 +3,76 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.gamerparadise.dao.mapper.AccountDAOMapper">
-    <resultMap id="CartResultMap" type="CartDAODTO">
+    <resultMap id="OrderResultMap" type="OrderDAODTO">
+        <id property="orderId" column="order_id"/>
         <result property="username" column="username"/>
-        <result property="gameId" column="game_id"/>
-        <result property="gameName" column="game_name"/>
-        <result property="franchiseId" column="franchise_id"/>
-        <result property="franchiseName" column="franchise_name"/>
+        <result property="orderStatus" column="order_status"/>
+        <result property="totalPurchasePrice" column="total_purchase_price"/>
+        <result property="createTime" column="create_time"/>
+        <collection property="items" ofType="OrderItemDAODTO" resultMap="OrderItemResultMap"/>
+    </resultMap>
+    <resultMap id="OrderItemResultMap" type="OrderItemDAODTO">
+        <id property="orderItemId" column="order_item_id"/>
+        <result property="orderId" column="order_id"/>
+        <result property="productId" column="product_id"/>
+        <result property="purchasePrice" column="purchase_price"/>
+        <result property="quantity" column="quantity"/>
     </resultMap>
     <resultMap id="PurchasedItemResultMap" type="PurchasedItemDAODTO">
         <result property="username" column="username"/>
-        <result property="id" column="id"/>
-        <result property="name" column="name"/>
-        <result property="type" column="type"/>
+        <result property="productId" column="product_id"/>
+        <result property="productName" column="product_name"/>
+        <result property="productType" column="product_type"/>
     </resultMap>
 
-    <select id="getCart" parameterType="String" resultMap="CartResultMap">
+    <select id="getCart" parameterType="String" resultMap="OrderResultMap">
         SELECT
-            *
-        FROM cart WHERE username = #{username};
+            orders.*,
+            order_items.*,
+            users.username
+        FROM order_items
+		JOIN orders ON order_items.order_id = orders.order_id
+		JOIN products ON products.product_id = order_items.product_id
+		JOIN users ON orders.user_id = users.user_id
+		WHERE username = #{username} AND orders.order_status = 'PENDING';
     </select>
 
-    <insert id="insertItem" parameterType="CartDAODTO">
-        INSERT INTO cart(username, game_id, game_name, franchise_id, franchise_name)
-        VALUES(#{username}, #{gameId}, #{gameName}, #{franchiseId}, #{franchiseName});
+    <insert id="createOrder" useGeneratedKeys="true" keyColumn="order_id" keyProperty="orderId">
+        INSERT INTO orders (user_id) VALUES (SELECT user_id FROM users WHERE username = #{username} LIMIT 1);
     </insert>
 
-    <delete id="removeItem" parameterType="CartDAODTO">
-        DELETE FROM cart WHERE username = #{username} AND game_id = #{gameId} AND franchise_id = #{franchiseId};
+    <select id="getOrder">
+        SELECT orders.*, users.username FROM orders
+        JOIN users ON orders.user_id = users.user_id
+        WHERE username = #{username} AND orders.order_status = 'PENDING';
+    </select>
+
+    <insert id="insertItem">
+        INSERT INTO order_items(order_id, product_id, purchase_price, quantity)
+        VALUES(#{item.orderId}, #{item.productId}, #{item.purchasePrice}, #{item.quantity});
+    </insert>
+
+    <delete id="removeItem">
+        DELETE FROM order_items WHERE order_id = (SELECT order_id FROM orders JOIN users ON orders.user_id WHERE username = #{username} AND status = 'PENDING') AND product_id = #{item.productId};
     </delete>
 
-    <delete id="clearCart" parameterType="String">
-        DELETE FROM cart WHERE username = #{username};
+    <delete id="closeCart">
+        UPDATE orders SET order_status = #{status} WHERE order_id = #{orderId};
     </delete>
 
-    <insert id="addItemsToAccount" >
-        INSERT INTO purchased_items (username, id, name, type)
+    <insert id="addItemsToAccount">
+        INSERT INTO purchased_items (user_id, id, name, type)
         VALUES
         <foreach collection="items" item="item" separator=",">
-            (#{username}, #{item.id}, #{item.name}, #{item.type})
+            (SELECT user_id FROM users WHERE username = ${username} LIMIT 1, #{item.id}, #{item.name}, #{item.type})
         </foreach>
         ;
     </insert>
 
     <select id="getPurchasedItems" parameterType="String" resultMap="PurchasedItemResultMap">
-        SELECT
-            *
-        FROM purchased_items WHERE username = #{username};
+        SELECT users.username, purchased_items.product_id, products.product_name, products.product_type FROM purchased_items
+        JOIN users ON purchased_items.user_id = users.user_id
+        JOIN products ON purchased_items.product_id = products.product_id
+        WHERE username = #{username} AND products.product_type in ('GAME', 'DLC');
     </select>
 </mapper>

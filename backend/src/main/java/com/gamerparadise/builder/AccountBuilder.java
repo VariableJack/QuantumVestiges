@@ -7,7 +7,8 @@ import lombok.NonNull;
 import java.util.List;
 
 import com.gamerparadise.builder.converter.AccountBuilderConverter;
-import com.gamerparadise.component.dto.CartComponentDTO;
+import com.gamerparadise.component.dto.OrderComponentDTO;
+import com.gamerparadise.component.dto.OrderItemComponentDTO;
 import com.gamerparadise.component.dto.PurchasedItemComponentDTO;
 import com.gamerparadise.dao.AccountDAO;
 
@@ -17,25 +18,29 @@ public class AccountBuilder {
     private AccountDAO accountDAO;
     @Autowired
     private AccountBuilderConverter accountBuilderConverter;
-    public List<CartComponentDTO> getCart(@NonNull String username) {
-        return accountDAO.getCart(username)
+    public OrderComponentDTO getCart(@NonNull String username) {
+        return accountBuilderConverter.convertOrderDAODTOToComponentDTO(accountDAO.getCart(username));
+    }
+    public OrderComponentDTO createOrder(@NonNull String username) {
+        return accountBuilderConverter.convertOrderDAODTOToComponentDTO(accountDAO.createOrder(username));
+    }
+    public OrderComponentDTO getOrder(@NonNull String username) {
+        return accountBuilderConverter.convertOrderDAODTOToComponentDTO(accountDAO.getOrder(username));
+        
+    }
+    public void insertItem(@NonNull OrderItemComponentDTO cartItem) {
+        accountDAO.insertItem(accountBuilderConverter.convertOrderItemComponentDTOToDAODTO(cartItem));
+    }
+    public void removeItem(@NonNull OrderItemComponentDTO cartItem) {
+        accountDAO.removeItem(accountBuilderConverter.convertOrderItemComponentDTOToDAODTO(cartItem));
+    }
+    public void closeOrder(long orderId, @NonNull String status) {
+        accountDAO.closeOrder(orderId, status);
+    }
+    public void addItemsToAccount(@NonNull OrderComponentDTO cart, @NonNull String username) {
+        accountDAO.addItemsToAccount(cart.getItems()
             .stream()
-            .map((cartItem) -> accountBuilderConverter.convertCartDAODTOToComponentDTO(cartItem))
-            .toList();
-    }
-    public void insertItem(@NonNull CartComponentDTO cartItem) {
-        accountDAO.insertItem(accountBuilderConverter.convertCartComponentDTOToDAODTO(cartItem));
-    }
-    public void removeItem(@NonNull CartComponentDTO cartItem) {
-        accountDAO.removeItem(accountBuilderConverter.convertCartComponentDTOToDAODTO(cartItem));
-    }
-    public void clearCart(@NonNull String username) {
-        accountDAO.clearCart(username);
-    }
-    public void addItemsToAccount(@NonNull List<CartComponentDTO> cart, @NonNull String username) {
-        accountDAO.addItemsToAccount(cart
-            .stream()
-            .map((cartItem) -> accountBuilderConverter.convertCartComponentDTOToPurchasedItemDAODTO(cartItem))
+            .map((cartItem) -> accountBuilderConverter.convertOrderComponentDTOToPurchasedItemDAODTO(cartItem))
             .toList(), username);
     }
     public List<PurchasedItemComponentDTO> getPurchasedItems(@NonNull String username) {

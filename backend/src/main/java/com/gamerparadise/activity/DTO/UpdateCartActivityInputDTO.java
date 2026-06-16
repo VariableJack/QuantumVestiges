@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @Data
 public class UpdateCartActivityInputDTO {
-    private Integer gameId;
-    private String gameName;
+    private Integer orderId;
+    private Integer productId;
     private String action;
 }

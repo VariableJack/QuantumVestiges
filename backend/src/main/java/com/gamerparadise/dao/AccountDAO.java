@@ -7,11 +7,13 @@ import org.apache.logging.log4j.Logger;
 
 import lombok.NonNull;
 import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 import com.gamerparadise.dao.mapper.AccountDAOMapper;
-import com.gamerparadise.dao.dto.CartDAODTO;
+import com.gamerparadise.dao.dto.OrderDAODTO;
+import com.gamerparadise.dao.dto.OrderItemDAODTO;
 import com.gamerparadise.dao.dto.PurchasedItemDAODTO;
 import com.gamerparadise.shared.Utility;
 
@@ -20,11 +22,14 @@ public class AccountDAO {
     @Autowired
     private AccountDAOMapper mapper;
     private static final Logger logger = LogManager.getLogger(AccountDAO.class);
-    public List<CartDAODTO> getCart(@NonNull String username) {
+    public OrderDAODTO getCart(@NonNull String username) {
         final Date startDate = new Date();
         logger.info("Fetching cart for user {}", username);
         try {
-            return mapper.getCart(username);
+            final OrderDAODTO pendingOrder = mapper.getCart(username);
+			if (Objects.isNull(pendingOrder))
+				return OrderDAODTO.builder().items(new ArrayList<OrderItemDAODTO>()).build();
+			return pendingOrder;
         } catch (Exception e) {
             throw e;
         } finally {
@@ -32,11 +37,11 @@ public class AccountDAO {
         }
     }
 
-    public void insertItem(@NonNull CartDAODTO cartItem) {
+    public OrderDAODTO createOrder(@NonNull String username) {
         final Date startDate = new Date();
-        logger.info("Inserting item to cart {}", cartItem);
+        logger.info("Creating order for user {}", username);
         try {
-            mapper.insertItem(cartItem);
+            return mapper.createOrder(username);
         } catch (Exception e) {
             throw e;
         } finally {
@@ -44,11 +49,35 @@ public class AccountDAO {
         }
     }
 
-    public void removeItem(@NonNull CartDAODTO cartItem) {
+    public OrderDAODTO getOrder(@NonNull String username) {
         final Date startDate = new Date();
-        logger.info("Removing item from cart {}", cartItem);
+        logger.info("Fetching order for user {}", username);
         try {
-            mapper.removeItem(cartItem);
+            return mapper.getOrder(username);
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            logger.info("Finished running SQL query in {} ms", Utility.getElapsedTime(startDate));
+        }
+    }
+
+    public void insertItem(@NonNull OrderItemDAODTO item) {
+        final Date startDate = new Date();
+        logger.info("Inserting item to cart {}", item);
+        try {
+            mapper.insertItem(item);
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            logger.info("Finished running SQL query in {} ms", Utility.getElapsedTime(startDate));
+        }
+    }
+
+    public void removeItem(@NonNull OrderItemDAODTO item) {
+        final Date startDate = new Date();
+        logger.info("Removing item from cart {}", item);
+        try {
+            mapper.removeItem(item);
         } catch (Exception e) {
             throw e;
         } finally {
@@ -56,11 +85,11 @@ public class AccountDAO {
         }
     }
     
-    public void clearCart(@NonNull String username) {
+    public void closeOrder(long orderId, @NonNull String status) {
         final Date startDate = new Date();
-        logger.info("Clearing cart for user {}", username);
+        logger.info("Closing cart for user {} with status {}", orderId, status);
         try {
-            mapper.clearCart(username);
+            mapper.closeOrder(orderId, status);
         } catch (Exception e) {
             throw e;
         } finally {

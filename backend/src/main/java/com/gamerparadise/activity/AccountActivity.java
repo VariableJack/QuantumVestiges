@@ -18,7 +18,7 @@ import java.util.Objects;
 import java.util.List;
 import java.util.Map;
 
-import com.gamerparadise.activity.dto.CartActivityDTO;
+import com.gamerparadise.activity.dto.OrderActivityDTO;
 import com.gamerparadise.activity.dto.UpdateCartActivityInputDTO;
 import com.gamerparadise.activity.dto.PurchasedItemActivityDTO;
 import com.gamerparadise.activity.converter.AccountActivityConverter;
@@ -36,15 +36,12 @@ public class AccountActivity {
     private static final Logger logger = LogManager.getLogger(AccountActivity.class);
 
     @GetMapping(name="GetCart",path="/cart")
-    public List<CartActivityDTO> getCart(@NonNull @RequestHeader(HttpHeaders.AUTHORIZATION) String accessToken) throws AccessDeniedException {
+    public OrderActivityDTO getCart(@NonNull @RequestHeader(HttpHeaders.AUTHORIZATION) String accessToken) throws AccessDeniedException {
         final Map<String, String> auth = cognitoAccessor.getUserDetailsFromAccessToken(accessToken);
         logger.info("Beginning to process getCart for user {}", auth.get("username"));
         final String username = auth.get("username");
-        final List<CartActivityDTO> cart = accountComponent.getCart(username)
-            .stream()
-            .map((cartItem) -> accountActivityConverter.convertCartComponentDTOToActivityDTO(cartItem))
-            .toList();
-        logger.info("Finished processing getCart, returning {} items", cart.size());
+        final OrderActivityDTO cart = accountActivityConverter.convertOrderComponentDTOToActivityDTO(accountComponent.getCart(username));
+        logger.info("Finished processing getCart, returning {} items", cart.getItems().size());
         return cart;
     }
 
@@ -55,7 +52,7 @@ public class AccountActivity {
         final Map<String, String> auth = cognitoAccessor.getUserDetailsFromAccessToken(accessToken);
         final String username = auth.get("username");
         logger.info("Beginning to process updateCart for user {}, with input {}", username, input);
-        if (Objects.isNull(input.getAction()) || Objects.isNull(input.getGameId())) {
+        if (Objects.isNull(input.getAction()) || Objects.isNull(input.getProductId())) {
             return;
         }
         accountComponent.updateCart(accountActivityConverter.convertCartInputToComponentDTO(input), username);

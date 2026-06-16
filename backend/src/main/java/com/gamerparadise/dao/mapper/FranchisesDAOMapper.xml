@@ -9,11 +9,11 @@
     </resultMap>
 
     <select id="getFranchises" resultMap="FranchiseResultMap">
-        SELECT * FROM franchise;
+        SELECT * FROM franchises;
     </select>
 
     <select id="getFranchiseByFilters" parameterType="FranchiseDAODTO" resultMap="FranchiseResultMap">
-        SELECT * FROM franchise
+        SELECT * FROM franchises
         <where>
         <if test="franchise.franchiseId != null">
             AND franchise_id = #{franchise.franchiseId}
