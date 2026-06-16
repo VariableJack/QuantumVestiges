@@ -14,5 +14,5 @@ import com.gamerparadise.dao.dto.ProductDAODTO;
 public interface ProductsDAOMapper {
     public List<ProductDAODTO> getProducts(@Param("franchiseId") @NonNull Integer franchiseId);
     public ProductDAODTO getProductByFilters(@Param("product") @NonNull ProductDAODTO productFilters);
-    public ProductDAODTO insertProduct(@Param("product") @NonNull ProductDAODTO product);
+    public void insertProduct(@Param("product") @NonNull ProductDAODTO product);
 }

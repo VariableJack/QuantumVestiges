@@ -14,5 +14,5 @@ import com.gamerparadise.dao.dto.FranchiseDAODTO;
 public interface FranchisesDAOMapper {
     public List<FranchiseDAODTO> getFranchises();
     public FranchiseDAODTO getFranchiseByFilters(@Param("franchise") @NonNull FranchiseDAODTO franchise);
-    public FranchiseDAODTO insertFranchise(@Param("franchise") FranchiseDAODTO franchise);
+    public void insertFranchise(@Param("franchise") FranchiseDAODTO franchise);
 }

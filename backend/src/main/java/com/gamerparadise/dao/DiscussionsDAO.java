@@ -49,7 +49,8 @@ public class DiscussionsDAO {
         final Date startDate = new Date();
         logger.info("Creating support request {}", thread);
         try {
-            return mapper.createSupportRequest(thread);
+            mapper.createSupportRequest(thread);
+            return thread;
         } catch (Exception e) {
             throw e;
         } finally {
@@ -61,7 +62,8 @@ public class DiscussionsDAO {
         final Date startDate = new Date();
         logger.info("Adding support request comment {}", comment);
         try {
-            return mapper.addSupportRequestComment(comment);
+            mapper.addSupportRequestComment(comment);
+            return comment;
         } catch (Exception e) {
             throw e;
         } finally {
@@ -121,7 +123,8 @@ public class DiscussionsDAO {
         final Date startDate = new Date();
         logger.info("Creating discussion {}", thread);
         try {
-            return mapper.createDiscussion(thread);
+            mapper.createDiscussion(thread);
+            return thread;
         } catch (Exception e) {
             throw e;
         } finally {
@@ -133,7 +136,8 @@ public class DiscussionsDAO {
         final Date startDate = new Date();
         logger.info("Adding discussion comment {}", comment);
         try {
-            return mapper.addDiscussionComment(comment);
+            mapper.addDiscussionComment(comment);
+            return comment;
         } catch (Exception e) {
             throw e;
         } finally {
@@ -181,7 +185,8 @@ public class DiscussionsDAO {
         final Date startDate = new Date();
         logger.info("Creating bug report {}", thread);
         try {
-            return mapper.createBugReport(thread);
+            mapper.createBugReport(thread);
+            return thread;
         } catch (Exception e) {
             throw e;
         } finally {
@@ -193,7 +198,8 @@ public class DiscussionsDAO {
         final Date startDate = new Date();
         logger.info("Adding bug report comment {}", comment);
         try {
-            return mapper.addBugReportComment(comment);
+            mapper.addBugReportComment(comment);
+            return comment;
         } catch (Exception e) {
             throw e;
         } finally {

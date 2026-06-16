@@ -7,19 +7,23 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import lombok.NonNull;
 import java.util.List;
 import java.util.Objects;
+import java.util.Map;
 
 import com.gamerparadise.activity.converter.ProductsActivityConverter;
 import com.gamerparadise.activity.dto.ProductActivityDTO;
 import com.gamerparadise.activity.dto.GetFileNamesForGameOutputActivityDTO;
 import com.gamerparadise.activity.dto.GetInstallerOutputActivityDTO;
+import com.gamerparadise.accessor.CognitoAccessor;
 import com.gamerparadise.component.ProductsComponent;
 import com.gamerparadise.component.dto.ProductComponentDTO;
 import com.gamerparadise.component.dto.GetFileNamesForGameOutputComponentDTO;
@@ -31,6 +35,8 @@ public class ProductsActivity {
     private ProductsActivityConverter productsActivityConverter;
     @Autowired
     private ProductsComponent productsComponent;
+    @Autowired
+    private CognitoAccessor cognitoAccessor;
     private static final Logger logger = LogManager.getLogger(ProductsActivity.class);
 
     @GetMapping(name="GetGames",path="/games")
@@ -56,8 +62,15 @@ public class ProductsActivity {
     }
 
     @PostMapping(name="UploadProduct",path="/games")
-    public ProductActivityDTO uploadProduct(@NonNull @RequestBody ProductActivityDTO input) {
-        logger.info("Beginning to process uploadProduct with input {}", input);
+    public ProductActivityDTO uploadProduct(@NonNull @RequestHeader(HttpHeaders.AUTHORIZATION) String accessToken, @NonNull @RequestBody ProductActivityDTO input) {
+        final Map<String, String> auth = cognitoAccessor.getUserDetailsFromAccessToken(accessToken);
+        final String username = auth.get("username");
+        final String group = auth.get("group");
+        if (!group.equals("admin")) {
+            logger.warn("User {} cannot create a new product", username);
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not permitted to create a new product");
+        }
+        logger.info("Beginning to process uploadProduct with input {} for user {} under group", input, username, group);
         final ProductComponentDTO convertedInput = productsActivityConverter.convertProductActivityDTOToComponentDTO(input);
         final ProductComponentDTO output = productsComponent.insertProduct(convertedInput);
         final ProductActivityDTO convertedOutput = productsActivityConverter.convertProductComponentDTOToActivityDTO(output);

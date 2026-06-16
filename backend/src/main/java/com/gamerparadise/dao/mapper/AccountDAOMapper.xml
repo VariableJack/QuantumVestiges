@@ -31,10 +31,10 @@
             order_items.*,
             users.username
         FROM order_items
-		JOIN orders ON order_items.order_id = orders.order_id
-		JOIN products ON products.product_id = order_items.product_id
-		JOIN users ON orders.user_id = users.user_id
-		WHERE username = #{username} AND orders.order_status = 'PENDING';
+        JOIN orders ON order_items.order_id = orders.order_id
+        JOIN products ON products.product_id = order_items.product_id
+        JOIN users ON orders.user_id = users.user_id
+        WHERE username = #{username} AND orders.order_status = 'PENDING';
     </select>
 
     <insert id="createOrder" useGeneratedKeys="true" keyColumn="order_id" keyProperty="orderId">
@@ -56,9 +56,9 @@
         DELETE FROM order_items WHERE order_id = (SELECT order_id FROM orders JOIN users ON orders.user_id WHERE username = #{username} AND status = 'PENDING') AND product_id = #{item.productId};
     </delete>
 
-    <delete id="closeCart">
+    <update id="closeCart">
         UPDATE orders SET order_status = #{status} WHERE order_id = #{orderId};
-    </delete>
+    </update>
 
     <insert id="addItemsToAccount">
         INSERT INTO purchased_items (user_id, id, name, type)

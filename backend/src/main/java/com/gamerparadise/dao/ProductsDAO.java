@@ -49,7 +49,8 @@ public class ProductsDAO {
         final Date startDate = new Date();
         logger.info("Inserting product {}", product);
         try {
-            return mapper.insertProduct(product);
+            mapper.insertProduct(product);
+			return mapper.getProductByFilters(product);
         } catch (Exception e) {
             throw e;
         } finally {

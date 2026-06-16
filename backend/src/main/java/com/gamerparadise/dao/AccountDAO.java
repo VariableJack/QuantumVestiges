@@ -27,9 +27,9 @@ public class AccountDAO {
         logger.info("Fetching cart for user {}", username);
         try {
             final OrderDAODTO pendingOrder = mapper.getCart(username);
-			if (Objects.isNull(pendingOrder))
-				return OrderDAODTO.builder().items(new ArrayList<OrderItemDAODTO>()).build();
-			return pendingOrder;
+            if (Objects.isNull(pendingOrder))
+                return OrderDAODTO.builder().items(new ArrayList<OrderItemDAODTO>()).build();
+            return pendingOrder;
         } catch (Exception e) {
             throw e;
         } finally {
@@ -41,7 +41,8 @@ public class AccountDAO {
         final Date startDate = new Date();
         logger.info("Creating order for user {}", username);
         try {
-            return mapper.createOrder(username);
+            mapper.createOrder(username);
+            return mapper.getOrder(username);
         } catch (Exception e) {
             throw e;
         } finally {

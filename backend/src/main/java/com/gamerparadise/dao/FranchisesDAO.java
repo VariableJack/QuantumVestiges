@@ -48,7 +48,8 @@ public class FranchisesDAO {
         final Date startDate = new Date();
         logger.info("Inserting franchise {}", franchise);
         try {
-            return mapper.insertFranchise(franchise);
+            mapper.insertFranchise(franchise);
+            return franchise;
         } catch (Exception e) {
             throw e;
         } finally {

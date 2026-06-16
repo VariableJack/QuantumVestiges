@@ -7,7 +7,7 @@
         <id property="threadId" column="thread_id"/>
         <result property="title" column="title"/>
         <result property="description" column="description"/>
-        <result property="author" column="author"/>
+        <result property="username" column="author"/>
         <result property="createTime" column="create_time"/>
         <result property="last_update_time" column="lastUpdateTime"/>
         <result property="last_update_by" column="lastUpdateBy"/>
@@ -18,62 +18,73 @@
         <id property="commentId" column="comment_id"/>
         <result property="threadId" column="thread_id"/>
         <result property="description" column="description"/>
-        <result property="author" column="author"/>
+        <result property="username" column="author"/>
         <result property="createTime" column="createTime"/>
     </resultMap>
     <!-- Support Requests -->
     <select id="getSupportRequests" parameterType="String" resultMap="ThreadResultMap">
-        SELECT * FROM support_requests WHERE username = #{username};
+        SELECT support_requests.*, users.username FROM support_requests
+		JOIN users ON support_requests.user_id = users.user_id
+		WHERE username = #{username}
+		ORDER BY create_time DESC;
     </select>
 
     <select id="getDetailedSupportRequest" parameterType="Integer" resultMap="ThreadResultMap">
-        SELECT * FROM support_requests WHERE thread_id = #{threadId};
+        SELECT support_requests.*, users.username, support_request_comments.*, users.username FROM support_requests
+		JOIN users ON support_requests.user_id = users.user_id
+		JOIN support_request_comments ON support_requests.thread_id = support_request_comments.thread_id
+		WHERE thread_id = #{threadId};
     </select>
 
     <insert id="createSupportRequest" parameterType="ThreadDAODTO"
         useGeneratedKeys="true" keyColumn="thread_id" keyProperty="threadId">
-        INSERT INTO support_requests(title, description, author)
-        VALUES(thread.title, thread.description, thread.author);
+        INSERT INTO support_requests(title, description, user_id)
+        VALUES(#{thread.title}, #{thread.description}, (SELECT user_id FROM users WHERE username = #{thread.author}));
     </insert>
 
     <insert id="addSupportRequestComment" parameterType="ThreadCommentDAODTO"
         useGeneratedKeys="true" keyColumn="comment_id" keyProperty="commentId">
-        INSERT INTO support_request_comments(thread_id, description, author)
-        VALUES(comment.thread_id, comment.description, comment.author);
+        INSERT INTO support_request_comments(thread_id, description, user_id)
+        VALUES(#{comment.threadId}, #{comment.description}, (SELECT user_id FROM users WHERE username = #{comment.author}));
     </insert>
 
     <update id="closeSupportRequest" parameterType="ThreadCommentDAODTO">
-        UPDATE support_requests SET last_update_time = CURRENT_TIME(), last_update_by = #{input.author}, status = "CLOSED"
+        UPDATE support_requests SET last_update_time = CURRENT_TIME(), last_update_by = (SELECT user_id FROM users WHERE username = #{input.author}), status = "CLOSED"
         WHERE thread_id = #{input.threadId};
     </update>
 
     <update id="reopenSupportRequest" parameterType="ThreadCommentDAODTO">
-        UPDATE support_requests SET last_update_time = CURRENT_TIME(), last_update_by = #{input.author}, status = "OPEN"
+        UPDATE support_requests SET last_update_time = CURRENT_TIME(), last_update_by = (SELECT user_id FROM users WHERE username = #{input.author}), status = "OPEN"
         WHERE thread_id = #{input.threadId};
     </update>
     <!-- "Standard" discussion threads -->
     <select id="getDiscussions" resultMap="ThreadResultMap">
-        SELECT * FROM discussions ORDER BY create_time desc;
+        SELECT discussions.*, users.username FROM discussions
+		JOIN users ON discussions.user_id = users.user_id
+		ORDER BY create_time DESC;
     </select>
 
     <select id="getDetailedDiscussion" parameterType="Integer" resultMap="ThreadResultMap">
-        SELECT * FROM discussions WHERE thread_id = #{threadId};
+        SELECT discussions.*, user.username, discussion_comments.*, users.username FROM discussions
+		JOIN users ON discussions.user_id = users.user_id
+		JOIN discussion_comments ON discussions.thread_id = discussion_comments.thread_id
+		WHERE thread_id = #{threadId};
     </select>
 
     <insert id="createDiscussion" parameterType="ThreadDAODTO"
         useGeneratedKeys="true" keyColumn="thread_id" keyProperty="threadId">
-        INSERT INTO discussions(title, description, author)
-        VALUES(thread.title, thread.description, thread.author);
+        INSERT INTO discussions(title, description, user_id)
+        VALUES(#{input.threadID}, #{input.description}, (SELECT user_id FROM users WHERE username = #{input.author}));
     </insert>
 
     <insert id="addDiscussionComment" parameterType="ThreadCommentDAODTO"
         useGeneratedKeys="true" keyColumn="comment_id" keyProperty="commentId">
-        INSERT INTO discussion_comments(thread_id, description, author)
-        VALUES(comment.threadId, comment.description, comment.author);
+        INSERT INTO discussion_comments(thread_id, description, user_id)
+        VALUES(#{comment.threadId}, #{comment.description}, (SELECT user_id FROM users WHERE username = #{comment.author}));
     </insert>
 
     <update id="closeDiscussion" parameterType="ThreadCommentDAODTO">
-        UPDATE support_requests SET last_update_time = CURRENT_TIME(), last_update_by = #{input.author}, status = "CLOSED"
+        UPDATE discussions SET last_update_time = CURRENT_TIME(), last_update_by = (SELECT user_id FROM users WHERE username = #{input.author}), status = "CLOSED"
         WHERE thread_id = #{input.threadId};
     </update>
     <!-- Bug reports -->
@@ -82,28 +93,31 @@
     </select>
 
     <select id="getDetailedBugReport" parameterType="Integer" resultMap="ThreadResultMap">
-        SELECT * FROM bug_reports WHERE thread_id = #{threadId};
+        SELECT bug_reports.*, user.username, bug_reports.*, users.username FROM bug_reports
+		JOIN users ON bug_reports.user_id = users.user_id
+		JOIN bug_reports ON bug_reports.thread_id = bug_report_comments.thread_id
+		WHERE thread_id = #{threadId};
     </select>
 
     <insert id="createBugReport" parameterType="ThreadDAODTO"
         useGeneratedKeys="true" keyColumn="thread_id" keyProperty="threadId">
-        INSERT INTO bug_reports(title, description, author)
-        VALUES(thread.title, thread.description, thread.author);
+        INSERT INTO bug_reports(title, description, user_id)
+        VALUES(#{input.threadID}, #{input.description}, (SELECT user_id FROM users WHERE username = #{input.author}));
     </insert>
 
     <insert id="addBugReportComment" parameterType="ThreadCommentDAODTO"
         useGeneratedKeys="true" keyColumn="comment_id" keyProperty="commentId">
-        INSERT INTO bug_report_comments(thread_id, description, author)
-        VALUES(comment.threadId, comment.description, comment.author);
+        INSERT INTO bug_report_comments(thread_id, description, user_id)
+        VALUES(#{comment.threadId}, #{comment.description}, (SELECT user_id FROM users WHERE username = #{comment.author}));
     </insert>
 
     <update id="closeBugReport" parameterType="ThreadCommentDAODTO">
-        UPDATE bug_report SET last_update_time = CURRENT_TIME(), last_update_by = #{input.author}, status = "CLOSED"
+        UPDATE bug_report SET last_update_time = CURRENT_TIME(), last_update_by = (SELECT user_id FROM users WHERE username = #{input.author}), status = "CLOSED"
         WHERE thread_id = #{input.threadId};
     </update>
 
     <update id="reopenBugReport" parameterType="ThreadCommentDAODTO">
-        UPDATE bug_report SET last_update_time = CURRENT_TIME(), last_update_by = #{input.author}, status = "OPEN"
+        UPDATE bug_report SET last_update_time = CURRENT_TIME(), last_update_by = (SELECT user_id FROM users WHERE username = #{input.author}), status = "OPEN"
         WHERE thread_id = #{input.threadId};
     </update>
 </mapper>

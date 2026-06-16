@@ -20,9 +20,9 @@ import java.util.Objects;
 import java.util.List;
 import java.util.Map;
 
+import com.gamerparadise.activity.converter.DiscussionsActivityConverter;
 import com.gamerparadise.activity.dto.ThreadActivityDTO;
 import com.gamerparadise.activity.dto.ThreadCommentActivityDTO;
-import com.gamerparadise.activity.converter.DiscussionsActivityConverter;
 import com.gamerparadise.accessor.CognitoAccessor;
 import com.gamerparadise.component.DiscussionsComponent;
 import com.gamerparadise.component.dto.ThreadComponentDTO;
