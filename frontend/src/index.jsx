@@ -249,11 +249,6 @@ const App = () => {
             )
         }
     }, [isError])
-    useEffect(() => {
-        if (group === 'admin') {
-            setFinalItemsToDisplay([...finalItemsToDisplay, ...ADMINISTRATOR_ITEMS])
-        }
-    }, [group])
     return (
         <div>
             <React.StrictMode>
@@ -267,7 +262,10 @@ const App = () => {
                         />
                         <Menubar
                             url={getConfig('hostname')}
-                            items={finalItemsToDisplay}
+                            items={[
+                                ...finalItemsToDisplay,
+                                ...((group === 'admin' && ADMINISTRATOR_ITEMS) || []),
+                            ]}
                             actionButtons={[
                                 {
                                     label: 'Download now',

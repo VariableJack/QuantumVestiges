@@ -86,6 +86,16 @@ const FranchisePageCreate = () => {
                     }}
                     placeholder={'Enter franchise name here'}
                 />
+                <div>
+                    <button
+                        onClick={() => {
+                            setError(franchiseName.length === 0)
+                            if (franchiseName) triggerCreateFranchise({ franchiseName })
+                        }}
+                    >
+                        Finalize and upload
+                    </button>
+                </div>
             </>
         )
     )

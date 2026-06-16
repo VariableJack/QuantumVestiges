@@ -15,6 +15,7 @@ import {
 } from '../../../redux/api/globalSlice'
 import { setSupportRequests, setBugReports, setDiscussionThreads } from '../api/requestsSlice'
 import { FORUM_PAGES, FORUM_PAGE_ITEMS, CONNECTION_ERROR_MESSAGE } from '../../../shared/constants'
+import '../../../styles/App.css'
 
 const getThreadHeaders = data => {
     return data.map(singleItem => (
@@ -157,7 +158,9 @@ const ForumPage = () => {
                     <div>
                         <h1>{FORUM_PAGE_ITEMS[type].recentText()} (Open)</h1>
                         <a href={`${FORUM_PAGE_ITEMS[type].createUrl()}`}>
-                            <button>{FORUM_PAGE_ITEMS[type].submitButtonText()}</button>
+                            <button className="forum-button">
+                                {FORUM_PAGE_ITEMS[type].submitButtonText()}
+                            </button>
                         </a>
                         {data
                             .filter(singleItem => singleItem.status === 'OPEN')

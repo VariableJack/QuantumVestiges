@@ -87,6 +87,7 @@ const DiscussionCreate = props => {
 
                 <div>
                     <button
+                        className="forum-button"
                         onClick={() => {
                             const newErrors = {
                                 title: inputs.title.length === 0,

@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useLocation } from 'react-router-dom'
+import { get } from 'lodash'
 
 import { useLazyGetGamesQuery } from '../../redux/api/mediaEndpoints'
-import { addErrorMessage } from '../../redux/api/globalSlice'
+import { addInfoMessage, removeInfoMessage, addErrorMessage } from '../../redux/api/globalSlice'
 import { CONNECTION_ERROR_MESSAGE } from '../../shared/constants'
 
 import '../../styles/App.css'

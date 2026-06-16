@@ -27,7 +27,7 @@ export const requestsEndpoints = gamerParadiseApiSlice.injectEndpoints({
         }),
         getDiscussionThreads: builder.query({
             query: () => ({
-                url: '/discussion-threads',
+                url: '/discussions',
                 method: 'GET',
             }),
             providesTags: ['discussionThreads'],
@@ -54,7 +54,7 @@ export const requestsEndpoints = gamerParadiseApiSlice.injectEndpoints({
         }),
         getDetailedDiscussionThread: builder.query({
             query: ({ requestId }) => ({
-                url: '/discussion-thread',
+                url: '/discussion',
                 param: {
                     requestId,
                 },
@@ -81,7 +81,7 @@ export const requestsEndpoints = gamerParadiseApiSlice.injectEndpoints({
         }),
         submitDiscussionThread: builder.mutation({
             query: ({ title, description }) => ({
-                url: '/discussion-threads',
+                url: '/discussion',
                 body: { title, description },
                 method: 'POST',
             }),
@@ -105,7 +105,7 @@ export const requestsEndpoints = gamerParadiseApiSlice.injectEndpoints({
         }),
         submitDiscussionThreadComment: builder.mutation({
             query: ({ threadId, description }) => ({
-                url: '/discussion-thread/comment',
+                url: '/discussion/comment',
                 body: { threadId, description },
                 method: 'POST',
             }),

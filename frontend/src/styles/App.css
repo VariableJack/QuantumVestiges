@@ -60,6 +60,15 @@ button.account {
   margin-right: 5px;
   background-color: #F2EB27;
 }
+button.forum-button {
+  font-size: 14px;
+  font-weight: bold;
+  width: 130px;
+  height: 35px;
+  border-radius: 25px;
+  margin-right: 5px;
+  background-color: #F2EB27;
+}
 /* All margin */
 .m-xl { margin: 50px; }
 .m-l  { margin: 40px; }

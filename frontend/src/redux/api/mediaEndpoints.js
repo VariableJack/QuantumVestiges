@@ -18,7 +18,7 @@ export const mediaEndpoints = gamerParadiseApiSlice.injectEndpoints({
         }),
         getGames: builder.query({
             query: ({ franchise }) => ({
-                url: `/games?franchiseId=${franchise}}`,
+                url: `/games?franchiseId=${franchise}`,
                 method: 'GET',
             }),
             providesTags: ['games'],
