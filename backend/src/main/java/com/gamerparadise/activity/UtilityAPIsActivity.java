@@ -5,10 +5,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -24,6 +24,8 @@ import com.gamerparadise.activity.dto.GeneratePresignedUrlsOutputActivityDTO;
 import com.gamerparadise.component.dto.GeneratePresignedUrlsComponentDTO;
 import com.gamerparadise.component.dto.GeneratePresignedUrlsOutputComponentDTO;
 import com.gamerparadise.component.UtilityAPIsComponent;
+
+import com.gamerparadise.controller.objects.PublicEndpoint;
 
 @RestController
 public class UtilityAPIsActivity {
@@ -42,6 +44,7 @@ public class UtilityAPIsActivity {
         return Objects.nonNull(entry) && list.contains(entry);
     }
 
+    @PublicEndpoint
     @PostMapping(name="GeneratePresignedUrls",path="/presigned-urls")
     public GeneratePresignedUrlsOutputActivityDTO generatePresignedUrls(@RequestBody @NonNull GeneratePresignedUrlsActivityDTO input) {
         if (!checkEntryInList(validMethods, input.getMethod())

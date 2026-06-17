@@ -65,7 +65,7 @@ export const mediaEndpoints = gamerParadiseApiSlice.injectEndpoints({
         // Admin
         createFranchise: builder.mutation({
             query: ({ franchiseName }) => ({
-                url: '/franchises',
+                url: '/franchise/create',
                 method: 'POST',
                 body: {
                     franchiseName,
@@ -92,7 +92,7 @@ export const mediaEndpoints = gamerParadiseApiSlice.injectEndpoints({
         }),
         createGame: builder.mutation({
             query: ({ productName, franchiseId, price }) => ({
-                url: '/products',
+                url: '/product/create',
                 method: 'POST',
                 body: {
                     productName,

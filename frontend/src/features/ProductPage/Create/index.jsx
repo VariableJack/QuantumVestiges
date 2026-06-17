@@ -150,8 +150,8 @@ const ProductPageCreate = () => {
         }
     }, [isUploadingFiles])
 
-	useEffect(() => {
-		if (isUploadingFilesSuccess) {
+    useEffect(() => {
+        if (isUploadingFilesSuccess) {
             dispatch(
                 addSuccessMessage({
                     title: 'Files successfully uploaded',
@@ -166,12 +166,12 @@ const ProductPageCreate = () => {
                     price: 5,
                 })
             } catch (e) {}
-	}
-	}, [isUploadingFilesSuccess])
+        }
+    }, [isUploadingFilesSuccess])
 
     const handleUpload = async () => {
         setIsUploadingFiles(true)
-		setIsUploadingFilesSuccess(false)
+        setIsUploadingFilesSuccess(false)
         const filesSucceeded = []
         const filesFailed = []
         try {
@@ -201,8 +201,8 @@ const ProductPageCreate = () => {
                 }),
             )
         } else {
-			setIsUploadingFilesSuccess(true)
-		}
+            setIsUploadingFilesSuccess(true)
+        }
         setIsUploadingFiles(false)
     }
 

@@ -16,7 +16,7 @@ import { CONNECTION_ERROR_MESSAGE } from '../../shared/constants'
 import '../../styles/App.css'
 
 const Game = () => {
-	const dispatch = useDispatch()
+    const dispatch = useDispatch()
     const { cart, purchasedGames } = useSelector(state => state.userReducer)
     const { search } = useLocation()
     const params = new URLSearchParams(search)
@@ -150,7 +150,9 @@ const Game = () => {
                     )) || <b>Removing from cart...</b>}
                 </div>
             )) ||
-                (!purchasedGames.find(purchasedGame => purchasedGame.productId === product.productId) && (
+                (!purchasedGames.find(
+                    purchasedGame => purchasedGame.productId === product.productId,
+                ) && (
                     <div>
                         <br />
                         {(!isUpdating && (

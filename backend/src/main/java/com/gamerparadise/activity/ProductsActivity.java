@@ -11,6 +11,8 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -23,11 +25,12 @@ import com.gamerparadise.activity.converter.ProductsActivityConverter;
 import com.gamerparadise.activity.dto.ProductActivityDTO;
 import com.gamerparadise.activity.dto.GetFileNamesForGameOutputActivityDTO;
 import com.gamerparadise.activity.dto.GetInstallerOutputActivityDTO;
-import com.gamerparadise.accessor.CognitoAccessor;
 import com.gamerparadise.component.ProductsComponent;
 import com.gamerparadise.component.dto.ProductComponentDTO;
 import com.gamerparadise.component.dto.GetFileNamesForGameOutputComponentDTO;
 import com.gamerparadise.component.dto.GetInstallerOutputComponentDTO;
+
+import com.gamerparadise.controller.objects.PublicEndpoint;
 
 @RestController
 public class ProductsActivity {
@@ -35,10 +38,9 @@ public class ProductsActivity {
     private ProductsActivityConverter productsActivityConverter;
     @Autowired
     private ProductsComponent productsComponent;
-    @Autowired
-    private CognitoAccessor cognitoAccessor;
     private static final Logger logger = LogManager.getLogger(ProductsActivity.class);
 
+    @PublicEndpoint
     @GetMapping(name="GetProducts",path="/products")
     public List<ProductActivityDTO> getProducts(@RequestParam(name="franchiseId",required=true) Integer franchiseId) {
         logger.info("Beginning to process getProducts for franchise ID {}", franchiseId.toString());
@@ -52,6 +54,7 @@ public class ProductsActivity {
 
     }
 
+    @PublicEndpoint
     @GetMapping(name="GetProductById",path="/product")
     public ProductActivityDTO getProductById(@RequestParam(name="productId",required=true) Integer productId) {
         logger.info("Beginning to process getProductById for product ID {}", productId.toString());
@@ -61,11 +64,10 @@ public class ProductsActivity {
         return convertedOutput;
     }
 
-    @PostMapping(name="UploadProduct",path="/products")
-    public ProductActivityDTO uploadProduct(@NonNull @RequestHeader(HttpHeaders.AUTHORIZATION) String accessToken, @NonNull @RequestBody ProductActivityDTO input) {
-        final Map<String, String> auth = cognitoAccessor.getUserDetailsFromAccessToken(accessToken);
-        final String username = auth.get("username");
-        final String group = auth.get("group");
+    @PostMapping(name="UploadProduct",path="/product/create")
+    public ProductActivityDTO uploadProduct(@AuthenticationPrincipal Jwt jwt, @NonNull @RequestBody ProductActivityDTO input) {
+        final String username = jwt.getClaimAsString("username");
+        final String group = jwt.getClaimAsStringList("cognito:groups").stream().filter(item -> item.equals("admin")).findFirst().orElse("user");
         if (!group.equals("admin")) {
             logger.warn("User {} cannot create a new product", username);
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not permitted to create a new product");
@@ -78,6 +80,7 @@ public class ProductsActivity {
         return convertedOutput;
     }
 
+    @PublicEndpoint
     @GetMapping(name="GetFileNamesForProduct",path="/products/files")
     public GetFileNamesForGameOutputActivityDTO getFileNamesForProduct(@RequestParam(name="productId",required=true) Integer productId) {
         logger.info("Beginning to process getFileNamesForProduct for productId {}", productId);
@@ -87,6 +90,7 @@ public class ProductsActivity {
         return convertedOutput;
     }
 
+    @PublicEndpoint
     @GetMapping(name="GetInstaller",path="/installer")
     public GetInstallerOutputActivityDTO getInstaller() {
         logger.info("Beginning to process getInstaller");

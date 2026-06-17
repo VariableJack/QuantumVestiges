@@ -7,11 +7,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.server.ResponseStatusException;
-import org.springframework.http.HttpHeaders;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -23,10 +23,11 @@ import java.util.Map;
 import com.gamerparadise.activity.converter.DiscussionsActivityConverter;
 import com.gamerparadise.activity.dto.ThreadActivityDTO;
 import com.gamerparadise.activity.dto.ThreadCommentActivityDTO;
-import com.gamerparadise.accessor.CognitoAccessor;
 import com.gamerparadise.component.DiscussionsComponent;
 import com.gamerparadise.component.dto.ThreadComponentDTO;
 import com.gamerparadise.component.dto.ThreadCommentComponentDTO;
+
+import com.gamerparadise.controller.objects.PublicEndpoint;
 
 @RestController
 public class DiscussionsActivity {
@@ -34,8 +35,6 @@ public class DiscussionsActivity {
     private DiscussionsActivityConverter discussionsActivityConverter;
     @Autowired
     private DiscussionsComponent discussionsComponent;
-    @Autowired
-    private CognitoAccessor cognitoAccessor;
     private static final Logger logger = LogManager.getLogger(DiscussionsActivity.class);
 
     /* Validation helpers */
@@ -55,9 +54,8 @@ public class DiscussionsActivity {
     }
     /* Support Request APIs */
     @GetMapping(name="GetSupportRequests",path="/support-requests")
-    public List<ThreadActivityDTO> getSupportRequests(@NonNull @RequestHeader(HttpHeaders.AUTHORIZATION) String accessToken) throws AccessDeniedException {
-        final Map<String, String> auth = cognitoAccessor.getUserDetailsFromAccessToken(accessToken);
-        final String username = auth.get("username");
+    public List<ThreadActivityDTO> getSupportRequests(@AuthenticationPrincipal Jwt jwt) throws AccessDeniedException {
+        final String username = jwt.getClaimAsString("username");
         logger.info("Beginning to process getSupportRequests for user {}", username);
         final List<ThreadActivityDTO> supportRequests = discussionsComponent.getSupportRequests(username)
             .stream()
@@ -69,12 +67,10 @@ public class DiscussionsActivity {
 
     @GetMapping(name="GetDetailedSupportRequest",path="/support-request")
     public ThreadActivityDTO getDetailedSupportRequest(
-        @NonNull @RequestHeader(HttpHeaders.AUTHORIZATION) String accessToken,
+        @AuthenticationPrincipal Jwt jwt,
         @NonNull @RequestParam Integer threadId) throws AccessDeniedException {
-
-        final Map<String, String> auth = cognitoAccessor.getUserDetailsFromAccessToken(accessToken);
-        final String username = auth.get("username");
-        final String group = auth.get("group");
+        final String username = jwt.getClaimAsString("username");
+        final String group = jwt.getClaimAsStringList("cognito:groups").stream().filter(item -> item.equals("admin")).findFirst().orElse("user");
         logger.info("Beginning to process getDetailedSupportRequest for user {} and ID {}", username, threadId);
         final ThreadActivityDTO supportRequest = discussionsActivityConverter
             .convertThreadComponentDTOToActivityDTO(discussionsComponent.getDetailedSupportRequest(username, group, threadId));
@@ -84,11 +80,9 @@ public class DiscussionsActivity {
 
     @PostMapping(name="CreateSupportRequest",path="/support-request")
     public ThreadActivityDTO createSupportRequest(
-        @NonNull @RequestHeader(HttpHeaders.AUTHORIZATION) String accessToken,
+        @AuthenticationPrincipal Jwt jwt,
         @NonNull @RequestBody ThreadActivityDTO input) {
-
-        final Map<String, String> auth = cognitoAccessor.getUserDetailsFromAccessToken(accessToken);
-        final String username = auth.get("username");
+        final String username = jwt.getClaimAsString("username");
         logger.info("Beginning to process createSupportRequest for user {}, with input {}", username, input);
         this.validateThread(input, "Support Request");
         final ThreadComponentDTO convertedInput = discussionsActivityConverter.convertThreadActivityDTOToComponentDTO(input, username);
@@ -100,12 +94,10 @@ public class DiscussionsActivity {
 
     @PostMapping(name="AddSupportRequestComment",path="/support-request/comment")
     public ThreadCommentActivityDTO addSupportRequestComment(
-        @NonNull @RequestHeader(HttpHeaders.AUTHORIZATION) String accessToken,
+        @AuthenticationPrincipal Jwt jwt,
         @NonNull @RequestBody ThreadCommentActivityDTO input) throws AccessDeniedException {
-
-        final Map<String, String> auth = cognitoAccessor.getUserDetailsFromAccessToken(accessToken);
-        final String username = auth.get("username");
-        final String group = auth.get("group");
+        final String username = jwt.getClaimAsString("username");
+        final String group = jwt.getClaimAsStringList("cognito:groups").stream().filter(item -> item.equals("admin")).findFirst().orElse("user");
         logger.info("Beginning to process addSupportRequestComment for user {}, with input {}", username, input);
         this.validateThreadComment(input, "Support Request");
         final ThreadCommentComponentDTO output = discussionsComponent.addSupportRequestComment(discussionsActivityConverter.convertThreadCommentActivityDTOToComponentDTO(input, username), group);
@@ -116,12 +108,10 @@ public class DiscussionsActivity {
 
     @PostMapping(name="CloseSupportRequest",path="/support-request/close")
     public void closeSupportRequest(
-        @NonNull @RequestHeader(HttpHeaders.AUTHORIZATION) String accessToken,
+        @AuthenticationPrincipal Jwt jwt,
         @NonNull @RequestBody ThreadCommentActivityDTO input) {
-
-        final Map<String, String> auth = cognitoAccessor.getUserDetailsFromAccessToken(accessToken);
-        final String username = auth.get("username");
-        final String group = auth.get("group");
+        final String username = jwt.getClaimAsString("username");
+        final String group = jwt.getClaimAsStringList("cognito:groups").stream().filter(item -> item.equals("admin")).findFirst().orElse("user");
         logger.info("Beginning to process closeSupportRequest for user {}, with input {}", username, input);
         discussionsComponent.closeSupportRequest(discussionsActivityConverter.convertThreadCommentActivityDTOToComponentDTO(input, username), group);
         logger.info("Finished processing closeSupportRequest");
@@ -129,22 +119,19 @@ public class DiscussionsActivity {
 
     @PostMapping(name="ReopenSupportRequest",path="/support-request/reopen")
     public void reopenSupportRequest(
-        @NonNull @RequestHeader(HttpHeaders.AUTHORIZATION) String accessToken,
+        @AuthenticationPrincipal Jwt jwt,
         @NonNull @RequestBody ThreadCommentActivityDTO input) {
-
-        final Map<String, String> auth = cognitoAccessor.getUserDetailsFromAccessToken(accessToken);
-        final String username = auth.get("username");
-        final String group = auth.get("group");
+        final String username = jwt.getClaimAsString("username");
+        final String group = jwt.getClaimAsStringList("cognito:groups").stream().filter(item -> item.equals("admin")).findFirst().orElse("user");
         logger.info("Beginning to process reopenSupportRequest for user {}, with input {}", username, input);
         discussionsComponent.reopenSupportRequest(discussionsActivityConverter.convertThreadCommentActivityDTOToComponentDTO(input, username), group);
         logger.info("Finished processing reopenSupportRequest");
     }
     /* "Standard" discussion thread APIs*/
+    @PublicEndpoint
     @GetMapping(name="GetDiscussions",path="/discussions")
-    public List<ThreadActivityDTO> getDiscussions(@NonNull @RequestHeader(HttpHeaders.AUTHORIZATION) String accessToken) throws AccessDeniedException {
-        final Map<String, String> auth = cognitoAccessor.getUserDetailsFromAccessToken(accessToken);
-        final String username = auth.get("username");
-        logger.info("Beginning to process getDiscussions for user {}", username);
+    public List<ThreadActivityDTO> getDiscussions() throws AccessDeniedException {
+        logger.info("Beginning to process getDiscussions");
         final List<ThreadActivityDTO> discussions = discussionsComponent.getDiscussions()
             .stream()
             .map((discussion) -> discussionsActivityConverter.convertThreadComponentDTOToActivityDTO(discussion))
@@ -153,14 +140,10 @@ public class DiscussionsActivity {
         return discussions;
     }
 
+    @PublicEndpoint
     @GetMapping(name="GetDetailedDiscussion",path="/discussion")
-    public ThreadActivityDTO getDetailedDiscussion(
-        @NonNull @RequestHeader(HttpHeaders.AUTHORIZATION) String accessToken,
-        @NonNull @RequestParam Integer threadId) throws AccessDeniedException {
-
-        final Map<String, String> auth = cognitoAccessor.getUserDetailsFromAccessToken(accessToken);
-        final String username = auth.get("username");
-        logger.info("Beginning to process getDetailedDiscussion for user {} and ID {}", username, threadId);
+    public ThreadActivityDTO getDetailedDiscussion(@NonNull @RequestParam Integer threadId) throws AccessDeniedException {
+        logger.info("Beginning to process getDetailedDiscussion for ID {}", threadId);
         final ThreadActivityDTO discussion = discussionsActivityConverter
             .convertThreadComponentDTOToActivityDTO(discussionsComponent.getDetailedDiscussion(threadId));
         logger.info("Finished processing getDetailedDiscussion");
@@ -169,11 +152,9 @@ public class DiscussionsActivity {
 
     @PostMapping(name="CreateDiscussion",path="/discussion")
     public ThreadActivityDTO createDiscussion(
-        @NonNull @RequestHeader(HttpHeaders.AUTHORIZATION) String accessToken,
+        @AuthenticationPrincipal Jwt jwt,
         @NonNull @RequestBody ThreadActivityDTO input) {
-
-        final Map<String, String> auth = cognitoAccessor.getUserDetailsFromAccessToken(accessToken);
-        final String username = auth.get("username");
+        final String username = jwt.getClaimAsString("username");
         logger.info("Beginning to process createDiscussion for user {}, with input {}", username, input);
         this.validateThread(input, "Discussion");
         final ThreadComponentDTO convertedInput = discussionsActivityConverter.convertThreadActivityDTOToComponentDTO(input, username);
@@ -185,11 +166,9 @@ public class DiscussionsActivity {
 
     @PostMapping(name="AddDiscussionComment",path="/discussion/comment")
     public ThreadCommentActivityDTO addDiscussionComment(
-        @NonNull @RequestHeader(HttpHeaders.AUTHORIZATION) String accessToken,
+        @AuthenticationPrincipal Jwt jwt,
         @NonNull @RequestBody ThreadCommentActivityDTO input) throws AccessDeniedException {
-
-        final Map<String, String> auth = cognitoAccessor.getUserDetailsFromAccessToken(accessToken);
-        final String username = auth.get("username");
+        final String username = jwt.getClaimAsString("username");
         logger.info("Beginning to process addDiscussionComment for user {}, with input {}", username, input);
         this.validateThreadComment(input, "Discussion");
         final ThreadCommentComponentDTO output = discussionsComponent.addDiscussionComment(discussionsActivityConverter.convertThreadCommentActivityDTOToComponentDTO(input, username));
@@ -200,22 +179,19 @@ public class DiscussionsActivity {
 
     @PostMapping(name="CloseDiscussion",path="/discussion/close")
     public void closeDiscussion(
-        @NonNull @RequestHeader(HttpHeaders.AUTHORIZATION) String accessToken,
+        @AuthenticationPrincipal Jwt jwt,
         @NonNull @RequestBody ThreadCommentActivityDTO input) {
-
-        final Map<String, String> auth = cognitoAccessor.getUserDetailsFromAccessToken(accessToken);
-        final String username = auth.get("username");
-        final String group = auth.get("group");
+        final String username = jwt.getClaimAsString("username");
+        final String group = jwt.getClaimAsStringList("cognito:groups").stream().filter(item -> item.equals("admin")).findFirst().orElse("user");
         logger.info("Beginning to process closeDiscussion for user {}, with input {}", username, input);
         discussionsComponent.closeDiscussion(discussionsActivityConverter.convertThreadCommentActivityDTOToComponentDTO(input, username), group);
         logger.info("Finished processing closeDiscussion");
     }
     /* Bug report APIs */
+    @PublicEndpoint
     @GetMapping(name="GetBugReports",path="/bug-reports")
-    public List<ThreadActivityDTO> getBugReports(@NonNull @RequestHeader(HttpHeaders.AUTHORIZATION) String accessToken) throws AccessDeniedException {
-        final Map<String, String> auth = cognitoAccessor.getUserDetailsFromAccessToken(accessToken);
-        final String username = auth.get("username");
-        logger.info("Beginning to process getBugReports for user {}", username);
+    public List<ThreadActivityDTO> getBugReports() throws AccessDeniedException {
+        logger.info("Beginning to process getBugReports");
         final List<ThreadActivityDTO> bugReports = discussionsComponent.getBugReports()
             .stream()
             .map((bugReport) -> discussionsActivityConverter.convertThreadComponentDTOToActivityDTO(bugReport))
@@ -224,14 +200,10 @@ public class DiscussionsActivity {
         return bugReports;
     }
 
+    @PublicEndpoint
     @GetMapping(name="GetDetailedBugReport",path="/bug-report")
-    public ThreadActivityDTO getDetailedBugReport(
-        @NonNull @RequestHeader(HttpHeaders.AUTHORIZATION) String accessToken,
-        @NonNull @RequestParam Integer threadId) throws AccessDeniedException {
-
-        final Map<String, String> auth = cognitoAccessor.getUserDetailsFromAccessToken(accessToken);
-        final String username = auth.get("username");
-        logger.info("Beginning to process getDetailedBugReport for user {} and ID", username, threadId);
+    public ThreadActivityDTO getDetailedBugReport(@NonNull @RequestParam Integer threadId) throws AccessDeniedException {
+        logger.info("Beginning to process getDetailedBugReport for ID {}", threadId);
         final ThreadActivityDTO bugReport = discussionsActivityConverter
             .convertThreadComponentDTOToActivityDTO(discussionsComponent.getDetailedBugReport(threadId));
         logger.info("Finished processing getDetailedBugReport");
@@ -240,11 +212,9 @@ public class DiscussionsActivity {
 
     @PostMapping(name="CreateBugReport",path="/bug-report")
     public ThreadActivityDTO createBugReport(
-        @NonNull @RequestHeader(HttpHeaders.AUTHORIZATION) String accessToken,
+        @AuthenticationPrincipal Jwt jwt,
         @NonNull @RequestBody ThreadActivityDTO input) {
-
-        final Map<String, String> auth = cognitoAccessor.getUserDetailsFromAccessToken(accessToken);
-        final String username = auth.get("username");
+        final String username = jwt.getClaimAsString("username");
         logger.info("Beginning to process createBugReport for user {}, with input {}", username, input);
         this.validateThread(input, "Bug Report");
         final ThreadComponentDTO convertedInput = discussionsActivityConverter.convertThreadActivityDTOToComponentDTO(input, username);
@@ -256,11 +226,9 @@ public class DiscussionsActivity {
 
     @PostMapping(name="AddBugReportComment",path="/bug-report/comment")
     public ThreadCommentActivityDTO addBugReportComment(
-        @NonNull @RequestHeader(HttpHeaders.AUTHORIZATION) String accessToken,
+        @AuthenticationPrincipal Jwt jwt,
         @NonNull @RequestBody ThreadCommentActivityDTO input) throws AccessDeniedException {
-
-        final Map<String, String> auth = cognitoAccessor.getUserDetailsFromAccessToken(accessToken);
-        final String username = auth.get("username");
+        final String username = jwt.getClaimAsString("username");
         logger.info("Beginning to process addBugReportComment for user {}, with input {}", username, input);
         this.validateThreadComment(input, "Bug Report");
         final ThreadCommentComponentDTO output = discussionsComponent.addBugReportComment(discussionsActivityConverter.convertThreadCommentActivityDTOToComponentDTO(input, username));
@@ -271,12 +239,10 @@ public class DiscussionsActivity {
 
     @PostMapping(name="CloseBugReport",path="/bug-report/close")
     public void closeBugReport(
-        @NonNull @RequestHeader(HttpHeaders.AUTHORIZATION) String accessToken,
+        @AuthenticationPrincipal Jwt jwt,
         @NonNull @RequestBody ThreadCommentActivityDTO input) {
-
-        final Map<String, String> auth = cognitoAccessor.getUserDetailsFromAccessToken(accessToken);
-        final String username = auth.get("username");
-        final String group = auth.get("group");
+        final String username = jwt.getClaimAsString("username");
+        final String group = jwt.getClaimAsStringList("cognito:groups").stream().filter(item -> item.equals("admin")).findFirst().orElse("user");
         logger.info("Beginning to process closeBugReport for user {}, with input {}", username, input);
         discussionsComponent.closeBugReport(discussionsActivityConverter.convertThreadCommentActivityDTOToComponentDTO(input, username));
         logger.info("Finished processing closeBugReport");
@@ -284,12 +250,10 @@ public class DiscussionsActivity {
 
     @PostMapping(name="ReopenBugReport",path="/bug-report/reopen")
     public void reopenBugReport(
-        @NonNull @RequestHeader(HttpHeaders.AUTHORIZATION) String accessToken,
+        @AuthenticationPrincipal Jwt jwt,
         @NonNull @RequestBody ThreadCommentActivityDTO input) {
-
-        final Map<String, String> auth = cognitoAccessor.getUserDetailsFromAccessToken(accessToken);
-        final String username = auth.get("username");
-        final String group = auth.get("group");
+        final String username = jwt.getClaimAsString("username");
+        final String group = jwt.getClaimAsStringList("cognito:groups").stream().filter(item -> item.equals("admin")).findFirst().orElse("user");
         logger.info("Beginning to process reopenBugReport for user {}, with input {}", username, input);
         discussionsComponent.reopenBugReport(discussionsActivityConverter.convertThreadCommentActivityDTOToComponentDTO(input, username));
         logger.info("Finished processing reopenBugReport");

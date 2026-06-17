@@ -70,17 +70,19 @@ const Franchise = () => {
             {franchise.franchiseName}
             <br />
             {(isLoading && <h2>Loading...</h2>) || <></>}
-            {products && (
+            {(products && (
                 <div>
                     <b>Products:</b>
                     {products.map(product => (
                         <div>
                             Product {product.productId}&nbsp;
-                            <a href={`/product?&productId=${product.productId}`}>{product.productName}</a>
+                            <a href={`/product?&productId=${product.productId}`}>
+                                {product.productName}
+                            </a>
                         </div>
                     ))}
                 </div>
-            ) || <></>}
+            )) || <></>}
         </div>
     )
 }

@@ -11,6 +11,8 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -21,9 +23,10 @@ import java.util.Map;
 
 import com.gamerparadise.activity.converter.FranchisesActivityConverter;
 import com.gamerparadise.activity.dto.FranchiseActivityDTO;
-import com.gamerparadise.accessor.CognitoAccessor;
 import com.gamerparadise.component.FranchisesComponent;
 import com.gamerparadise.component.dto.FranchiseComponentDTO;
+
+import com.gamerparadise.controller.objects.PublicEndpoint;
 
 @RestController
 public class FranchisesActivity {
@@ -31,10 +34,9 @@ public class FranchisesActivity {
     private FranchisesActivityConverter franchisesActivityConverter;
     @Autowired
     private FranchisesComponent franchisesComponent;
-    @Autowired
-    private CognitoAccessor cognitoAccessor;
     private static final Logger logger = LogManager.getLogger(FranchisesActivity.class);
 
+    @PublicEndpoint
     @GetMapping(name="GetFranchises",path="/franchises")
     public List<FranchiseActivityDTO> getFranchises() {
         logger.info("Beginning to process getFranchises");
@@ -47,6 +49,7 @@ public class FranchisesActivity {
         return convertedOutput;
     }
 
+    @PublicEndpoint
     @GetMapping(name="GetFranchiseById",path="/franchise")
     public FranchiseActivityDTO getFranchiseById(@RequestParam(name="franchiseId",required=true) Integer franchiseId) {
         logger.info("Beginning to process getFranchiseById for franchise ID" + franchiseId.toString());
@@ -56,11 +59,10 @@ public class FranchisesActivity {
         return convertedOutput;
     }
 
-    @PostMapping(name="CreateFranchise",path="/franchises")
-    public FranchiseActivityDTO createFranchise(@NonNull @RequestHeader(HttpHeaders.AUTHORIZATION) String accessToken, @NonNull @RequestBody FranchiseActivityDTO input) {
-        final Map<String, String> auth = cognitoAccessor.getUserDetailsFromAccessToken(accessToken);
-        final String username = auth.get("username");
-        final String group = auth.get("group");
+    @PostMapping(name="CreateFranchise",path="/franchise/create")
+    public FranchiseActivityDTO createFranchise(@AuthenticationPrincipal Jwt jwt, @NonNull @RequestBody FranchiseActivityDTO input) {
+        final String username = jwt.getClaimAsString("username");
+        final String group = jwt.getClaimAsStringList("cognito:groups").stream().filter(item -> item.equals("admin")).findFirst().orElse("user");
         if (!group.equals("admin")) {
             logger.warn("User {} cannot create a new franchise", username);
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not permitted to create a new franchise");
