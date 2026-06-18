@@ -9,6 +9,7 @@ import lombok.NonNull;
 import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import com.gamerparadise.dao.mapper.AdministrationDAOMapper;
 import com.gamerparadise.dao.dto.UserDAODTO;
@@ -37,7 +38,11 @@ public class AdministrationDAO {
         final Date startDate = new Date();
         logger.info("Fetching notification preferences for user {}", username);
         try {
-            return mapper.getUserNotificationPreferences(username);
+            final List<UserNotificationDAODTO> output = mapper.getUserNotificationPreferences(username);
+            if (Objects.isNull(output)) {
+                return new ArrayList<UserNotificationDAODTO>();
+            }
+            return output;
         } catch (Exception e) {
             throw e;
         } finally {
@@ -49,7 +54,11 @@ public class AdministrationDAO {
         final Date startDate = new Date();
         logger.info("Fetching subscriptions for user {}", username);
         try {
-            return mapper.getUserSubscriptions(username);
+            final List<UserSubscriptionDAODTO> output = mapper.getUserSubscriptions(username);
+            if (Objects.isNull(output)) {
+                return new ArrayList<UserSubscriptionDAODTO>();
+            }
+            return output;
         } catch (Exception e) {
             throw e;
         } finally {

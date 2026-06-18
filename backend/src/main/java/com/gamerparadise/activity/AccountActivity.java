@@ -68,7 +68,7 @@ public class AccountActivity {
     @GetMapping(name="GetPurchasedItems",path="/purchased-games")
     public List<PurchasedItemActivityDTO> getPurchasedItems(@AuthenticationPrincipal Jwt jwt) throws AccessDeniedException {
         final String username = jwt.getClaimAsString("username");
-        logger.info("Beginning to process getPurchasedItemsfor user {}", username);
+        logger.info("Beginning to process getPurchasedItems for user {}", username);
         final List<PurchasedItemActivityDTO> purchasedItems = accountComponent.getPurchasedItems(username)
             .stream()
             .map((purchasedItem) -> accountActivityConverter.convertPurchasedItemComponentDTOToActivityDTO(purchasedItem))

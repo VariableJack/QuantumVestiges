@@ -17,13 +17,13 @@ public class AdministrationActivityConverter {
             .userId(input.getUserId())
             .username(input.getUsername())
             .notifications(input.getNotifications()
-				.stream()
-				.map(notification -> convertUserNotificationComponentDTOToActivityDTO(notification))
-				.toList())
+                .stream()
+                .map(notification -> convertUserNotificationComponentDTOToActivityDTO(notification))
+                .toList())
             .subscriptions(input.getSubscriptions()
-				.stream()
-				.map(subscription -> convertUserSubscriptionComponentDTOToActivityDTO(subscription))
-				.toList())
+                .stream()
+                .map(subscription -> convertUserSubscriptionComponentDTOToActivityDTO(subscription))
+                .toList())
             .build();
     }
 
@@ -37,17 +37,17 @@ public class AdministrationActivityConverter {
             .build();
     }
 
-	public UserSubscriptionActivityDTO convertUserSubscriptionComponentDTOToActivityDTO(@NonNull UserSubscriptionComponentDTO input) {
-		return UserSubscriptionActivityDTO.builder()
-			.username(input.getUsername())
-			.subscriptionStartDate(input.getSubscriptionStartDate())
-			.subscriptionEndDate(input.getSubscriptionEndDate())
-			.billingPeriod(input.getBillingPeriod())
-			.autoRenewal(input.getAutoRenewal())
-			.productId(input.getProductId())
-			.productName(input.getProductName())
-			.build();
-	}
+    public UserSubscriptionActivityDTO convertUserSubscriptionComponentDTOToActivityDTO(@NonNull UserSubscriptionComponentDTO input) {
+        return UserSubscriptionActivityDTO.builder()
+            .username(input.getUsername())
+            .subscriptionStartDate(input.getSubscriptionStartDate())
+            .subscriptionEndDate(input.getSubscriptionEndDate())
+            .billingPeriod(input.getBillingPeriod())
+            .autoRenewal(input.getAutoRenewal())
+            .productId(input.getProductId())
+            .productName(input.getProductName())
+            .build();
+    }
 
     public UserNotificationComponentDTO convertUserNotificationActivityDTOToComponentDTO(@NonNull UserNotificationActivityDTO input, @NonNull String username) {
         return UserNotificationComponentDTO.builder()
@@ -59,15 +59,15 @@ public class AdministrationActivityConverter {
             .build();
     }
 
-	public UserSubscriptionComponentDTO convertUserSubscriptionActivityDTOToComponentDTO(@NonNull UserSubscriptionActivityDTO input, @NonNull String username) {
-		return UserSubscriptionComponentDTO.builder()
-			.username(username)
-			.subscriptionStartDate(input.getSubscriptionStartDate())
-			.subscriptionEndDate(input.getSubscriptionEndDate())
-			.billingPeriod(input.getBillingPeriod())
-			.autoRenewal(input.getAutoRenewal())
-			.productId(input.getProductId())
-			.productName(input.getProductName())
-			.build();
-	}
+    public UserSubscriptionComponentDTO convertUserSubscriptionActivityDTOToComponentDTO(@NonNull UserSubscriptionActivityDTO input, @NonNull String username) {
+        return UserSubscriptionComponentDTO.builder()
+            .username(username)
+            .subscriptionStartDate(input.getSubscriptionStartDate())
+            .subscriptionEndDate(input.getSubscriptionEndDate())
+            .billingPeriod(input.getBillingPeriod())
+            .autoRenewal(input.getAutoRenewal())
+            .productId(input.getProductId())
+            .productName(input.getProductName())
+            .build();
+    }
 }

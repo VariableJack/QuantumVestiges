@@ -17,13 +17,13 @@ public class AdministrationBuilderConverter {
             .userId(input.getUserId())
             .username(input.getUsername())
             .notifications(input.getNotifications()
-				.stream()
-				.map(notification -> convertUserNotificationDAODTOToComponentDTO(notification))
-				.toList())
+                .stream()
+                .map(notification -> convertUserNotificationDAODTOToComponentDTO(notification))
+                .toList())
             .subscriptions(input.getSubscriptions()
-				.stream()
-				.map(subscription -> convertUserSubscriptionDAODTOToComponentDTO(subscription))
-				.toList())
+                .stream()
+                .map(subscription -> convertUserSubscriptionDAODTOToComponentDTO(subscription))
+                .toList())
             .build();
     }
 
@@ -37,17 +37,17 @@ public class AdministrationBuilderConverter {
             .build();
     }
 
-	public UserSubscriptionComponentDTO convertUserSubscriptionDAODTOToComponentDTO(@NonNull UserSubscriptionDAODTO input) {
-		return UserSubscriptionComponentDTO.builder()
-			.username(input.getUsername())
-			.subscriptionStartDate(input.getSubscriptionStartDate())
-			.subscriptionEndDate(input.getSubscriptionEndDate())
-			.billingPeriod(input.getBillingPeriod())
-			.autoRenewal(input.getAutoRenewal())
-			.productId(input.getProductId())
-			.productName(input.getProductName())
-			.build();
-	}
+    public UserSubscriptionComponentDTO convertUserSubscriptionDAODTOToComponentDTO(@NonNull UserSubscriptionDAODTO input) {
+        return UserSubscriptionComponentDTO.builder()
+            .username(input.getUsername())
+            .subscriptionStartDate(input.getSubscriptionStartDate())
+            .subscriptionEndDate(input.getSubscriptionEndDate())
+            .billingPeriod(input.getBillingPeriod())
+            .autoRenewal(input.getAutoRenewal())
+            .productId(input.getProductId())
+            .productName(input.getProductName())
+            .build();
+    }
 
     public UserNotificationDAODTO convertUserNotificationComponentDTOToDAODTO(@NonNull UserNotificationComponentDTO input) {
         return UserNotificationDAODTO.builder()
@@ -59,15 +59,15 @@ public class AdministrationBuilderConverter {
             .build();
     }
 
-	public UserSubscriptionDAODTO convertUserSubscriptionComponentDTOToDAODTO(@NonNull UserSubscriptionComponentDTO input) {
-		return UserSubscriptionDAODTO.builder()
-			.username(input.getUsername())
-			.subscriptionStartDate(input.getSubscriptionStartDate())
-			.subscriptionEndDate(input.getSubscriptionEndDate())
-			.billingPeriod(input.getBillingPeriod())
-			.autoRenewal(input.getAutoRenewal())
-			.productId(input.getProductId())
-			.productName(input.getProductName())
-			.build();
-	}
+    public UserSubscriptionDAODTO convertUserSubscriptionComponentDTOToDAODTO(@NonNull UserSubscriptionComponentDTO input) {
+        return UserSubscriptionDAODTO.builder()
+            .username(input.getUsername())
+            .subscriptionStartDate(input.getSubscriptionStartDate())
+            .subscriptionEndDate(input.getSubscriptionEndDate())
+            .billingPeriod(input.getBillingPeriod())
+            .autoRenewal(input.getAutoRenewal())
+            .productId(input.getProductId())
+            .productName(input.getProductName())
+            .build();
+    }
 }

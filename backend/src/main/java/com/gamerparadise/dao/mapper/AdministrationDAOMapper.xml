@@ -6,8 +6,6 @@
     <resultMap id="UserResultMap" type="UserDAODTO">
         <id property="userId" column="user_id"/>
         <result property="username" column="username"/>
-        <collection property="notifications" ofType="UserNotificationDAODTO" resultMap="UserNotificationResultMap"/>
-        <collection property="subscriptions" ofType="UserSubscriptionDAODTO" resultMap="UserSubscriptionResultMap"/>
     </resultMap>
     <resultMap id="UserNotificationResultMap" type="UserNotificationDAODTO">
         <result property="username" column="username"/>
@@ -27,24 +25,7 @@
     </resultMap>
 
     <select id="getUser" parameterType="String" resultMap="UserResultMap">
-        SELECT
-			users.*,
-            user_notification_preferences.is_enabled,
-            notification_types.notification_type,
-            notification_types.frequency,
-            user_notification_preferences.last_update_time,
-            user_subscriptions.subscription_start_date,
-            user_subscriptions.subscription_end_date,
-            user_subscriptions.billing_period,
-            user_subscriptions.auto_renewal,
-            products.product_id,
-            products.product_name
-		FROM users
-		JOIN user_notification_preferences ON user_notification_preferences.user_id = users.user_id
-		JOIN notification_types ON user_notification_preferences.notification_type_id = notification_types.notification_type_id
-        JOIN user_subscriptions ON user_subscriptions.user_id = users.user_id
-        JOIN products ON user_subscriptions.product_id = products.product_id
-        WHERE username=#{username};
+        SELECT user_id, username FROM users WHERE username=#{username};
     </select>
 
     <select id="getUserNotificationPreferences" parameterType="String" resultMap="UserNotificationResultMap">
@@ -75,7 +56,7 @@
         WHERE username = #{username};
     </select>
 
-    <insert id="createUser" useGeneratedKeys="true" keyColumn="user_id" keyProperty="userId">
+    <insert id="createUser">
         INSERT INTO users (username) VALUES (#{username});
     </insert>
 

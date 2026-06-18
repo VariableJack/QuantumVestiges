@@ -40,7 +40,7 @@ public class AdministrationActivity {
     public UserActivityDTO getSettings(@AuthenticationPrincipal Jwt jwt) throws AccessDeniedException {
         final String username = jwt.getClaimAsString("username");
         logger.info("Beginning to process getSettings for user {}", username);
-		final UserComponentDTO userComponentDTO = administrationComponent.getOrCreateUser(username);
+        final UserComponentDTO userComponentDTO = administrationComponent.getOrCreateUser(username);
         final UserActivityDTO userActivityDTO = administrationActivityConverter.convertUserComponentDTOToActivityDTO(userComponentDTO);
         logger.info("Finished processing getSettings");
         return userActivityDTO;
@@ -52,10 +52,10 @@ public class AdministrationActivity {
         @NonNull @RequestBody UserActivityDTO input) throws AccessDeniedException {
         final String username = jwt.getClaimAsString("username");
         logger.info("Beginning to process updateNotificationPreferences for user {}, with input {}", username, input);
-		final List<UserNotificationComponentDTO> inputNotifications = input.getNotifications()
-			.stream()
-			.map(notification -> administrationActivityConverter.convertUserNotificationActivityDTOToComponentDTO(notification, username))
-			.toList();
+        final List<UserNotificationComponentDTO> inputNotifications = input.getNotifications()
+            .stream()
+            .map(notification -> administrationActivityConverter.convertUserNotificationActivityDTOToComponentDTO(notification, username))
+            .toList();
         administrationComponent.updateNotificationPreferences(inputNotifications);
         logger.info("Finished processing updateNotificationPreferences");
     }
