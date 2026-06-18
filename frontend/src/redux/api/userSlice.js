@@ -15,6 +15,8 @@ const initialState = {
     cart: [],
     purchasedGames: [],
     error: null,
+    preferences: [],
+    subscriptions: [],
 }
 
 const userSlice = createSlice({
@@ -51,6 +53,18 @@ const userSlice = createSlice({
         clearError: state => {
             state.error = null
         },
+        setPreferences: (state, action) => {
+            state.preferences = [...action.payload]
+        },
+        setSubscriptions: (state, action) => {
+            state.subscriptions = [...action.payload]
+        },
+        clearPreferences: state => {
+            state.preferences = []
+        },
+        clearSubscriptions: state => {
+            state.subscriptions = []
+        },
     },
 })
 
@@ -65,6 +79,10 @@ const {
     clearPurchasedGames,
     setError,
     clearError,
+    setPreferences,
+    setSubscriptions,
+    clearPreferences,
+    clearSubscriptions,
 } = userSlice.actions
 export {
     setUsername,
@@ -77,5 +95,9 @@ export {
     clearPurchasedGames,
     setError,
     clearError,
+    setPreferences,
+    setSubscriptions,
+    clearPreferences,
+    clearSubscriptions,
 }
 export default userSlice

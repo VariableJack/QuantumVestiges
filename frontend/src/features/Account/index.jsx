@@ -6,113 +6,33 @@ import {
     clearGroup,
     clearPurchasedGames,
     clearCart,
+    setPreferences,
+    setSubscriptions,
+    clearPreferences,
+    clearSubscriptions,
 } from '../../redux/api/userSlice'
+import {
+    addSuccessMessage,
+    addInfoMessage,
+    removeInfoMessage,
+    addErrorMessage,
+} from '../../redux/api/globalSlice'
 
 import { useUpdateCartMutation, useCheckoutCartMutation } from '../../redux/api/mediaEndpoints'
-import { EULA, Modal, Toggle, TOS } from '../../shared/components'
+import {
+    useLazyGetSettingsQuery,
+    useUpdateNotificationPreferencesMutation,
+} from '../../redux/api/accountEndpoints'
+
+import { Toggle } from '../../shared/components'
+import { CONNECTION_ERROR_MESSAGE } from '../../shared/constants'
 import { getConfig } from '../../shared/utils'
 
 import '../../styles/App.css'
 
-const Account = props => {
-    const { username, cart, purchasedGames } = useSelector(state => state.userReducer)
-    const { auth } = props
-    const dispatch = useDispatch()
-
-    const [updateCart, { isLoading: isUpdating }] = useUpdateCartMutation()
-    const [checkoutCart, { isLoading: isCheckingOut }] = useCheckoutCartMutation()
-    const [areCheckboxesChecked, setAreCheckboxesChecked] = useState({
-        privacyPolicy: false,
-        tos: false,
-    })
-    const [showModal, setShowModal] = useState({
-        privacyPolicy: false,
-        tos: false,
-    })
-    const [submitAgreement, setSubmitAgreement] = useState(false)
-    const [pageState, setPageState] = useState({
-        id: 'login',
-        title: 'Logging in?',
-        disabled: false,
-    })
-
-    useEffect(() => {
-        if (submitAgreement && areCheckboxesChecked.privacyPolicy && areCheckboxesChecked.tos)
-            auth.signinRedirect()
-    }, [submitAgreement])
-    const handleTabChange = item => {
-        set(
-            auth,
-            ['settings', 'metadata', 'authorization_endpoint'],
-            `https://${getConfig('cognitoDomain')}/${item.id}`,
-        )
-        setAreCheckboxesChecked({
-            privacyPolicy: false,
-            tos: false,
-        })
-        setSubmitAgreement(false)
-        setPageState(item)
-    }
-    if (auth.isLoading) {
-        return <div>Loading...</div>
-    }
-    if (auth.error) {
-        return <div>Encountering error... {auth.error.message}</div>
-    }
-    if (username) {
-        return (
-            <div>
-                <pre> Hello: {username} </pre>
-                Cart
-                {cart.map(item => (
-                    <div>
-                        {item.franchiseName} || {item.gameName}
-                        <br />
-                        {(!isUpdating && (
-                            <button
-                                onClick={() => {
-                                    updateCart({ action: 'remove', gameId: item.gameId })
-                                }}
-                            >
-                                Remove from Cart
-                            </button>
-                        )) || <b>Removing from cart...</b>}
-                    </div>
-                ))}
-                <br />
-                {
-                    (!isCheckingOut && <button onClick={checkoutCart}>Checkout cart</button>) || (
-                        <b>Checking out...</b>
-                    )
-                    // TODO - integrate payment processing here
-                }
-                <br />
-                Games you own
-                <br />
-                {purchasedGames.map(item => (
-                    <div>
-                        {item.franchiseName} || {item.gameName}
-                        <br />
-                    </div>
-                ))}
-                <button
-                    onClick={() => {
-                        auth.removeUser()
-                        dispatch(clearUsername())
-                        dispatch(clearGroup())
-                        localStorage.setItem('accessToken', '')
-                        dispatch(clearPurchasedGames())
-                        dispatch(clearCart())
-                    }}
-                >
-                    Sign out
-                </button>
-            </div>
-        )
-    }
-    const generateSpecificCheckbox = type => {
-        return
-    }
+const Login = props => {
+    const { auth, submitAgreement, setSubmitAgreement, pageState, setPageState, handleTabChange } =
+        props
     return (
         <div>
             {(pageState.id === 'login' && (
@@ -222,6 +142,282 @@ const Account = props => {
                 onChange={item => handleTabChange(item)}
             />
         </div>
+    )
+}
+
+const Account = props => {
+    const { username, cart, purchasedGames } = useSelector(state => state.userReducer)
+    const { auth } = props
+    const dispatch = useDispatch()
+
+    const [
+        updateCart,
+        {
+            isLoading: updateCartIsUpdating,
+            isSuccess: updateCartIsSuccess,
+            isError: updateCartIsError,
+            error: updateCartError,
+        },
+    ] = useUpdateCartMutation()
+    const [
+        checkoutCart,
+        {
+            isLoading: checkoutCartIsLoading,
+            isSuccess: checkoutCartIsSuccess,
+            isError: checkoutCartIsError,
+            error: checkoutCartError,
+        },
+    ] = useCheckoutCartMutation()
+    const [
+        triggerGetSettings,
+        { isLoading: getSettingsIsLoading, isError: getSettingsIsError, error: getSettingsError },
+    ] = useLazyGetSettingsQuery()
+    const [
+        updateNotificationPreferences,
+        {
+            isLoading: updateNotificationPreferencesIsUpdating,
+            isSuccess: updateNotificationPreferencesIsSuccess,
+            isError: updateNotificationPreferencesIsError,
+            error: updateNotificationPreferencesError,
+        },
+    ] = useUpdateNotificationPreferencesMutation()
+    const [areCheckboxesChecked, setAreCheckboxesChecked] = useState({
+        privacyPolicy: false,
+        tos: false,
+    })
+    const [submitAgreement, setSubmitAgreement] = useState(false)
+    const [pageState, setPageState] = useState({
+        id: 'login',
+        title: 'Logging in?',
+        disabled: false,
+    })
+
+    const [lastProductRemoved, setLastProductRemoved] = useState({
+        productId: -1,
+        productName: '',
+    })
+
+    useEffect(() => {
+        if (submitAgreement && areCheckboxesChecked.privacyPolicy && areCheckboxesChecked.tos)
+            auth.signinRedirect()
+    }, [submitAgreement])
+    const handleTabChange = item => {
+        set(
+            auth,
+            ['settings', 'metadata', 'authorization_endpoint'],
+            `https://${getConfig('cognitoDomain')}/${item.id}`,
+        )
+        setAreCheckboxesChecked({
+            privacyPolicy: false,
+            tos: false,
+        })
+        setSubmitAgreement(false)
+        setPageState(item)
+    }
+    useEffect(() => {
+        if (auth.isAuthenticated) {
+            triggerGetSettings()
+        }
+    }, [auth])
+    useEffect(() => {
+        const messageId = `updateCartInfo-remove-${lastProductRemoved.productId}`
+        if (updateCartIsUpdating) {
+            dispatch(
+                addInfoMessage({
+                    title: 'Updating cart...',
+                    description: 'Please wait as the system removes the item from your cart',
+                    id: messageId,
+                }),
+            )
+        } else {
+            dispatch(removeInfoMessage(messageId))
+        }
+    }, [updateCartIsUpdating])
+    useEffect(() => {
+        if (updateCartIsError) {
+            dispatch(
+                addErrorMessage({
+                    title: 'Failed to remove item from your cart',
+                    description: get(
+                        updateNotificationPreferencesError,
+                        'data.error',
+                        CONNECTION_ERROR_MESSAGE,
+                    ),
+                    id: `updateCartError-remove-${lastProductRemoved.productId}`,
+                }),
+            )
+        }
+    }, [updateCartIsError])
+    useEffect(() => {
+        if (updateCartIsSuccess) {
+            dispatch(
+                addSuccessMessage({
+                    title: 'Item successfully removed',
+                    description: 'The system has successfully removed the item from your cart',
+                    id: `updateCartError-remove-${lastProductRemoved.productId}`,
+                }),
+            )
+        }
+    }, [updateCartIsSuccess])
+
+    useEffect(() => {
+        const messageId = 'checkoutCartInfo'
+        if (updateCartIsUpdating) {
+            dispatch(
+                addInfoMessage({
+                    title: 'Checking out cart...',
+                    description: 'Please wait as the system checks out your cart',
+                    id: messageId,
+                }),
+            )
+        } else {
+            dispatch(removeInfoMessage(messageId))
+        }
+    }, [updateCartIsUpdating])
+    useEffect(() => {
+        if (updateCartIsError) {
+            dispatch(
+                addErrorMessage({
+                    title: 'Failed to check out your cart',
+                    description: get(
+                        updateNotificationPreferencesError,
+                        'data.error',
+                        CONNECTION_ERROR_MESSAGE,
+                    ),
+                    id: 'checkoutCartError',
+                }),
+            )
+        }
+    }, [updateCartIsError])
+    useEffect(() => {
+        if (updateCartIsSuccess) {
+            dispatch(
+                addSuccessMessage({
+                    title: 'Successfully checked out your cart',
+                    description:
+                        'Your cart has been successfully checked out and all items should now be added to your account',
+                    id: 'checkoutCartSuccess',
+                }),
+            )
+        }
+    }, [updateCartIsSuccess])
+
+    useEffect(() => {
+        const messageId = 'updateNotificationPreferencesInfo'
+        if (updateCartIsUpdating) {
+            dispatch(
+                addInfoMessage({
+                    title: 'Updating Notification Preferences',
+                    description: 'Please wait as the system updates your notification preferences',
+                    id: messageId,
+                }),
+            )
+        } else {
+            dispatch(removeInfoMessage(messageId))
+        }
+    }, [updateNotificationPreferencesIsUpdating])
+    useEffect(() => {
+        if (updateNotificationPreferencesIsError) {
+            dispatch(
+                addErrorMessage({
+                    title: 'Failed to update Notification Preferences',
+                    description: get(
+                        updateNotificationPreferencesError,
+                        'data.error',
+                        CONNECTION_ERROR_MESSAGE,
+                    ),
+                    id: 'updateNotificationPreferencesError',
+                }),
+            )
+        }
+    }, [updateNotificationPreferencesIsError])
+    useEffect(() => {
+        if (updateNotificationPreferencesIsSuccess) {
+            dispatch(
+                addSuccessMessage({
+                    title: 'Successfully updated Notification Preferences',
+                    description: 'Your Notification Preferences have been successfully updated',
+                    id: 'updateNotificationPreferencesSuccess',
+                }),
+            )
+        }
+    }, [updateNotificationPreferencesIsSuccess])
+
+    if (auth.isLoading) {
+        return <div>Loading...</div>
+    }
+    if (auth.error) {
+        return <div>Encountering error... {auth.error.message}</div>
+    }
+    if (username) {
+        return (
+            <div>
+                <pre> Hello: {username} </pre>
+                Cart
+                {cart.map(item => (
+                    <div>
+                        {item.franchiseName} || {item.gameName}
+                        <br />
+                        {(!updateCartIsUpdating && (
+                            <button
+                                onClick={() => {
+                                    updateCart({ action: 'remove', productId: item.productId })
+                                    setLastProductRemoved({
+                                        productId: item.productId,
+                                        productName: item.productName,
+                                    })
+                                }}
+                            >
+                                Remove from Cart
+                            </button>
+                        )) || <b>Removing from cart...</b>}
+                    </div>
+                ))}
+                <br />
+                {
+                    (!checkoutCartIsLoading && (
+                        <button onClick={checkoutCart}>Checkout cart</button>
+                    )) || <b>Checking out...</b>
+                    // TODO - integrate payment processing here
+                }
+                <br />
+                Games you own
+                <br />
+                {purchasedGames.map(item => (
+                    <div>
+                        {item.franchiseName} || {item.gameName}
+                        <br />
+                    </div>
+                ))}
+                <button
+                    onClick={() => {
+                        auth.removeUser()
+                        dispatch(clearUsername())
+                        dispatch(clearGroup())
+                        localStorage.setItem('accessToken', '')
+                        dispatch(clearPurchasedGames())
+                        dispatch(clearCart())
+                        dispatch(clearPreferences())
+                        dispatch(clearSubscriptions())
+                    }}
+                >
+                    Sign out
+                </button>
+            </div>
+        )
+    }
+
+    return (
+        <Login
+            auth={auth}
+            areCheckboxesChecked={areCheckboxesChecked}
+            setAreCheckboxesChecked={setAreCheckboxesChecked}
+            submitAgreement={submitAgreement}
+            setSubmitAgreement={setSubmitAgreement}
+            pageState={pageState}
+            setPageState={setPageState}
+            handleTabChange={handleTabChange}
+        />
     )
 }
 

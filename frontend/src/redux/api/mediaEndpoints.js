@@ -45,12 +45,12 @@ export const mediaEndpoints = gamerParadiseApiSlice.injectEndpoints({
             providesTags: ['cart'],
         }),
         updateCart: builder.mutation({
-            query: ({ action, gameId }) => ({
+            query: ({ action, productId }) => ({
                 url: '/update-cart',
                 method: 'POST',
                 body: {
                     action,
-                    gameId,
+                    productId,
                 },
             }),
             invalidateTags: ['cart'],
