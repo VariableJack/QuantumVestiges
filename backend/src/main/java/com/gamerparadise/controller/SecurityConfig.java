@@ -1,5 +1,6 @@
 package com.gamerparadise.controller;
 
+import org.springframework.core.annotation.Order;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -10,16 +11,30 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 @Configuration
 public class SecurityConfig {
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http,
-        RequestMappingHandlerMapping handlerMapping) throws Exception {
+    @Order(1)
+    public SecurityFilterChain publicSecurityFilterChain(
+            HttpSecurity http, 
+            RequestMappingHandlerMapping handlerMapping) throws Exception {
         final AnnotationRequestMatcher publicEndpoints = new AnnotationRequestMatcher(handlerMapping);
-        http.cors(Customizer.withDefaults())
-            .authorizeHttpRequests((requests) -> requests
-                .requestMatchers(publicEndpoints).permitAll()
-                .anyRequest().authenticated())
+        http
+            .securityMatcher(publicEndpoints)
+            .cors(Customizer.withDefaults())
+            .csrf(csrf -> csrf.disable())
+            .authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
+        return http.build();
+    }
+
+    @Bean
+    @Order(2)
+    public SecurityFilterChain protectedSecurityFilterChain(HttpSecurity http) throws Exception {
+        http
+            .cors(Customizer.withDefaults())
+            .csrf(csrf -> csrf.disable())
+            .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
             .oauth2ResourceServer(oauth2 -> oauth2
                 .authenticationEntryPoint(new CustomAuthenticationEntryPoint())
-                .jwt(Customizer.withDefaults()));
+                .jwt(Customizer.withDefaults())
+            );
         return http.build();
     }
 }

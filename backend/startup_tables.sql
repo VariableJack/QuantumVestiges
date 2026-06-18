@@ -76,7 +76,7 @@ create table products (
 create table user_subscriptions (
   user_subscription_id SERIAL primary key,
   user_id BIGINT UNSIGNED Not null references users.user_id ON DELETE RESTRICT,
-  product_id BIGINT UNSIGNED Not null references product_id ON DELETE RESTRICT,
+  product_id BIGINT UNSIGNED Not null references products.product_id ON DELETE RESTRICT,
   subscription_start_date timestamp not null,
   subscription_end_date timestamp not null,
   billing_period enum('1-MONTH', '3-MONTH', '6-MONTH', '12-MONTH') not null,
@@ -90,11 +90,11 @@ create table user_subscriptions_cl (
   product_id BIGINT UNSIGNED not null,
   subscription_start_date timestamp not null,
   subscription_end_date timestamp not null,
-  billing_period enum not null,
+  billing_period enum('1-MONTH', '3-MONTH', '6-MONTH', '12-MONTH') not null,
   auto_renewal boolean not null,
   change_action enum('INSERT', 'UPDATE', 'delete') not null,
   change_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-)
+);
 --
 delimiter //
 create trigger user_subscriptions_insert
@@ -240,6 +240,7 @@ create table purchased_items (
   user_id BIGINT UNSIGNED Not null references users.user_id ON DELETE RESTRICT,
   product_id BIGINT UNSIGNED Not null references product.product_id ON DELETE RESTRICT
 );
+--
 delimiter //
 create trigger users_delete
 after delete on users
@@ -280,5 +281,27 @@ begin
   UPDATE feedback
   SET user_id = 1
   WHERE user_id = OLD.user_id;
+end;//
+delimiter ;
+
+delimiter //
+create trigger users_insert
+after insert on users
+for each row
+begin
+  INSERT INTO user_notification_preferences(user_id, notification_type_id, is_enabled)
+  SELECT NEW.user_id, notification_type_id, FALSE
+  FROM notification_types;
+end;//
+delimiter ;
+
+delimiter //
+create trigger notification_types_insert
+after insert on notification_types
+for each row
+begin
+  INSERT INTO user_notification_preferences(user_id, notification_type_id, is_enabled)
+  SELECT user_id, NEW.notification_type_id, FALSE
+  FROM notification_types;
 end;//
 delimiter ;

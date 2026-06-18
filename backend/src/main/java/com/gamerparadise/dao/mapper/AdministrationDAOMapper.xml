@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gamerparadise.dao.mapper.AdministrationDAOMapper">
+    <resultMap id="UserResultMap" type="UserDAODTO">
+        <id property="userId" column="user_id"/>
+        <result property="username" column="username"/>
+        <collection property="notifications" ofType="UserNotificationDAODTO" resultMap="UserNotificationResultMap"/>
+        <collection property="subscriptions" ofType="UserSubscriptionDAODTO" resultMap="UserSubscriptionResultMap"/>
+    </resultMap>
+    <resultMap id="UserNotificationResultMap" type="UserNotificationDAODTO">
+        <result property="username" column="username"/>
+        <result property="isEnabled" column="is_enabled"/>
+        <result property="notificationType" column="notification_type"/>
+        <result property="frequency" column="frequency"/>
+        <result property="lastUpdateTime" column="last_update_time"/>
+    </resultMap>
+    <resultMap id="UserSubscriptionResultMap" type="UserSubscriptionDAODTO">
+        <result property="username" column="username"/>
+        <result property="subscriptionStartDate" column="subscription_start_date"/>
+        <result property="subscriptionEndDate" column="subscription_end_date"/>
+        <result property="billingPeriod" column="billing_period"/>
+        <result property="autoRenewal" column="auto_renewal"/>
+        <result property="productId" column="product_id"/>
+        <result property="productName" column="product_name"/>
+    </resultMap>
+
+    <select id="getUser" parameterType="String" resultMap="UserResultMap">
+        SELECT
+			users.*,
+            user_notification_preferences.is_enabled,
+            notification_types.notification_type,
+            notification_types.frequency,
+            user_notification_preferences.last_update_time,
+            user_subscriptions.subscription_start_date,
+            user_subscriptions.subscription_end_date,
+            user_subscriptions.billing_period,
+            user_subscriptions.auto_renewal,
+            products.product_id,
+            products.product_name
+		FROM users
+		JOIN user_notification_preferences ON user_notification_preferences.user_id = users.user_id
+		JOIN notification_types ON user_notification_preferences.notification_type_id = notification_types.notification_type_id
+        JOIN user_subscriptions ON user_subscriptions.user_id = users.user_id
+        JOIN products ON user_subscriptions.product_id = products.product_id
+        WHERE username=#{username};
+    </select>
+
+    <select id="getUserNotificationPreferences" parameterType="String" resultMap="UserNotificationResultMap">
+        SELECT
+            users.username,
+            user_notification_preferences.is_enabled,
+            notification_types.notification_type,
+            notification_types.frequency,
+            user_notification_preferences.last_update_time
+        FROM user_notification_preferences
+        JOIN users ON user_notification_preferences.user_id = users.user_id
+        JOIN notification_types ON user_notification_preferences.notification_type_id = notification_types.notification_type_id
+        WHERE username = #{username};
+    </select>
+
+    <select id="getUserSubscriptions" parameterType="String" resultMap="UserSubscriptionResultMap">
+        SELECT
+            users.username,
+            user_subscriptions.subscription_start_date,
+            user_subscriptions.subscription_end_date,
+            user_subscriptions.billing_period,
+            user_subscriptions.auto_renewal,
+            products.product_id,
+            products.product_name
+        FROM user_subscriptions
+        JOIN users ON user_subscriptions.user_id = users.user_id
+        JOIN products ON user_subscriptions.product_id = products.product_id
+        WHERE username = #{username};
+    </select>
+
+    <insert id="createUser" useGeneratedKeys="true" keyColumn="user_id" keyProperty="userId">
+        INSERT INTO users (username) VALUES (#{username});
+    </insert>
+
+    <update id="saveUserPayment">
+        UPDATE users SET stripe_customer_id = #{stripeCustomerId} WHERE username = #{username};
+    </update>
+
+    <update id="updateNotificationPreference">
+        UPDATE user_notification_preferences SET is_enabled = #{input.isEnabled} WHERE user_id = (SELECT user_id FROM users WHERE username = #{input.username})
+    </update>
+
+    <insert id="createSubscription">
+        INSERT INTO user_subscriptions (user_id, product_id, subscription_start_date, subscription_end_date, billing_period, auto_renewal)
+        VALUES (SELECT user_id FROM users WHERE username = #{input.username}, #{input.productId}, #{input.subscriptionStartDate}, #{input.subscriptionEndDate}, #{input.billingPeriod}, {input.autoRenewal});
+    </insert>
+
+    <update id="updateSubscription">
+        UPDATE user_subscriptions
+        SET billing_period = ${input.billingPeriod},
+            auto_renewal = ${input.autoRenewal}
+        WHERE user_id = SELECT user_id FROM users WHERE username = #{input.username};
+    </update>
+</mapper>

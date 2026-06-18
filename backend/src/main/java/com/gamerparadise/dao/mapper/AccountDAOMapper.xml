@@ -38,7 +38,7 @@
     </select>
 
     <insert id="createOrder" useGeneratedKeys="true" keyColumn="order_id" keyProperty="orderId">
-        INSERT INTO orders (user_id) VALUES (SELECT user_id FROM users WHERE username = #{username} LIMIT 1);
+        INSERT INTO orders (user_id) VALUES (SELECT * FROM users WHERE username = #{username});
     </insert>
 
     <select id="getOrder">
