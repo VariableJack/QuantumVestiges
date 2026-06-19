@@ -12,7 +12,7 @@ import { getUserPoolId } from '../../shared/utils'
 const initialState = {
     username: undefined,
     group: '',
-    cart: [],
+    order: {},
     purchasedGames: [],
     error: null,
     preferences: [],
@@ -35,11 +35,11 @@ const userSlice = createSlice({
         clearGroup: state => {
             state.group = ''
         },
-        setCart: (state, action) => {
-            state.cart = [...action.payload]
+        setOrder: (state, action) => {
+            state.order = { ...action.payload }
         },
-        clearCart: state => {
-            state.cart = []
+        clearOrder: state => {
+            state.order = {}
         },
         setPurchasedGames: (state, action) => {
             state.purchasedGames = [...action.payload]
@@ -73,8 +73,8 @@ const {
     clearUsername,
     setGroup,
     clearGroup,
-    setCart,
-    clearCart,
+    setOrder,
+    clearOrder,
     setPurchasedGames,
     clearPurchasedGames,
     setError,
@@ -89,8 +89,8 @@ export {
     clearUsername,
     setGroup,
     clearGroup,
-    setCart,
-    clearCart,
+    setOrder,
+    clearOrder,
     setPurchasedGames,
     clearPurchasedGames,
     setError,

@@ -204,7 +204,7 @@ const DiscussionWrapperCreate = props => {
     useEffect(() => {
         let successMessage = undefined
         if (supportRequestIsSuccess) {
-            const createdLink = `/support-request/requestId=${bugReports[0].threadId}`
+            const createdLink = `/support-request/${supportRequests[0].threadId}`
             successMessage = {
                 title: 'Successfully created new support request',
                 description: `Your support request has been successfully created and can be accessed ${(<a href={createdLink}>'here'</a>)}`,
@@ -213,7 +213,7 @@ const DiscussionWrapperCreate = props => {
             dispatch(setSupportRequests([response, ...supportRequests]))
         }
         if (bugReportIsSuccess) {
-            const createdLink = `/bug-report/requestId=${supportRequests[0].threadId}`
+            const createdLink = `/bug-report/${bugReports[0].threadId}`
             successMessage = {
                 title: 'Successfully created new bug report',
                 description: `Your bug report has been successfully created and can be accessed ${(<a href={createdLink}>'here'</a>)}`,
@@ -222,7 +222,7 @@ const DiscussionWrapperCreate = props => {
             dispatch(setBugReports([response, ...bugReports]))
         }
         if (discussionThreadIsSuccess) {
-            const createdLink = `/discussion/requestId=${discussionThreads[0].threadId}`
+            const createdLink = `/discussion/${discussionThreads[0].threadId}`
             successMessage = {
                 title: 'Successfully created new discussion',
                 description: `Your discussion has been successfully created and can be accessed ${(<a href={createdLink}>'here'</a>)}`,

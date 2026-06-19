@@ -27,9 +27,11 @@ const filterData = (data, pagination, author, status) => {
         )
         .slice(0, pagination.count)
 }
-const getThreadHeaders = data => {
+const getThreadHeaders = (data, url) => {
     return data.map(singleItem => (
         <ThreadHeader
+            url={url}
+            threadId={singleItem.threadId}
             title={singleItem.title}
             author={singleItem.author}
             createTime={singleItem.createTime}
@@ -68,9 +70,15 @@ const DiscussionComponent = props => {
         <div>
             <h1>{baseTitle}</h1>
             Open
-            {getThreadHeaders(filterData(data, pagination, selectedAuthor.author, 'OPEN'))}
+            {getThreadHeaders(
+                filterData(data, pagination, selectedAuthor.author, 'OPEN'),
+                FORUM_PAGE_ITEMS[type].allViewUrl(),
+            )}
             Closed
-            {getThreadHeaders(filterData(data, pagination, selectedAuthor.author, 'CLOSED'))}
+            {getThreadHeaders(
+                filterData(data, pagination, selectedAuthor.author, 'CLOSED'),
+                FORUM_PAGE_ITEMS[type].allViewUrl(),
+            )}
             <span>
                 Page size
                 <Toggle
@@ -172,7 +180,7 @@ const DiscussionWrapper = props => {
             switch (type) {
                 case FORUM_PAGES.SUPPORT:
                     response = await triggerGetSupportRequests().unwrap()
-                    dispatch(setDiscussionThreads(response))
+                    dispatch(setSupportRequests(response))
                     break
                 case FORUM_PAGES.BUG_REPORT:
                     response = await triggerGetBugReport().unwrap()
@@ -180,7 +188,7 @@ const DiscussionWrapper = props => {
                     break
                 case FORUM_PAGES.DISCUSSION:
                     response = await triggerGetDiscussionThreads().unwrap()
-                    dispatch(setSupportRequests(response))
+                    dispatch(setDiscussionThreads(response))
                     break
                 default:
                     response = []

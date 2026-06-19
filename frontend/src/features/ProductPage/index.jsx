@@ -4,7 +4,7 @@ import { get } from 'lodash'
 
 import { useLocation } from 'react-router-dom'
 
-import { useUpdateCartMutation, useLazyGetProductByIdQuery } from '../../redux/api/mediaEndpoints'
+import { useUpdateOrderMutation, useLazyGetProductByIdQuery } from '../../redux/api/mediaEndpoints'
 import {
     addSuccessMessage,
     addInfoMessage,
@@ -17,7 +17,7 @@ import '../../styles/App.css'
 
 const Game = () => {
     const dispatch = useDispatch()
-    const { cart, purchasedGames } = useSelector(state => state.userReducer)
+    const { order, purchasedGames } = useSelector(state => state.userReducer)
     const { search } = useLocation()
     const params = new URLSearchParams(search)
     const productId = params.get('productId')
@@ -32,7 +32,7 @@ const Game = () => {
             error: updateOrderError,
             isSuccess: updateOrderIsSuccess,
         },
-    ] = useUpdateCartMutation()
+    ] = useUpdateOrderMutation()
     const [product, setProduct] = useState({
         productId: -1,
         productName: '',
@@ -43,7 +43,9 @@ const Game = () => {
         const response = await triggerGetProduct({ productId }).unwrap()
         setProduct(response)
     }
-    const isPresentInCart = cart.find(cartItem => cartItem.productId === product.productId)
+    const isPresentInOrder = order.items.find(
+        orderItem => orderItem.productId === product.productId,
+    )
     useEffect(() => {
         if (!productId) {
             window.location.href('/not-found')
@@ -80,15 +82,16 @@ const Game = () => {
     }, [isLoading])
 
     useEffect(() => {
-        const messageId = `updateOrderInfo-${(isPresentInCart && 'remove') || 'add'}-${product.productId}`
+        const messageId = `updateOrderInfo-${(isPresentInOrder && 'remove') || 'add'}-${product.productId}`
         if (isUpdating) {
             dispatch(
                 addInfoMessage({
-                    title: (isPresentInCart && 'Removing item from cart') || 'Adding item to cart',
+                    title:
+                        (isPresentInOrder && 'Removing item from order') || 'Adding item to order',
                     description:
-                        (isPresentInCart &&
-                            'Please wait as the system removes the item from your cart') ||
-                        'Please wait as the system addes the item to your cart',
+                        (isPresentInOrder &&
+                            'Please wait as the system removes the item from your order') ||
+                        'Please wait as the system addes the item to your order',
                     id: messageId,
                 }),
             )
@@ -101,9 +104,9 @@ const Game = () => {
         if (updateOrderIsError) {
             dispatch(
                 addErrorMessage({
-                    title: `Failed to ${(isPresentInCart && 'remove item from') || 'add item to'} your cart`,
+                    title: `Failed to ${(isPresentInOrder && 'remove item from') || 'add item to'} your order`,
                     description: get(updateOrderError, 'data.error', CONNECTION_ERROR_MESSAGE),
-                    id: `updateOrderError-${(isPresentInCart && 'remove') || 'add'}-${product.productId}`,
+                    id: `updateOrderError-${(isPresentInOrder && 'remove') || 'add'}-${product.productId}`,
                 }),
             )
         }
@@ -113,9 +116,9 @@ const Game = () => {
         if (updateOrderIsSuccess) {
             dispatch(
                 addSuccessMessage({
-                    title: (isPresentInCart && 'Removed item from cart') || 'Added item to cart',
-                    description: `The system has successfully ${(isPresentInCart && 'removed the item from') || 'added the item to'} your cart`,
-                    id: `updateOrderSuccess-${(isPresentInCart && 'remove') || 'add'}-${product.productId}`,
+                    title: (isPresentInOrder && 'Removed item from order') || 'Added item to order',
+                    description: `The system has successfully ${(isPresentInOrder && 'removed the item from') || 'added the item to'} your order`,
+                    id: `updateOrderSuccess-${(isPresentInOrder && 'remove') || 'add'}-${product.productId}`,
                 }),
             )
         }
@@ -136,7 +139,7 @@ const Game = () => {
     return (
         <div>
             {product.franchiseName} - {product.productName}
-            {(isPresentInCart && (
+            {(isPresentInOrder && (
                 <div>
                     <br />
                     {(!isUpdating && (
@@ -145,9 +148,9 @@ const Game = () => {
                                 updateOrder({ action: 'remove', productId: product.productId })
                             }}
                         >
-                            Remove from Cart
+                            Remove from Order
                         </button>
-                    )) || <b>Removing from cart...</b>}
+                    )) || <b>Removing from order...</b>}
                 </div>
             )) ||
                 (!purchasedGames.find(
@@ -165,9 +168,9 @@ const Game = () => {
                                     })
                                 }}
                             >
-                                Add to Cart
+                                Add to Order
                             </button>
-                        )) || <b>Adding to cart...</b>}
+                        )) || <b>Adding to order...</b>}
                     </div>
                 )) || (
                     <div>

@@ -3,13 +3,25 @@ import { formatTimestamp } from '../../utils'
 import '../../../styles/App.css'
 
 const ThreadHeader = props => {
-    const { title, author, description, createTime, lastUpdateTime, lastUpdateBy, status } = props
+    const {
+        title,
+        url,
+        threadId,
+        author,
+        description,
+        createTime,
+        lastUpdateTime,
+        lastUpdateBy,
+        status,
+    } = props
+    const header = (url && (
+        <a href={`${url}/${threadId}`}>
+            <h3>{title}</h3>
+        </a>
+    )) || <h3>{title}</h3>
     return (
         <div>
-            <span>
-                <h1 className="f-l">{title}</h1>
-            </span>
-            <span className="f-l">{description}</span>
+            <span className="f-l">{header}</span>
             <span className="f-r">
                 {author} - {formatTimestamp(createTime)}
                 {(status && lastUpdateBy && (
@@ -20,6 +32,11 @@ const ThreadHeader = props => {
                     </>
                 )) || <></>}
             </span>
+            <br />
+            <span className="f-l">{description}</span>
+            <br />
+            <br />
+            <br />
         </div>
     )
 }

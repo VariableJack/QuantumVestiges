@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { useLocation } from 'react-router-dom'
 import { get } from 'lodash'
 
 import {
@@ -47,53 +46,57 @@ const DiscussionDetailed = props => {
                     </button>
                 </div>
             </div>
-            <Modal
-                header={`Do you wish to put a comment as you ${(data.status === 'OPEN' && 'close out') || 'reopen'} this ${FORUM_PAGE_ITEMS[type].detailedPageTitle}?`}
-                footer={
-                    <div>
-                        <button
-                            className="f-l secondary"
-                            onClick={() => {
-                                setModalIsOpen(false)
-                                setModalInputDescription('')
-                                setModalCommentResetBoolean(true)
-                            }}
-                        >
-                            Cancel
-                        </button>
-                        <button
-                            className="f-l primary"
-                            onClick={() => {
-                                if (data.status === 'OPEN')
-                                    closeAction({
-                                        threadId: data.threadId,
-                                        description: modalInputDescription,
-                                    })
-                                else
-                                    reopenAction({
-                                        threadId: data.threadId,
-                                        description: modalInputDescription,
-                                    })
-                                setModalIsOpen(false)
-                                setModalInputDescription('')
-                                setModalCommentResetBoolean(true)
-                            }}
-                        >
-                            Submit
-                        </button>
-                    </div>
-                }
-            >
-                <input
-                    className={`medium-border description ${(~!modalCommentResetBoolean && 'error-text') || 'no-error-text'}`}
-                    placeholder="Enter your comment here (not required)"
-                    value={modalInputDescription}
-                    onChange={event => {
-                        setModalInputDescription(event.nativeEvent.srcElement.value)
-                        setModalCommentResetBoolean(event.nativeEvent.srcElement.value.length > 0)
-                    }}
-                />
-            </Modal>
+            {(modalIsOpen && (
+                <Modal
+                    header={`Do you wish to put a comment as you ${(data.status === 'OPEN' && 'close out') || 'reopen'} this ${FORUM_PAGE_ITEMS[type].detailedPageTitle}?`}
+                    footer={
+                        <div>
+                            <button
+                                className="f-l secondary"
+                                onClick={() => {
+                                    setModalIsOpen(false)
+                                    setModalInputDescription('')
+                                    setModalCommentResetBoolean(true)
+                                }}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                className="f-l primary"
+                                onClick={() => {
+                                    if (data.status === 'OPEN')
+                                        closeAction({
+                                            threadId: data.threadId,
+                                            description: modalInputDescription,
+                                        })
+                                    else
+                                        reopenAction({
+                                            threadId: data.threadId,
+                                            description: modalInputDescription,
+                                        })
+                                    setModalIsOpen(false)
+                                    setModalInputDescription('')
+                                    setModalCommentResetBoolean(true)
+                                }}
+                            >
+                                Submit
+                            </button>
+                        </div>
+                    }
+                >
+                    <input
+                        className={`medium-border description ${(!modalCommentResetBoolean && 'error-text') || 'no-error-text'}`}
+                        placeholder="Enter your comment here (not required)"
+                        value={modalInputDescription}
+                        onChange={event => {
+                            setModalInputDescription(event.nativeEvent.srcElement.value)
+                            setModalCommentResetBoolean(
+                                event.nativeEvent.srcElement.value.length > 0,
+                            )
+                        }}
+                    />
+                </Modal>
+            )) || <></>}
             <ThreadHeader
                 title={data.title}
                 author={data.author}
@@ -105,7 +108,7 @@ const DiscussionDetailed = props => {
                 <>
                     <div>
                         <input
-                            className={`medium-border description ${(~!mainCommentResetBoolean && 'error-text') || 'no-error-text'}`}
+                            className={`medium-border description ${(!mainCommentResetBoolean && 'error-text') || 'no-error-text'}`}
                             placeholder="Enter your comment here..."
                             value={inputDescription}
                             onChange={event => {
@@ -133,7 +136,7 @@ const DiscussionDetailed = props => {
                     <br />
                 </>
             )) || <></>}
-            {data.comments.map(comment => {
+            {get(data, 'comments', []).map(comment => {
                 ;<div className="d-f">
                     <span>{comment.author}</span>
                     <span className="mh-xl">{comment.description}</span>
@@ -145,10 +148,10 @@ const DiscussionDetailed = props => {
 }
 
 const DiscussionWrapperDetailed = props => {
+    const dispatch = useDispatch()
+    const threadId = window.location.pathname.split('/')[2]
+    useEffect(() => {}, [])
     const { type } = props
-    const { search } = useLocation()
-    const params = new URLSearchParams(search)
-    const requestId = params.get('requestId')
 
     const [
         triggerGetSupportRequest,
@@ -201,6 +204,11 @@ const DiscussionWrapperDetailed = props => {
 
     const [data, setData] = useState({
         threadId: -1,
+        title: '',
+        author: '',
+        description: '',
+        createTime: 0,
+        comments: [],
     })
     const [getDataErrorStatusCode, setGetDataErrorStatusCode] = useState(0)
 
@@ -233,7 +241,7 @@ const DiscussionWrapperDetailed = props => {
         } else {
             dispatch(removeInfoMessage('discussionThreadInfo'))
         }
-        if (infoMessage) dispatch(setInfoMessage(infoMessage))
+        if (infoMessage) dispatch(addInfoMessage(infoMessage))
     }, [supportRequestIsLoading, bugReportIsLoading, discussionThreadIsLoading])
 
     useEffect(() => {
@@ -294,7 +302,7 @@ const DiscussionWrapperDetailed = props => {
         } else {
             dispatch(removeInfoMessage('discussionThreadInfo'))
         }
-        if (infoMessage) dispatch(setInfoMessage(infoMessage))
+        if (infoMessage) dispatch(addInfoMessage(infoMessage))
     }, [
         supportRequestCommentIsSubmitting,
         bugReportCommentIsSubmitting,
@@ -363,28 +371,38 @@ const DiscussionWrapperDetailed = props => {
     const getData = async () => {
         let response = {
             threadId: -1,
+            title: '',
+            author: '',
+            description: '',
+            createTime: 0,
+            comments: [],
         }
         try {
             switch (type) {
                 case FORUM_PAGES.SUPPORT:
-                    response = await triggerGetSupportRequest(requestId).unwrap()
+                    response = await triggerGetSupportRequest({ threadId }).unwrap()
                     break
                 case FORUM_TYPE.BUG_REPORT:
-                    response = await triggerGetBugReport(requestId).unwrap()
+                    response = await triggerGetBugReport({ threadId }).unwrap()
                     break
                 case FORUM_PAGES.DISCUSSION:
-                    response = await triggerGetDiscussionThread(requestId).unwrap()
+                    response = await triggerGetDiscussionThread({ threadId }).unwrap()
                     break
             }
         } catch (e) {}
-        return response
+        setData(response)
     }
     useEffect(() => {
-        setData(getData())
+        getData()
     }, [])
     const submitAction = async input => {
         let response = {
             threadId: -1,
+            title: '',
+            author: '',
+            description: '',
+            createTime: 0,
+            comments: [],
         }
         try {
             switch (type) {
@@ -408,10 +426,7 @@ const DiscussionWrapperDetailed = props => {
             comments: [...data.comments, response],
         })
     }
-    switch (getDataErrorStatusCode) {
-        default:
-            return <DiscussionDetailed data={data} type={type} submitAction={handleSubmitAndSave} />
-    }
+    return <DiscussionDetailed data={data} type={type} submitAction={handleSubmitAndSave} />
 }
 
 export default DiscussionWrapperDetailed

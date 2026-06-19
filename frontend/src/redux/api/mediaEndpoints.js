@@ -30,14 +30,13 @@ export const mediaEndpoints = gamerParadiseApiSlice.injectEndpoints({
             }),
         }),
         getPurchasedItems: builder.query({
-            query: ({ accessToken }) => ({
+            query: () => ({
                 url: '/purchased-games',
                 method: 'GET',
-                headers: { Authorization: accessToken },
             }),
             providesTags: ['account-details'],
         }),
-        getCart: builder.query({
+        getOrder: builder.query({
             query: () => ({
                 url: '/order',
                 method: 'GET',
@@ -56,7 +55,7 @@ export const mediaEndpoints = gamerParadiseApiSlice.injectEndpoints({
             }),
             invalidateTags: ['order'],
         }),
-        checkoutCart: builder.mutation({
+        checkoutOrder: builder.mutation({
             query: () => ({
                 url: '/checkout-order',
                 method: 'POST',
@@ -120,9 +119,9 @@ export const {
     useLazyGetInstallerQuery,
 
     useLazyGetPurchasedItemsQuery,
-    useLazyGetCartQuery,
-    useUpdateCartMutation,
-    useCheckoutCartMutation,
+    useLazyGetOrderQuery,
+    useUpdateOrderMutation,
+    useCheckoutOrderMutation,
     useCreateFranchiseMutation,
     useCreateGameMutation,
 } = mediaEndpoints

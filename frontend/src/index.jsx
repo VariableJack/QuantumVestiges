@@ -9,15 +9,15 @@ import { store } from './redux/api'
 import {
     useLazyGetFranchisesQuery,
     useLazyGetPurchasedItemsQuery,
-    useLazyGetCartQuery,
-    useCheckoutCartMutation,
+    useLazyGetOrderQuery,
+    useCheckoutOrderMutation,
 } from './redux/api/mediaEndpoints'
 import { setFranchises, addErrorMessage } from './redux/api/globalSlice'
 import {
     setUsername,
     setAccessToken,
     setGroup,
-    setCart,
+    setOrder,
     setPurchasedGames,
 } from './redux/api/userSlice'
 
@@ -79,9 +79,9 @@ const RouterWrapper = props => {
     const dispatch = useDispatch()
 
     const [
-        triggerGetCart,
-        { isLoading: isGetCartLoading, isError: getCartIsError, error: getCartError },
-    ] = useLazyGetCartQuery()
+        triggerGetOrder,
+        { isLoading: isGetOrderLoading, isError: getOrderIsError, error: getOrderError },
+    ] = useLazyGetOrderQuery()
     const [
         triggerGetPurchasedItems,
         {
@@ -92,27 +92,23 @@ const RouterWrapper = props => {
     ] = useLazyGetPurchasedItemsQuery()
     const getDetails = async auth => {
         try {
-            const cartResults = await triggerGetCart({
-                accessToken: auth.user.accessToken,
-            }).unwrap()
-            const purchasedGamesResults = await triggerGetPurchasedItems({
-                accessToken: auth.user.accessToken,
-            }).unwrap()
-            dispatch(setCart([...cartResults]))
+            const orderResults = await triggerGetOrder().unwrap()
+            const purchasedGamesResults = await triggerGetPurchasedItems().unwrap()
+            dispatch(setOrder(orderResults))
             dispatch(setPurchasedGames([...purchasedGamesResults]))
         } catch (e) {}
     }
     useEffect(() => {
-        if (getCartIsError) {
+        if (getOrderIsError) {
             dispatch(
                 addErrorMessage({
-                    title: 'Failed to fetch your cart',
-                    description: get(getCartError, 'data.error', CONNECTION_ERROR_MESSAGE),
-                    id: 'cartFetch',
+                    title: 'Failed to fetch your order',
+                    description: get(getOrderError, 'data.error', CONNECTION_ERROR_MESSAGE),
+                    id: 'orderFetch',
                 }),
             )
         }
-    }, [getCartIsError])
+    }, [getOrderIsError])
     useEffect(() => {
         if (getPurchasedItemsIsError) {
             dispatch(
@@ -158,15 +154,15 @@ const RouterWrapper = props => {
                 <Route path="/download" element={<DownloadInstaller />} />
 
                 <Route
-                    path="/bug-report/:requestId"
+                    path="/bug-report/:threadId"
                     element={<DiscussionWrapperDetailed type={FORUM_PAGES.BUG_REPORT} />}
                 />
                 <Route
-                    path="/support/:requestId"
+                    path="/support/:threadId"
                     element={<DiscussionWrapperDetailed type={FORUM_PAGES.SUPPORT} />}
                 />
                 <Route
-                    path="/discussion/:requestId"
+                    path="/discussion/:threadId"
                     element={<DiscussionWrapperDetailed type={FORUM_PAGES.DISCUSSION} />}
                 />
 

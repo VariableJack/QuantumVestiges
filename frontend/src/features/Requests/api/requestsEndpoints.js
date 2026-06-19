@@ -33,31 +33,22 @@ export const requestsEndpoints = gamerParadiseApiSlice.injectEndpoints({
             providesTags: ['discussionThreads'],
         }),
         getDetailedSupportRequest: builder.query({
-            query: ({ requestId }) => ({
-                url: '/support-request',
-                param: {
-                    requestId,
-                },
+            query: ({ threadId }) => ({
+                url: `/support-request?threadId=${threadId}`,
                 method: 'GET',
             }),
             providesTags: ['supportRequest'],
         }),
         getDetailedBugReport: builder.query({
-            query: ({ requestId }) => ({
-                url: '/bug-report',
-                param: {
-                    requestId,
-                },
+            query: ({ threadId }) => ({
+                url: `/bug-report?threadId=${threadId}`,
                 method: 'GET',
             }),
             providesTags: ['bugReport'],
         }),
         getDetailedDiscussionThread: builder.query({
-            query: ({ requestId }) => ({
-                url: '/discussion',
-                param: {
-                    requestId,
-                },
+            query: ({ threadId }) => ({
+                url: `/discussion?threadId=${threadId}`,
                 method: 'GET',
             }),
             providesTags: ['discussionThread'],

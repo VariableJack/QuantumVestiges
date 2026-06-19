@@ -15,11 +15,14 @@ import {
 } from '../../../redux/api/globalSlice'
 import { setSupportRequests, setBugReports, setDiscussionThreads } from '../api/requestsSlice'
 import { FORUM_PAGES, FORUM_PAGE_ITEMS, CONNECTION_ERROR_MESSAGE } from '../../../shared/constants'
+import { ThreadHeader } from '../../../shared/components'
 import '../../../styles/App.css'
 
-const getThreadHeaders = data => {
+const getThreadHeaders = (data, url) => {
     return data.map(singleItem => (
         <ThreadHeader
+            url={url}
+            threadId={singleItem.threadId}
             title={singleItem.title}
             author={singleItem.author}
             createTime={singleItem.createTime}
@@ -162,10 +165,11 @@ const ForumPage = () => {
                                 {FORUM_PAGE_ITEMS[type].submitButtonText()}
                             </button>
                         </a>
-                        {data
-                            .filter(singleItem => singleItem.status === 'OPEN')
-                            .slice(0, 10)
-                            .map(singleItem => getThreadHeaders(singleItem))}
+                        <br />
+                        {getThreadHeaders(
+                            data.filter(singleItem => singleItem.status === 'OPEN').slice(0, 10),
+                            FORUM_PAGE_ITEMS[type].allViewUrl(),
+                        )}
                         <h2>
                             <a href={`${FORUM_PAGE_ITEMS[type].allViewUrl()}`}>
                                 {FORUM_PAGE_ITEMS[type].baseTitle(group)}

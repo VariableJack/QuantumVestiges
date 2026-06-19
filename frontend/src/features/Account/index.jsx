@@ -5,7 +5,7 @@ import {
     clearUsername,
     clearGroup,
     clearPurchasedGames,
-    clearCart,
+    clearOrder,
     setPreferences,
     setSubscriptions,
     clearPreferences,
@@ -18,7 +18,7 @@ import {
     addErrorMessage,
 } from '../../redux/api/globalSlice'
 
-import { useUpdateCartMutation, useCheckoutCartMutation } from '../../redux/api/mediaEndpoints'
+import { useUpdateOrderMutation, useCheckoutOrderMutation } from '../../redux/api/mediaEndpoints'
 import {
     useLazyGetSettingsQuery,
     useUpdateNotificationPreferencesMutation,
@@ -146,7 +146,7 @@ const Login = props => {
 }
 
 const Account = props => {
-    const { username, cart, purchasedGames } = useSelector(state => state.userReducer)
+    const { username, order, purchasedGames } = useSelector(state => state.userReducer)
     const { auth } = props
     const dispatch = useDispatch()
 
@@ -158,16 +158,16 @@ const Account = props => {
             isError: updateOrderIsError,
             error: updateOrderError,
         },
-    ] = useUpdateCartMutation()
+    ] = useUpdateOrderMutation()
     const [
-        checkoutCart,
+        checkoutOrder,
         {
-            isLoading: checkoutCartIsLoading,
-            isSuccess: checkoutCartIsSuccess,
-            isError: checkoutCartIsError,
-            error: checkoutCartError,
+            isLoading: checkoutOrderIsLoading,
+            isSuccess: checkoutOrderIsSuccess,
+            isError: checkoutOrderIsError,
+            error: checkoutOrderError,
         },
-    ] = useCheckoutCartMutation()
+    ] = useCheckoutOrderMutation()
     const [
         triggerGetSettings,
         { isLoading: getSettingsIsLoading, isError: getSettingsIsError, error: getSettingsError },
@@ -224,8 +224,8 @@ const Account = props => {
         if (updateOrderIsUpdating) {
             dispatch(
                 addInfoMessage({
-                    title: 'Updating cart...',
-                    description: 'Please wait as the system removes the item from your cart',
+                    title: 'Updating order...',
+                    description: 'Please wait as the system removes the item from your order',
                     id: messageId,
                 }),
             )
@@ -237,7 +237,7 @@ const Account = props => {
         if (updateOrderIsError) {
             dispatch(
                 addErrorMessage({
-                    title: 'Failed to remove item from your cart',
+                    title: 'Failed to remove item from your order',
                     description: get(
                         updateNotificationPreferencesError,
                         'data.error',
@@ -253,7 +253,7 @@ const Account = props => {
             dispatch(
                 addSuccessMessage({
                     title: 'Item successfully removed',
-                    description: 'The system has successfully removed the item from your cart',
+                    description: 'The system has successfully removed the item from your order',
                     id: `updateOrderError-remove-${lastProductRemoved.productId}`,
                 }),
             )
@@ -261,12 +261,12 @@ const Account = props => {
     }, [updateOrderIsSuccess])
 
     useEffect(() => {
-        const messageId = 'checkoutCartInfo'
+        const messageId = 'checkoutOrderInfo'
         if (updateOrderIsUpdating) {
             dispatch(
                 addInfoMessage({
-                    title: 'Checking out cart...',
-                    description: 'Please wait as the system checks out your cart',
+                    title: 'Checking out order...',
+                    description: 'Please wait as the system checks out your order',
                     id: messageId,
                 }),
             )
@@ -278,13 +278,13 @@ const Account = props => {
         if (updateOrderIsError) {
             dispatch(
                 addErrorMessage({
-                    title: 'Failed to check out your cart',
+                    title: 'Failed to check out your order',
                     description: get(
                         updateNotificationPreferencesError,
                         'data.error',
                         CONNECTION_ERROR_MESSAGE,
                     ),
-                    id: 'checkoutCartError',
+                    id: 'checkoutOrderError',
                 }),
             )
         }
@@ -293,10 +293,10 @@ const Account = props => {
         if (updateOrderIsSuccess) {
             dispatch(
                 addSuccessMessage({
-                    title: 'Successfully checked out your cart',
+                    title: 'Successfully checked out your order',
                     description:
-                        'Your cart has been successfully checked out and all items should now be added to your account',
-                    id: 'checkoutCartSuccess',
+                        'Your order has been successfully checked out and all items should now be added to your account',
+                    id: 'checkoutOrderSuccess',
                 }),
             )
         }
@@ -353,10 +353,10 @@ const Account = props => {
         return (
             <div>
                 <pre> Hello: {username} </pre>
-                Cart
-                {cart.map(item => (
+                Order
+                {get(order, 'items', []).map(item => (
                     <div>
-                        {item.franchiseName} || {item.gameName}
+                        {item.franchiseName} || {item.productName}
                         <br />
                         {(!updateOrderIsUpdating && (
                             <button
@@ -368,15 +368,15 @@ const Account = props => {
                                     })
                                 }}
                             >
-                                Remove from Cart
+                                Remove from Order
                             </button>
-                        )) || <b>Removing from cart...</b>}
+                        )) || <b>Removing from order...</b>}
                     </div>
                 ))}
                 <br />
                 {
-                    (!checkoutCartIsLoading && (
-                        <button onClick={checkoutCart}>Checkout cart</button>
+                    (!checkoutOrderIsLoading && (
+                        <button onClick={checkoutOrder}>Checkout order</button>
                     )) || <b>Checking out...</b>
                     // TODO - integrate payment processing here
                 }
@@ -396,7 +396,7 @@ const Account = props => {
                         dispatch(clearGroup())
                         localStorage.setItem('accessToken', '')
                         dispatch(clearPurchasedGames())
-                        dispatch(clearCart())
+                        dispatch(clearOrder())
                         dispatch(clearPreferences())
                         dispatch(clearSubscriptions())
                     }}
