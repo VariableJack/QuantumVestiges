@@ -23,6 +23,7 @@ public class AccountActivityConverter {
             .quantity(input.getQuantity())
             .build();
     }
+
     public OrderComponentDTO convertOrderActivityDTOToComponentDTO(@NonNull OrderActivityDTO input) {
         return OrderComponentDTO.builder()
             .orderId(input.getOrderId())
@@ -40,6 +41,7 @@ public class AccountActivityConverter {
             .orderId(input.getOrderId())
             .productId(input.getProductId())
             .productName(input.getProductName())
+            .franchiseName(input.getFranchiseName())
             .purchasePrice(input.getPurchasePrice())
             .quantity(input.getQuantity())
             .build();

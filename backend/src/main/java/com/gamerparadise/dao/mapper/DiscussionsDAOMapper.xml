@@ -7,33 +7,62 @@
         <id property="threadId" column="thread_id"/>
         <result property="title" column="title"/>
         <result property="description" column="description"/>
-        <result property="username" column="author"/>
+        <result property="author" column="username"/>
         <result property="createTime" column="create_time"/>
-        <result property="last_update_time" column="lastUpdateTime"/>
-        <result property="last_update_by" column="lastUpdateBy"/>
+        <result property="lastUpdateTime" column="last_update_time"/>
+        <result property="lastUpdateBy" column="last_update_by"/>
         <result property="status" column="status"/>
         <collection property="comments" ofType="ThreadCommentDAODTO" resultMap="ThreadCommentResultMap"/>
     </resultMap>
     <resultMap id="ThreadCommentResultMap" type="ThreadCommentDAODTO">
         <id property="commentId" column="comment_id"/>
-        <result property="threadId" column="thread_id"/>
-        <result property="description" column="description"/>
-        <result property="username" column="author"/>
-        <result property="createTime" column="createTime"/>
+        <result property="threadId" column="comment_thread_id"/>
+        <result property="description" column="comment"/>
+        <result property="author" column="comment_author"/>
+        <result property="createTime" column="comment_create_time"/>
     </resultMap>
     <!-- Support Requests -->
     <select id="getSupportRequests" parameterType="String" resultMap="ThreadResultMap">
-        SELECT support_requests.*, users.username FROM support_requests
+        SELECT
+            support_requests.thread_id,
+            support_requests.title,
+            support_requests.description,
+            users.username,
+            support_requests.create_time,
+            support_requests.last_update_time,
+            support_requests.last_update_by,
+            support_requests.status
+        FROM support_requests
         JOIN users ON support_requests.user_id = users.user_id
         WHERE username = #{username}
         ORDER BY create_time DESC;
     </select>
 
     <select id="getDetailedSupportRequest" parameterType="Integer" resultMap="ThreadResultMap">
-        SELECT support_requests.*, users.username, support_request_comments.*, users.username FROM support_requests
+        SELECT
+            support_requests.thread_id,
+            support_requests.title,
+            support_requests.description,
+            users.username,
+            support_requests.create_time,
+            support_requests.last_update_time,
+            support_requests.last_update_by,
+            support_requests.status,
+            support_request_comments_table.*
+        FROM support_requests
+        LEFT JOIN (
+            SELECT
+                support_request_comments.comment_id,
+                support_request_comments.thread_id as comment_thread_id,
+                support_request_comments.comment,
+                users.username as comment_author,
+                support_request_comments.create_time as comment_create_time
+            FROM support_request_comments
+            JOIN users ON support_request_comments.user_id = users.user_id
+        ) support_request_comments_table ON support_requests.thread_id = support_request_comments_table.comment_thread_id
         JOIN users ON support_requests.user_id = users.user_id
-        JOIN support_request_comments ON support_requests.thread_id = support_request_comments.thread_id
-        WHERE thread_id = #{threadId};
+        WHERE support_requests.thread_id = #{threadId}
+        LIMIT 1;
     </select>
 
     <insert id="createSupportRequest" parameterType="ThreadDAODTO"
@@ -59,16 +88,44 @@
     </update>
     <!-- "Standard" discussion threads -->
     <select id="getDiscussions" resultMap="ThreadResultMap">
-        SELECT discussions.*, users.username FROM discussions
+        SELECT
+            discussions.thread_id,
+            discussions.title,
+            discussions.description,
+            users.username,
+            discussions.create_time,
+            discussions.last_update_time,
+            discussions.last_update_by,
+            discussions.status
+        FROM discussions
         JOIN users ON discussions.user_id = users.user_id
-        ORDER BY create_time DESC;
     </select>
 
     <select id="getDetailedDiscussion" parameterType="Integer" resultMap="ThreadResultMap">
-        SELECT discussions.*, user.username, discussion_comments.*, users.username FROM discussions
+        SELECT
+            discussions.thread_id,
+            discussions.title,
+            discussions.description,
+            users.username,
+            discussions.create_time,
+            discussions.last_update_time,
+            discussions.last_update_by,
+            discussions.status,
+            discussion_comments_table.*
+        FROM support_requests
+        LEFT JOIN (
+            SELECT
+                discussion_comments.comment_id,
+                discussion_comments.thread_id as comment_thread_id,
+                discussion_comments.comment,
+                users.username as comment_author,
+                discussion_comments.create_time as comment_create_time
+            FROM discussion_comments
+            JOIN users ON discussion_comments.user_id = users.user_id
+        ) discussion_comments_table ON discussions.thread_id = discussion_comments_table.comment_thread_id
         JOIN users ON discussions.user_id = users.user_id
-        JOIN discussion_comments ON discussions.thread_id = discussion_comments.thread_id
-        WHERE thread_id = #{threadId};
+        WHERE discussions.thread_id = #{threadId}
+        LIMIT 1;
     </select>
 
     <insert id="createDiscussion" parameterType="ThreadDAODTO"
@@ -89,14 +146,44 @@
     </update>
     <!-- Bug reports -->
     <select id="getBugReports" resultMap="ThreadResultMap">
-        SELECT * FROM bug_reports ORDER BY create_time desc;
+        SELECT
+            bug_reports.thread_id,
+            bug_reports.title,
+            bug_reports.description,
+            users.username,
+            bug_reports.create_time,
+            bug_reports.last_update_time,
+            bug_reports.last_update_by,
+            bug_reports.status
+        FROM bug_reports
+        JOIN users ON bug_reports.user_id = users.user_id
     </select>
 
     <select id="getDetailedBugReport" parameterType="Integer" resultMap="ThreadResultMap">
-        SELECT bug_reports.*, user.username, bug_reports.*, users.username FROM bug_reports
+        SELECT
+            bug_reports.thread_id,
+            bug_reports.title,
+            bug_reports.description,
+            users.username,
+            bug_reports.create_time,
+            bug_reports.last_update_time,
+            bug_reports.last_update_by,
+            bug_reports.status,
+            bug_report_comments_table.*
+        FROM bug_reports
+        LEFT JOIN (
+            SELECT
+                bug_report_comments.comment_id,
+                bug_report_comments.thread_id as comment_thread_id,
+                bug_report_comments.comment,
+                users.username as comment_author,
+                bug_report_comments.create_time as comment_create_time
+            FROM bug_report_comments
+            JOIN users ON bug_report_comments.user_id = users.user_id
+        ) bug_report_comments_table ON bug_reports.thread_id = bug_report_comments_table.comment_thread_id
         JOIN users ON bug_reports.user_id = users.user_id
-        JOIN bug_reports ON bug_reports.thread_id = bug_report_comments.thread_id
-        WHERE thread_id = #{threadId};
+        WHERE bug_reports.thread_id = #{threadId}
+        LIMIT 1;
     </select>
 
     <insert id="createBugReport" parameterType="ThreadDAODTO"

@@ -15,6 +15,7 @@ public class OrderItemDAODTO {
     private long orderId;
     private long productId;
     private String productName;
+    private String franchiseName;
     private Integer purchasePrice;
     private int quantity;
 }

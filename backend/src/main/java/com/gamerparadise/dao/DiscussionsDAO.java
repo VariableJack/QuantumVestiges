@@ -7,6 +7,7 @@ import org.apache.logging.log4j.Logger;
 
 import lombok.NonNull;
 import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -25,7 +26,13 @@ public class DiscussionsDAO {
         final Date startDate = new Date();
         logger.info("Fetching support requests for user {}", username);
         try {
-            return mapper.getSupportRequests(username);
+            final List<ThreadDAODTO> threads = mapper.getSupportRequests(username);
+            threads.stream().forEach(thread -> {
+                if (Objects.isNull(thread.getComments())) {
+                    thread.setComments(new ArrayList<ThreadCommentDAODTO>());
+                }
+            });
+            return threads;
         } catch (Exception e) {
             logger.error("getSupportRequests failed due to ", e);
             throw e;
@@ -38,7 +45,11 @@ public class DiscussionsDAO {
         final Date startDate = new Date();
         logger.info("Fetching support request for ID {}", threadId);
         try {
-            return mapper.getDetailedSupportRequest(threadId);
+            final ThreadDAODTO thread = mapper.getDetailedSupportRequest(threadId);
+            if (Objects.isNull(thread.getComments())) {
+                thread.setComments(new ArrayList<ThreadCommentDAODTO>());
+            }
+            return thread;
         } catch (Exception e) {
             logger.error("getDetailedSupportRequest failed due to ", e);
             throw e;
@@ -52,6 +63,7 @@ public class DiscussionsDAO {
         logger.info("Creating support request {}", thread);
         try {
             mapper.createSupportRequest(thread);
+            thread.setComments(new ArrayList<ThreadCommentDAODTO>());
             return thread;
         } catch (Exception e) {
             logger.error("createSupportRequest failed due to ", e);
@@ -105,7 +117,13 @@ public class DiscussionsDAO {
         final Date startDate = new Date();
         logger.info("Fetching discussions");
         try {
-            return mapper.getDiscussions();
+            final List<ThreadDAODTO> threads = mapper.getDiscussions();
+            threads.stream().forEach(thread -> {
+                if (Objects.isNull(thread.getComments())) {
+                    thread.setComments(new ArrayList<ThreadCommentDAODTO>());
+                }
+            });
+            return threads;
         } catch (Exception e) {
             logger.error("getDiscussions failed due to ", e);
             throw e;
@@ -118,7 +136,11 @@ public class DiscussionsDAO {
         final Date startDate = new Date();
         logger.info("Fetching discussion for ID {}", threadId);
         try {
-            return mapper.getDetailedDiscussion(threadId);
+            final ThreadDAODTO thread = mapper.getDetailedDiscussion(threadId);
+            if (Objects.isNull(thread.getComments())) {
+                thread.setComments(new ArrayList<ThreadCommentDAODTO>());
+            }
+            return thread;
         } catch (Exception e) {
             logger.error("getDetailedDiscussion failed due to ", e);
             throw e;
@@ -132,6 +154,7 @@ public class DiscussionsDAO {
         logger.info("Creating discussion {}", thread);
         try {
             mapper.createDiscussion(thread);
+            thread.setComments(new ArrayList<ThreadCommentDAODTO>());
             return thread;
         } catch (Exception e) {
             logger.error("createDiscussion failed due to ", e);
@@ -172,7 +195,13 @@ public class DiscussionsDAO {
         final Date startDate = new Date();
         logger.info("Fetching bug reports");
         try {
-            return mapper.getBugReports();
+            final List<ThreadDAODTO> threads = mapper.getBugReports();
+            threads.stream().forEach(thread -> {
+                if (Objects.isNull(thread.getComments())) {
+                    thread.setComments(new ArrayList<ThreadCommentDAODTO>());
+                }
+            });
+            return threads;
         } catch (Exception e) {
             logger.error("getBugReports failed due to ", e);
             throw e;
@@ -185,7 +214,11 @@ public class DiscussionsDAO {
         final Date startDate = new Date();
         logger.info("Fetching bug report for ID {}", threadId);
         try {
-            return mapper.getDetailedBugReport(threadId);
+            final ThreadDAODTO thread = mapper.getDetailedBugReport(threadId);
+            if (Objects.isNull(thread.getComments())) {
+                thread.setComments(new ArrayList<ThreadCommentDAODTO>());
+            }
+            return thread;
         } catch (Exception e) {
             logger.error("getDetailedBugReport failed due to ", e);
             throw e;
@@ -199,6 +232,7 @@ public class DiscussionsDAO {
         logger.info("Creating bug report {}", thread);
         try {
             mapper.createBugReport(thread);
+            thread.setComments(new ArrayList<ThreadCommentDAODTO>());
             return thread;
         } catch (Exception e) {
             logger.error("createBugReport failed due to ", e);

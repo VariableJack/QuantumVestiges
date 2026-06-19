@@ -16,6 +16,7 @@
         <result property="orderId" column="order_id"/>
         <result property="productId" column="product_id"/>
         <result property="productName" column="product_name"/>
+        <result property="franchiseName" column="franchise_name"/>
         <result property="purchasePrice" column="purchase_price"/>
         <result property="quantity" column="quantity"/>
     </resultMap>
@@ -37,11 +38,12 @@
             order_items.order_id,
             order_items.product_id,
             order_items.product_name,
+            order_items.franchise_name,
             order_items.purchase_price,
             order_items.quantity
         FROM orders
         LEFT JOIN (
-            SELECT order_items.*, products.product_name FROM order_items 
+            SELECT order_items.*, products.product_name, products.franchise_name FROM order_items 
             JOIN products ON products.product_id = order_items.product_id
         ) order_items ON order_items.order_id = orders.order_id
         JOIN users ON orders.user_id = users.user_id
