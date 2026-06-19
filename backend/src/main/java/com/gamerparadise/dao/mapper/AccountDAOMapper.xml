@@ -15,6 +15,7 @@
         <id property="orderItemId" column="order_item_id"/>
         <result property="orderId" column="order_id"/>
         <result property="productId" column="product_id"/>
+        <result property="productName" column="product_name"/>
         <result property="purchasePrice" column="purchase_price"/>
         <result property="quantity" column="quantity"/>
     </resultMap>
@@ -25,27 +26,31 @@
         <result property="productType" column="product_type"/>
     </resultMap>
 
-    <select id="getCart" parameterType="String" resultMap="OrderResultMap">
+    <select id="getOrder" parameterType="String" resultMap="OrderResultMap">
         SELECT
-            orders.*,
-            order_items.*,
-            users.username
-        FROM order_items
-        JOIN orders ON order_items.order_id = orders.order_id
-        JOIN products ON products.product_id = order_items.product_id
+            orders.order_id,
+            users.username,
+            orders.order_status,
+            orders.total_purchase_price,
+            orders.create_time,
+            order_items.order_item_id,
+            order_items.order_id,
+            order_items.product_id,
+            order_items.product_name,
+            order_items.purchase_price,
+            order_items.quantity
+        FROM orders
+        LEFT JOIN (
+            SELECT order_items.*, products.product_name FROM order_items 
+            JOIN products ON products.product_id = order_items.product_id
+        ) order_items ON order_items.order_id = orders.order_id
         JOIN users ON orders.user_id = users.user_id
         WHERE username = #{username} AND orders.order_status = 'PENDING';
     </select>
 
-    <insert id="createOrder" useGeneratedKeys="true" keyColumn="order_id" keyProperty="orderId">
-        INSERT INTO orders (user_id) VALUES (SELECT * FROM users WHERE username = #{username});
+    <insert id="createOrder">
+        INSERT INTO orders (user_id) SELECT users.user_id FROM users WHERE username = #{username};
     </insert>
-
-    <select id="getOrder">
-        SELECT orders.*, users.username FROM orders
-        JOIN users ON orders.user_id = users.user_id
-        WHERE username = #{username} AND orders.order_status = 'PENDING';
-    </select>
 
     <insert id="insertItem">
         INSERT INTO order_items(order_id, product_id, purchase_price, quantity)
@@ -63,8 +68,8 @@
     <insert id="addItemsToAccount">
         INSERT INTO purchased_items (user_id, id, name, type)
         VALUES
-        <foreach collection="items" item="item" separator=",">
-            (SELECT user_id FROM users WHERE username = ${username} LIMIT 1, #{item.id}, #{item.name}, #{item.type})
+        <foreach collection="items" item="item" separator="UNION_ALL">
+            SELECT user_id, #{item.id}, #{item.name}, #{item.type} FROM users WHERE username = #{item.username} LIMIT 1
         </foreach>
         ;
     </insert>

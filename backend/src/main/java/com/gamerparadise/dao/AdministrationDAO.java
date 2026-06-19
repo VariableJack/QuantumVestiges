@@ -28,6 +28,7 @@ public class AdministrationDAO {
         try {
             return mapper.getUser(username);
         } catch (Exception e) {
+            logger.error("getUser failed due to ", e);
             throw e;
         } finally {
             logger.info("Finished running SQL query in {} ms", Utility.getElapsedTime(startDate));
@@ -44,6 +45,7 @@ public class AdministrationDAO {
             }
             return output;
         } catch (Exception e) {
+            logger.error("getUserNotificationPreferences failed due to ", e);
             throw e;
         } finally {
             logger.info("Finished running SQL query in {} ms", Utility.getElapsedTime(startDate));
@@ -60,6 +62,7 @@ public class AdministrationDAO {
             }
             return output;
         } catch (Exception e) {
+            logger.error("getUserSubscriptions failed due to ", e);
             throw e;
         } finally {
             logger.info("Finished running SQL query in {} ms", Utility.getElapsedTime(startDate));
@@ -73,6 +76,7 @@ public class AdministrationDAO {
             mapper.createUser(username);
             return mapper.getUser(username);
         } catch (Exception e) {
+            logger.error("createUser failed due to ", e);
             throw e;
         } finally {
             logger.info("Finished running SQL query in {} ms", Utility.getElapsedTime(startDate));
@@ -85,6 +89,7 @@ public class AdministrationDAO {
         try {
             mapper.saveUserPayment(username, stripeCustomerId);
         } catch (Exception e) {
+            logger.error("saveUserPayment failed due to ", e);
             throw e;
         } finally {
             logger.info("Finished running SQL query in {} ms", Utility.getElapsedTime(startDate));
@@ -97,6 +102,7 @@ public class AdministrationDAO {
         try {
             mapper.updateNotificationPreference(input);
         } catch (Exception e) {
+            logger.error("updateNotificationPreference failed due to ", e);
             throw e;
         } finally {
             logger.info("Finished running SQL query in {} ms", Utility.getElapsedTime(startDate));
@@ -109,6 +115,7 @@ public class AdministrationDAO {
         try {
             mapper.createSubscription(input);
         } catch (Exception e) {
+            logger.error("createSubscription failed due to ", e);
             throw e;
         } finally {
             logger.info("Finished running SQL query in {} ms", Utility.getElapsedTime(startDate));
@@ -121,6 +128,7 @@ public class AdministrationDAO {
         try {
             mapper.updateSubscription(input);
         } catch (Exception e) {
+            logger.error("updateSubscription failed due to ", e);
             throw e;
         } finally {
             logger.info("Finished running SQL query in {} ms", Utility.getElapsedTime(startDate));

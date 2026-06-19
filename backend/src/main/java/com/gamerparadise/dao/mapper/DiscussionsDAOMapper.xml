@@ -39,13 +39,13 @@
     <insert id="createSupportRequest" parameterType="ThreadDAODTO"
         useGeneratedKeys="true" keyColumn="thread_id" keyProperty="threadId">
         INSERT INTO support_requests(title, description, user_id)
-        VALUES(#{thread.title}, #{thread.description}, (SELECT user_id FROM users WHERE username = #{thread.author}));
+        SELECT #{thread.title}, #{thread.description}, user_id FROM users WHERE username = #{thread.author};
     </insert>
 
     <insert id="addSupportRequestComment" parameterType="ThreadCommentDAODTO"
         useGeneratedKeys="true" keyColumn="comment_id" keyProperty="commentId">
         INSERT INTO support_request_comments(thread_id, description, user_id)
-        VALUES(#{comment.threadId}, #{comment.description}, (SELECT user_id FROM users WHERE username = #{comment.author}));
+        SELECT #{comment.threadId}, #{comment.description}, user_id FROM users WHERE username = #{comment.author};
     </insert>
 
     <update id="closeSupportRequest" parameterType="ThreadCommentDAODTO">
@@ -74,13 +74,13 @@
     <insert id="createDiscussion" parameterType="ThreadDAODTO"
         useGeneratedKeys="true" keyColumn="thread_id" keyProperty="threadId">
         INSERT INTO discussions(title, description, user_id)
-        VALUES(#{input.threadID}, #{input.description}, (SELECT user_id FROM users WHERE username = #{input.author}));
+        SELECT #{thread.title}, #{thread.description}, user_id FROM users WHERE username = #{thread.author};
     </insert>
 
     <insert id="addDiscussionComment" parameterType="ThreadCommentDAODTO"
         useGeneratedKeys="true" keyColumn="comment_id" keyProperty="commentId">
         INSERT INTO discussion_comments(thread_id, description, user_id)
-        VALUES(#{comment.threadId}, #{comment.description}, (SELECT user_id FROM users WHERE username = #{comment.author}));
+        SELECT #{comment.threadId}, #{comment.description}, user_id FROM users WHERE username = #{comment.author};
     </insert>
 
     <update id="closeDiscussion" parameterType="ThreadCommentDAODTO">
@@ -102,13 +102,13 @@
     <insert id="createBugReport" parameterType="ThreadDAODTO"
         useGeneratedKeys="true" keyColumn="thread_id" keyProperty="threadId">
         INSERT INTO bug_reports(title, description, user_id)
-        VALUES(#{input.threadID}, #{input.description}, (SELECT user_id FROM users WHERE username = #{input.author}));
+        SELECT #{thread.title}, #{thread.description}, user_id FROM users WHERE username = #{thread.author};
     </insert>
 
     <insert id="addBugReportComment" parameterType="ThreadCommentDAODTO"
         useGeneratedKeys="true" keyColumn="comment_id" keyProperty="commentId">
         INSERT INTO bug_report_comments(thread_id, description, user_id)
-        VALUES(#{comment.threadId}, #{comment.description}, (SELECT user_id FROM users WHERE username = #{comment.author}));
+        SELECT #{comment.threadId}, #{comment.description}, user_id FROM users WHERE username = #{comment.author};
     </insert>
 
     <update id="closeBugReport" parameterType="ThreadCommentDAODTO">

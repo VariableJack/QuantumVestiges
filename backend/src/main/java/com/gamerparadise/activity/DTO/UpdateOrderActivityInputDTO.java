@@ -9,8 +9,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @Data
-public class UpdateCartActivityInputDTO {
+public class UpdateOrderActivityInputDTO {
     private Integer orderId;
     private Integer productId;
     private String action;
+    private int quantity;
 }

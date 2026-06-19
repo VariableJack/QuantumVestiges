@@ -70,7 +70,7 @@
 
     <insert id="createSubscription">
         INSERT INTO user_subscriptions (user_id, product_id, subscription_start_date, subscription_end_date, billing_period, auto_renewal)
-        VALUES (SELECT user_id FROM users WHERE username = #{input.username}, #{input.productId}, #{input.subscriptionStartDate}, #{input.subscriptionEndDate}, #{input.billingPeriod}, {input.autoRenewal});
+        SELECT user_id, #{input.productId}, #{input.subscriptionStartDate}, #{input.subscriptionEndDate}, #{input.billingPeriod}, {input.autoRenewal} FROM users WHERE username = #{input.username};
     </insert>
 
     <update id="updateSubscription">

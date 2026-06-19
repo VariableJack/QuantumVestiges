@@ -14,8 +14,7 @@ import com.gamerparadise.dao.dto.PurchasedItemDAODTO;
 @Component
 @Mapper
 public interface AccountDAOMapper {
-    public OrderDAODTO getCart(@Param("username") @NonNull String username);
-    public void createOrder(@Param("userId") @NonNull String username);
+    public void createOrder(@Param("username") @NonNull String username);
     public OrderDAODTO getOrder(@Param("username") @NonNull String username);
     public void insertItem(@Param("item") @NonNull OrderItemDAODTO item);
     public void removeItem(@Param("item") @NonNull OrderItemDAODTO item);

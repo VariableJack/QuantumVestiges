@@ -10,6 +10,7 @@ public class OrderItemComponentDTO {
     private long orderItemId;
     private long orderId;
     private long productId;
+    private String productName;
     private Integer purchasePrice;
-    private Timestamp quantity;
+    private int quantity;
 }

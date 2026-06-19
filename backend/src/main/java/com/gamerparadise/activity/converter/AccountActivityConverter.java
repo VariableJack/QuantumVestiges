@@ -5,21 +5,22 @@ import lombok.NonNull;
 
 import com.gamerparadise.activity.dto.OrderActivityDTO;
 import com.gamerparadise.activity.dto.OrderItemActivityDTO;
-import com.gamerparadise.activity.dto.UpdateCartActivityInputDTO;
+import com.gamerparadise.activity.dto.UpdateOrderActivityInputDTO;
 import com.gamerparadise.activity.dto.PurchasedItemActivityDTO;
 import com.gamerparadise.component.dto.OrderComponentDTO;
 import com.gamerparadise.component.dto.OrderItemComponentDTO;
-import com.gamerparadise.component.dto.UpdateCartComponentInputDTO;
+import com.gamerparadise.component.dto.UpdateOrderComponentInputDTO;
 import com.gamerparadise.component.dto.PurchasedItemComponentDTO;
 
 @Component
 public class AccountActivityConverter {
-    public UpdateCartComponentInputDTO convertCartInputToComponentDTO(@NonNull UpdateCartActivityInputDTO input) {
-        return UpdateCartComponentInputDTO
+    public UpdateOrderComponentInputDTO convertOrderInputToComponentDTO(@NonNull UpdateOrderActivityInputDTO input) {
+        return UpdateOrderComponentInputDTO
             .builder()
             .orderId(input.getOrderId())
             .productId(input.getProductId())
             .action(input.getAction())
+            .quantity(input.getQuantity())
             .build();
     }
     public OrderComponentDTO convertOrderActivityDTOToComponentDTO(@NonNull OrderActivityDTO input) {
@@ -38,6 +39,7 @@ public class AccountActivityConverter {
             .orderItemId(input.getOrderItemId())
             .orderId(input.getOrderId())
             .productId(input.getProductId())
+            .productName(input.getProductName())
             .purchasePrice(input.getPurchasePrice())
             .quantity(input.getQuantity())
             .build();
@@ -59,6 +61,7 @@ public class AccountActivityConverter {
             .orderItemId(input.getOrderItemId())
             .orderId(input.getOrderId())
             .productId(input.getProductId())
+            .productName(input.getProductName())
             .purchasePrice(input.getPurchasePrice())
             .quantity(input.getQuantity())
             .build();

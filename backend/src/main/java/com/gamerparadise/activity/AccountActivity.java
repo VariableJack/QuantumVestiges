@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.gamerparadise.activity.dto.OrderActivityDTO;
-import com.gamerparadise.activity.dto.UpdateCartActivityInputDTO;
+import com.gamerparadise.activity.dto.UpdateOrderActivityInputDTO;
 import com.gamerparadise.activity.dto.PurchasedItemActivityDTO;
 import com.gamerparadise.activity.converter.AccountActivityConverter;
 import com.gamerparadise.component.AccountComponent;
@@ -34,34 +34,34 @@ public class AccountActivity {
     private AccountComponent accountComponent;
     private static final Logger logger = LogManager.getLogger(AccountActivity.class);
 
-    @GetMapping(name="GetCart",path="/cart")
-    public OrderActivityDTO getCart(@AuthenticationPrincipal Jwt jwt) throws AccessDeniedException {
+    @GetMapping(name="GetOrder",path="/order")
+    public OrderActivityDTO getOrder(@AuthenticationPrincipal Jwt jwt) throws AccessDeniedException {
         final String username = jwt.getClaimAsString("username");
-        logger.info("Beginning to process getCart for user {}", username);
-        final OrderActivityDTO cart = accountActivityConverter.convertOrderComponentDTOToActivityDTO(accountComponent.getCart(username));
-        logger.info("Finished processing getCart, returning {} items", cart.getItems().size());
-        return cart;
+        logger.info("Beginning to process getOrder for user {}", username);
+        final OrderActivityDTO order = accountActivityConverter.convertOrderComponentDTOToActivityDTO(accountComponent.getOrCreateOrder(username));
+        logger.info("Finished processing getOrder, returning {} items", order.getItems().size());
+        return order;
     }
 
-    @PostMapping(name="UpdateCart",path="/update-cart")
-    public void updateCart(
+    @PostMapping(name="UpdateOrder",path="/update-order")
+    public void updateOrder(
         @AuthenticationPrincipal Jwt jwt,
-        @NonNull @RequestBody UpdateCartActivityInputDTO input) throws AccessDeniedException {
+        @NonNull @RequestBody UpdateOrderActivityInputDTO input) throws AccessDeniedException {
         final String username = jwt.getClaimAsString("username");
-        logger.info("Beginning to process updateCart for user {}, with input {}", username, input);
+        logger.info("Beginning to process updateOrder for user {}, with input {}", username, input);
         if (Objects.isNull(input.getAction()) || Objects.isNull(input.getProductId())) {
             return;
         }
-        accountComponent.updateCart(accountActivityConverter.convertCartInputToComponentDTO(input), username);
-        logger.info("Finished processing updateCart");
+        accountComponent.updateOrder(accountActivityConverter.convertOrderInputToComponentDTO(input), username);
+        logger.info("Finished processing updateOrder");
     }
 
-    @PostMapping(name="CheckoutCart",path="/checkout-cart")
-    public void checkoutCart(@AuthenticationPrincipal Jwt jwt) throws AccessDeniedException {
+    @PostMapping(name="CheckoutOrder",path="/checkout-order")
+    public void checkoutOrder(@AuthenticationPrincipal Jwt jwt) throws AccessDeniedException {
         final String username = jwt.getClaimAsString("username");
-        logger.info("Beginning to process checkoutCart for user {}", username);
-        accountComponent.checkoutCart(username);
-        logger.info("Finished processing checkoutCart");
+        logger.info("Beginning to process checkoutOrder for user {}", username);
+        accountComponent.checkoutOrder(username);
+        logger.info("Finished processing checkoutOrder");
         return;
     }
 

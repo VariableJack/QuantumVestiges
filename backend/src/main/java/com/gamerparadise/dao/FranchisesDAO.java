@@ -26,6 +26,7 @@ public class FranchisesDAO {
         try {
             return mapper.getFranchises();
         } catch (Exception e) {
+            logger.error("getFranchises failed due to ", e);
             throw e;
         } finally {
             logger.info("Finished running SQL query in {} ms", Utility.getElapsedTime(startDate));
@@ -38,6 +39,7 @@ public class FranchisesDAO {
         try {
             return mapper.getFranchiseByFilters(franchiseFilters);
         } catch (Exception e) {
+            logger.error("getFranchiseByFilters failed due to ", e);
             throw e;
         } finally {
             logger.info("Finished running SQL query in {} ms", Utility.getElapsedTime(startDate));
@@ -51,6 +53,7 @@ public class FranchisesDAO {
             mapper.insertFranchise(franchise);
             return franchise;
         } catch (Exception e) {
+            logger.error("insertFranchise failed due to ", e);
             throw e;
         } finally {
             logger.info("Finished running SQL query in {} ms", Utility.getElapsedTime(startDate));

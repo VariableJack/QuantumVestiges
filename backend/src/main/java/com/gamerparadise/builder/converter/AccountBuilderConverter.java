@@ -28,6 +28,7 @@ public class AccountBuilderConverter {
             .orderItemId(input.getOrderItemId())
             .orderId(input.getOrderId())
             .productId(input.getProductId())
+            .productName(input.getProductName())
             .purchasePrice(input.getPurchasePrice())
             .quantity(input.getQuantity())
             .build();
@@ -49,6 +50,7 @@ public class AccountBuilderConverter {
             .orderItemId(input.getOrderItemId())
             .orderId(input.getOrderId())
             .productId(input.getProductId())
+            .productName(input.getProductName())
             .purchasePrice(input.getPurchasePrice())
             .quantity(input.getQuantity())
             .build();

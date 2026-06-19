@@ -27,6 +27,7 @@ public class ProductsDAO {
         try {
             return mapper.getProducts(franchiseId);
         } catch (Exception e) {
+            logger.error("getProducts failed due to ", e);
             throw e;
         } finally {
             logger.info("Finished running SQL query in {} ms", Utility.getElapsedTime(startDate));
@@ -39,6 +40,7 @@ public class ProductsDAO {
         try {
             return mapper.getProductByFilters(productFilters);
         } catch (Exception e) {
+            logger.error("getProductByFilters failed due to ", e);
             throw e;
         } finally {
             logger.info("Finished running SQL query in {} ms", Utility.getElapsedTime(startDate));
@@ -52,6 +54,7 @@ public class ProductsDAO {
             mapper.insertProduct(product);
             return mapper.getProductByFilters(product);
         } catch (Exception e) {
+            logger.error("insertProduct failed due to ", e);
             throw e;
         } finally {
             logger.info("Finished running SQL query in {} ms", Utility.getElapsedTime(startDate));

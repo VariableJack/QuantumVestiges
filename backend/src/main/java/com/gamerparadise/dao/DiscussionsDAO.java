@@ -27,6 +27,7 @@ public class DiscussionsDAO {
         try {
             return mapper.getSupportRequests(username);
         } catch (Exception e) {
+            logger.error("getSupportRequests failed due to ", e);
             throw e;
         } finally {
             logger.info("Finished running SQL query in {} ms", Utility.getElapsedTime(startDate));
@@ -39,6 +40,7 @@ public class DiscussionsDAO {
         try {
             return mapper.getDetailedSupportRequest(threadId);
         } catch (Exception e) {
+            logger.error("getDetailedSupportRequest failed due to ", e);
             throw e;
         } finally {
             logger.info("Finished running SQL query in {} ms", Utility.getElapsedTime(startDate));
@@ -52,6 +54,7 @@ public class DiscussionsDAO {
             mapper.createSupportRequest(thread);
             return thread;
         } catch (Exception e) {
+            logger.error("createSupportRequest failed due to ", e);
             throw e;
         } finally {
             logger.info("Finished running SQL query in {} ms", Utility.getElapsedTime(startDate));
@@ -65,6 +68,7 @@ public class DiscussionsDAO {
             mapper.addSupportRequestComment(comment);
             return comment;
         } catch (Exception e) {
+            logger.error("addSupportRequestComment failed due to ", e);
             throw e;
         } finally {
             logger.info("Finished running SQL query in {} ms", Utility.getElapsedTime(startDate));
@@ -77,6 +81,7 @@ public class DiscussionsDAO {
         try {
             mapper.closeSupportRequest(input);
         } catch (Exception e) {
+            logger.error("closeSupportRequest failed due to ", e);
             throw e;
         } finally {
             logger.info("Finished running SQL query in {} ms", Utility.getElapsedTime(startDate));
@@ -89,6 +94,7 @@ public class DiscussionsDAO {
         try {
             mapper.reopenSupportRequest(input);
         } catch (Exception e) {
+            logger.error("reopenSupportRequest failed due to ", e);
             throw e;
         } finally {
             logger.info("Finished running SQL query in {} ms", Utility.getElapsedTime(startDate));
@@ -101,6 +107,7 @@ public class DiscussionsDAO {
         try {
             return mapper.getDiscussions();
         } catch (Exception e) {
+            logger.error("getDiscussions failed due to ", e);
             throw e;
         } finally {
             logger.info("Finished running SQL query in {} ms", Utility.getElapsedTime(startDate));
@@ -113,6 +120,7 @@ public class DiscussionsDAO {
         try {
             return mapper.getDetailedDiscussion(threadId);
         } catch (Exception e) {
+            logger.error("getDetailedDiscussion failed due to ", e);
             throw e;
         } finally {
             logger.info("Finished running SQL query in {} ms", Utility.getElapsedTime(startDate));
@@ -126,6 +134,7 @@ public class DiscussionsDAO {
             mapper.createDiscussion(thread);
             return thread;
         } catch (Exception e) {
+            logger.error("createDiscussion failed due to ", e);
             throw e;
         } finally {
             logger.info("Finished running SQL query in {} ms", Utility.getElapsedTime(startDate));
@@ -139,6 +148,7 @@ public class DiscussionsDAO {
             mapper.addDiscussionComment(comment);
             return comment;
         } catch (Exception e) {
+            logger.error("addDiscussionComment failed due to ", e);
             throw e;
         } finally {
             logger.info("Finished running SQL query in {} ms", Utility.getElapsedTime(startDate));
@@ -151,6 +161,7 @@ public class DiscussionsDAO {
         try {
             mapper.closeDiscussion(input);
         } catch (Exception e) {
+            logger.error("closeDiscussion failed due to ", e);
             throw e;
         } finally {
             logger.info("Finished running SQL query in {} ms", Utility.getElapsedTime(startDate));
@@ -163,6 +174,7 @@ public class DiscussionsDAO {
         try {
             return mapper.getBugReports();
         } catch (Exception e) {
+            logger.error("getBugReports failed due to ", e);
             throw e;
         } finally {
             logger.info("Finished running SQL query in {} ms", Utility.getElapsedTime(startDate));
@@ -175,6 +187,7 @@ public class DiscussionsDAO {
         try {
             return mapper.getDetailedBugReport(threadId);
         } catch (Exception e) {
+            logger.error("getDetailedBugReport failed due to ", e);
             throw e;
         } finally {
             logger.info("Finished running SQL query in {} ms", Utility.getElapsedTime(startDate));
@@ -188,6 +201,7 @@ public class DiscussionsDAO {
             mapper.createBugReport(thread);
             return thread;
         } catch (Exception e) {
+            logger.error("createBugReport failed due to ", e);
             throw e;
         } finally {
             logger.info("Finished running SQL query in {} ms", Utility.getElapsedTime(startDate));
@@ -201,6 +215,7 @@ public class DiscussionsDAO {
             mapper.addBugReportComment(comment);
             return comment;
         } catch (Exception e) {
+            logger.error("addBugReportComment failed due to ", e);
             throw e;
         } finally {
             logger.info("Finished running SQL query in {} ms", Utility.getElapsedTime(startDate));
@@ -213,6 +228,7 @@ public class DiscussionsDAO {
         try {
             mapper.closeBugReport(input);
         } catch (Exception e) {
+            logger.error("closeBugReport failed due to ", e);
             throw e;
         } finally {
             logger.info("Finished running SQL query in {} ms", Utility.getElapsedTime(startDate));
@@ -225,6 +241,7 @@ public class DiscussionsDAO {
         try {
             mapper.reopenBugReport(input);
         } catch (Exception e) {
+            logger.error("reopenBugReport failed due to ", e);
             throw e;
         } finally {
             logger.info("Finished running SQL query in {} ms", Utility.getElapsedTime(startDate));

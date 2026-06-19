@@ -22,40 +22,22 @@ public class AccountDAO {
     @Autowired
     private AccountDAOMapper mapper;
     private static final Logger logger = LogManager.getLogger(AccountDAO.class);
-    public OrderDAODTO getCart(@NonNull String username) {
-        final Date startDate = new Date();
-        logger.info("Fetching cart for user {}", username);
-        try {
-            final OrderDAODTO pendingOrder = mapper.getCart(username);
-            if (Objects.isNull(pendingOrder))
-                return OrderDAODTO.builder().items(new ArrayList<OrderItemDAODTO>()).build();
-            return pendingOrder;
-        } catch (Exception e) {
-            throw e;
-        } finally {
-            logger.info("Finished running SQL query in {} ms", Utility.getElapsedTime(startDate));
-        }
-    }
 
-    public OrderDAODTO createOrder(@NonNull String username) {
+    public OrderDAODTO getOrCreateOrder(@NonNull String username) {
         final Date startDate = new Date();
-        logger.info("Creating order for user {}", username);
+        logger.info("Fetching or creating order for user {}", username);
         try {
-            mapper.createOrder(username);
-            return mapper.getOrder(username);
+            OrderDAODTO order = mapper.getOrder(username);
+            if (Objects.isNull(order)) {
+                mapper.createOrder(username);
+                order = mapper.getOrder(username);
+            }
+            if (Objects.isNull(order.getItems())) {
+                order.setItems(new ArrayList<OrderItemDAODTO>());
+            }
+            return order;
         } catch (Exception e) {
-            throw e;
-        } finally {
-            logger.info("Finished running SQL query in {} ms", Utility.getElapsedTime(startDate));
-        }
-    }
-
-    public OrderDAODTO getOrder(@NonNull String username) {
-        final Date startDate = new Date();
-        logger.info("Fetching order for user {}", username);
-        try {
-            return mapper.getOrder(username);
-        } catch (Exception e) {
+            logger.error("getOrCreateOrder failed due to ", e);
             throw e;
         } finally {
             logger.info("Finished running SQL query in {} ms", Utility.getElapsedTime(startDate));
@@ -68,6 +50,7 @@ public class AccountDAO {
         try {
             mapper.insertItem(item);
         } catch (Exception e) {
+            logger.error("insertItem failed due to ", e);
             throw e;
         } finally {
             logger.info("Finished running SQL query in {} ms", Utility.getElapsedTime(startDate));
@@ -80,6 +63,7 @@ public class AccountDAO {
         try {
             mapper.removeItem(item);
         } catch (Exception e) {
+            logger.error("removeItem failed due to ", e);
             throw e;
         } finally {
             logger.info("Finished running SQL query in {} ms", Utility.getElapsedTime(startDate));
@@ -92,6 +76,7 @@ public class AccountDAO {
         try {
             mapper.closeOrder(orderId, status);
         } catch (Exception e) {
+            logger.error("closeOrder failed due to ", e);
             throw e;
         } finally {
             logger.info("Finished running SQL query in {} ms", Utility.getElapsedTime(startDate));
@@ -104,6 +89,7 @@ public class AccountDAO {
         try {
             mapper.addItemsToAccount(input, username);
         } catch (Exception e) {
+            logger.error("addItemsToAccount failed due to ", e);
             throw e;
         } finally {
             logger.info("Finished running SQL query in {} ms", Utility.getElapsedTime(startDate));
@@ -116,6 +102,7 @@ public class AccountDAO {
         try {
             return mapper.getPurchasedItems(username);
         } catch (Exception e) {
+            logger.error("getPurchasedItems failed due to ", e);
             throw e;
         } finally {
             logger.info("Finished running SQL query in {} ms", Utility.getElapsedTime(startDate));
