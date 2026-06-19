@@ -44,10 +44,16 @@ export class CognitoStack extends Stack {
             },
         })
         // Create a User Pool Client (for apps to connect)
-        const callbackUrls = SUBDOMAINS_BY_STAGE[stage].map(
-            subdomain => `https://${subdomain}${DOMAIN_NAME}`,
-        )
-        if (stage === 'devo') callbackUrls.push('https://localhost:3000')
+        const callbackUrls = []
+        SUBDOMAINS_BY_STAGE[stage].forEach(subdomain => {
+            callbackUrls.push(`https://${subdomain}${DOMAIN_NAME}`)
+            callbackUrls.push(`https://${subdomain}${DOMAIN_NAME}/account`)
+        })
+        const defaultRedirectUri = `https://${SUBDOMAINS_BY_STAGE[stage].slice(-1)[0]}${DOMAIN_NAME}/account`
+        if (stage === 'devo') {
+            callbackUrls.push('https://localhost:3000')
+            callbackUrls.push('https://localhost:3000/account')
+        }
         const userPoolClient = new UserPoolClient(
             this,
             `${SERVICE_PREFIX}-UserPoolClient-${stage}`,
@@ -70,6 +76,7 @@ export class CognitoStack extends Stack {
                         OAuthScope.COGNITO_ADMIN,
                     ],
                     callbackUrls: callbackUrls,
+                    defaultRedirectUri,
                 },
             },
         )
