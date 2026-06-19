@@ -151,12 +151,12 @@ const Account = props => {
     const dispatch = useDispatch()
 
     const [
-        updateCart,
+        updateOrder,
         {
-            isLoading: updateCartIsUpdating,
-            isSuccess: updateCartIsSuccess,
-            isError: updateCartIsError,
-            error: updateCartError,
+            isLoading: updateOrderIsUpdating,
+            isSuccess: updateOrderIsSuccess,
+            isError: updateOrderIsError,
+            error: updateOrderError,
         },
     ] = useUpdateCartMutation()
     const [
@@ -220,8 +220,8 @@ const Account = props => {
         }
     }, [auth])
     useEffect(() => {
-        const messageId = `updateCartInfo-remove-${lastProductRemoved.productId}`
-        if (updateCartIsUpdating) {
+        const messageId = `updateOrderInfo-remove-${lastProductRemoved.productId}`
+        if (updateOrderIsUpdating) {
             dispatch(
                 addInfoMessage({
                     title: 'Updating cart...',
@@ -232,9 +232,9 @@ const Account = props => {
         } else {
             dispatch(removeInfoMessage(messageId))
         }
-    }, [updateCartIsUpdating])
+    }, [updateOrderIsUpdating])
     useEffect(() => {
-        if (updateCartIsError) {
+        if (updateOrderIsError) {
             dispatch(
                 addErrorMessage({
                     title: 'Failed to remove item from your cart',
@@ -243,26 +243,26 @@ const Account = props => {
                         'data.error',
                         CONNECTION_ERROR_MESSAGE,
                     ),
-                    id: `updateCartError-remove-${lastProductRemoved.productId}`,
+                    id: `updateOrderError-remove-${lastProductRemoved.productId}`,
                 }),
             )
         }
-    }, [updateCartIsError])
+    }, [updateOrderIsError])
     useEffect(() => {
-        if (updateCartIsSuccess) {
+        if (updateOrderIsSuccess) {
             dispatch(
                 addSuccessMessage({
                     title: 'Item successfully removed',
                     description: 'The system has successfully removed the item from your cart',
-                    id: `updateCartError-remove-${lastProductRemoved.productId}`,
+                    id: `updateOrderError-remove-${lastProductRemoved.productId}`,
                 }),
             )
         }
-    }, [updateCartIsSuccess])
+    }, [updateOrderIsSuccess])
 
     useEffect(() => {
         const messageId = 'checkoutCartInfo'
-        if (updateCartIsUpdating) {
+        if (updateOrderIsUpdating) {
             dispatch(
                 addInfoMessage({
                     title: 'Checking out cart...',
@@ -273,9 +273,9 @@ const Account = props => {
         } else {
             dispatch(removeInfoMessage(messageId))
         }
-    }, [updateCartIsUpdating])
+    }, [updateOrderIsUpdating])
     useEffect(() => {
-        if (updateCartIsError) {
+        if (updateOrderIsError) {
             dispatch(
                 addErrorMessage({
                     title: 'Failed to check out your cart',
@@ -288,9 +288,9 @@ const Account = props => {
                 }),
             )
         }
-    }, [updateCartIsError])
+    }, [updateOrderIsError])
     useEffect(() => {
-        if (updateCartIsSuccess) {
+        if (updateOrderIsSuccess) {
             dispatch(
                 addSuccessMessage({
                     title: 'Successfully checked out your cart',
@@ -300,11 +300,11 @@ const Account = props => {
                 }),
             )
         }
-    }, [updateCartIsSuccess])
+    }, [updateOrderIsSuccess])
 
     useEffect(() => {
         const messageId = 'updateNotificationPreferencesInfo'
-        if (updateCartIsUpdating) {
+        if (updateOrderIsUpdating) {
             dispatch(
                 addInfoMessage({
                     title: 'Updating Notification Preferences',
@@ -358,10 +358,10 @@ const Account = props => {
                     <div>
                         {item.franchiseName} || {item.gameName}
                         <br />
-                        {(!updateCartIsUpdating && (
+                        {(!updateOrderIsUpdating && (
                             <button
                                 onClick={() => {
-                                    updateCart({ action: 'remove', productId: item.productId })
+                                    updateOrder({ action: 'remove', productId: item.productId })
                                     setLastProductRemoved({
                                         productId: item.productId,
                                         productName: item.productName,

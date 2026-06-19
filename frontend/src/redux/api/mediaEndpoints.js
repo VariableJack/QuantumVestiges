@@ -1,7 +1,7 @@
 import gamerParadiseApiSlice from './gamerParadiseApiSlice'
 
 export const mediaEndpoints = gamerParadiseApiSlice.injectEndpoints({
-    tagTypes: ['account-details', 'cart', 'products', 'franchises'],
+    tagTypes: ['account-details', 'order', 'products', 'franchises'],
     endpoints: builder => ({
         getFranchises: builder.query({
             query: () => ({
@@ -39,28 +39,29 @@ export const mediaEndpoints = gamerParadiseApiSlice.injectEndpoints({
         }),
         getCart: builder.query({
             query: () => ({
-                url: '/cart',
+                url: '/order',
                 method: 'GET',
             }),
-            providesTags: ['cart'],
+            providesTags: ['order'],
         }),
-        updateCart: builder.mutation({
-            query: ({ action, productId }) => ({
-                url: '/update-cart',
+        updateOrder: builder.mutation({
+            query: ({ action, productId, quantity }) => ({
+                url: '/update-order',
                 method: 'POST',
                 body: {
                     action,
                     productId,
+                    quantity,
                 },
             }),
-            invalidateTags: ['cart'],
+            invalidateTags: ['order'],
         }),
         checkoutCart: builder.mutation({
             query: () => ({
-                url: '/checkout-cart',
+                url: '/checkout-order',
                 method: 'POST',
             }),
-            invalidateTags: ['account-details', 'cart'],
+            invalidateTags: ['account-details', 'order'],
         }),
         // Admin
         createFranchise: builder.mutation({

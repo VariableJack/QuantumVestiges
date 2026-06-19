@@ -60,7 +60,7 @@ const cognitoAuthConfig = {
     authority: `https://cognito-idp.${getConfig('region')}.amazonaws.com/${getConfig('userPoolId')}`,
     client_id: getConfig('clientId'),
     response_type: 'code',
-    redirect_uri: getConfig('hostname'),
+    redirect_uri: `${getConfig('hostname')}/account`,
     scope: 'aws.cognito.signin.user.admin email openid profile',
     metadata: {
         issuer: `https://cognito-idp.${getConfig('region')}.amazonaws.com/${getConfig('userPoolId')}`,

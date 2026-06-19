@@ -25,12 +25,12 @@ const Game = () => {
     const [triggerGetProduct, { isLoading, isError: getProductIsError, error: getProductError }] =
         useLazyGetProductByIdQuery()
     const [
-        updateCart,
+        updateOrder,
         {
             isLoading: isUpdating,
-            isError: updateCartIsError,
-            error: updateCartError,
-            isSuccess: updateCartIsSuccess,
+            isError: updateOrderIsError,
+            error: updateOrderError,
+            isSuccess: updateOrderIsSuccess,
         },
     ] = useUpdateCartMutation()
     const [product, setProduct] = useState({
@@ -80,7 +80,7 @@ const Game = () => {
     }, [isLoading])
 
     useEffect(() => {
-        const messageId = `updateCartInfo-${(isPresentInCart && 'remove') || 'add'}-${product.productId}`
+        const messageId = `updateOrderInfo-${(isPresentInCart && 'remove') || 'add'}-${product.productId}`
         if (isUpdating) {
             dispatch(
                 addInfoMessage({
@@ -98,28 +98,28 @@ const Game = () => {
     }, [isUpdating])
 
     useEffect(() => {
-        if (updateCartIsError) {
+        if (updateOrderIsError) {
             dispatch(
                 addErrorMessage({
                     title: `Failed to ${(isPresentInCart && 'remove item from') || 'add item to'} your cart`,
-                    description: get(updateCartError, 'data.error', CONNECTION_ERROR_MESSAGE),
-                    id: `updateCartError-${(isPresentInCart && 'remove') || 'add'}-${product.productId}`,
+                    description: get(updateOrderError, 'data.error', CONNECTION_ERROR_MESSAGE),
+                    id: `updateOrderError-${(isPresentInCart && 'remove') || 'add'}-${product.productId}`,
                 }),
             )
         }
-    }, [updateCartIsError])
+    }, [updateOrderIsError])
 
     useEffect(() => {
-        if (updateCartIsSuccess) {
+        if (updateOrderIsSuccess) {
             dispatch(
                 addSuccessMessage({
                     title: (isPresentInCart && 'Removed item from cart') || 'Added item to cart',
                     description: `The system has successfully ${(isPresentInCart && 'removed the item from') || 'added the item to'} your cart`,
-                    id: `updateCartSuccess-${(isPresentInCart && 'remove') || 'add'}-${product.productId}`,
+                    id: `updateOrderSuccess-${(isPresentInCart && 'remove') || 'add'}-${product.productId}`,
                 }),
             )
         }
-    }, [updateCartIsSuccess])
+    }, [updateOrderIsSuccess])
 
     const onDownloadClick = () => {
         const appProtocol = 'myapp://open'
@@ -142,7 +142,7 @@ const Game = () => {
                     {(!isUpdating && (
                         <button
                             onClick={() => {
-                                updateCart({ action: 'remove', productId: product.productId })
+                                updateOrder({ action: 'remove', productId: product.productId })
                             }}
                         >
                             Remove from Cart
@@ -158,7 +158,11 @@ const Game = () => {
                         {(!isUpdating && (
                             <button
                                 onClick={() => {
-                                    updateCart({ action: 'add', productId: product.productId })
+                                    updateOrder({
+                                        action: 'add',
+                                        productId: product.productId,
+                                        quantity: 1,
+                                    })
                                 }}
                             >
                                 Add to Cart
