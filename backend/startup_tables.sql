@@ -26,40 +26,9 @@ create table user_notification_preferences_cl (
   notification_type_id int Not null,
   old_is_enabled boolean,
   new_is_enabled boolean,
-  change_action enum('INSERT', 'UPDATE', 'delete') not null,
+  change_action enum('INSERT', 'UPDATE', 'DELETE') not null,
   change_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
---
-delimiter //
-create trigger user_notification_preferences_insert
-after insert on user_notification_preferences
-for each row
-begin
-  insert into user_notification_preferences_cl(user_id,notification_type_id,old_is_enabled,new_is_enabled,change_action)
-  VALUES (NEW.user_id,NEW.notification_type_id,NULL,NEW.is_enabled,'INSERT');
-end;//
-delimiter ;
-delimiter //
-create trigger user_notification_preferences_update
-after update on user_notification_preferences
-for each row
-begin
-  if OLD.is_enabled <> NEW.is_enabled then
-    insert into user_notification_preferences_cl(user_id,notification_type_id,old_is_enabled,new_is_enabled,change_action)
-    VALUES (NEW.user_id,NEW.notification_type_id,OLD.is_enabled,NEW.is_enabled,'UPDATE');
-  end if;
-end;//
-delimiter ;
-delimiter //
-create trigger user_notification_preferences_delete
-after delete on user_notification_preferences
-for each row
-begin
-  insert into user_notification_preferences_cl(user_id,notification_type_id,old_is_enabled,new_is_enabled,change_action)
-  VALUES (OLD.user_id,OLD.notification_type_id,OLD.is_enabled,NULL,'DELETE');
-end;//
-delimiter ;
---
 create table franchises (
   franchise_id SERIAL primary key,
   franchise_name VARCHAR(32) Not null unique
@@ -92,84 +61,27 @@ create table user_subscriptions_cl (
   subscription_end_date timestamp not null,
   billing_period enum('1-MONTH', '3-MONTH', '6-MONTH', '12-MONTH') not null,
   auto_renewal boolean not null,
-  change_action enum('INSERT', 'UPDATE', 'delete') not null,
+  change_action enum('INSERT', 'UPDATE', 'DELETE') not null,
   change_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
---
-delimiter //
-create trigger user_subscriptions_insert
-after insert on user_subscriptions
-for each row
-begin
-  insert into user_subscriptions_cl(user_subscription_id,product_id,subscription_start_date,subscription_end_date,billing_period,auto_renewal,change_action)
-  VALUES (NEW.user_subscription_id,NEW.product_id,NEW.subscription_start_date,NEW.subscription_end_date,NEW.billing_period,NEW.auto_renewal,'INSERT');
-end;//
-delimiter ;
-delimiter //
-create trigger user_subscriptions_update
-after update on user_subscriptions
-for each row
-begin
-  insert into user_subscriptions_cl(user_subscription_id,product_id,subscription_start_date,subscription_end_date,billing_period,auto_renewal,change_action)
-  VALUES (NEW.user_subscription_id,NEW.product_id,NEW.subscription_start_date,NEW.subscription_end_date,NEW.billing_period,NEW.auto_renewal,'UPDATE');
-end;//
-delimiter ;
-delimiter //
-create trigger user_subscriptions_delete
-after delete on user_subscriptions
-for each row
-begin
-  insert into user_subscriptions_cl(user_subscription_id,product_id,subscription_start_date,subscription_end_date,billing_period,auto_renewal,change_action)
-  VALUES (OLD.user_subscription_id,OLD.product_id,OLD.subscription_start_date,OLD.subscription_end_date,OLD.billing_period,OLD.auto_renewal,'UPDATE');
-end;//
-delimiter ;
---
 create table orders (
   order_id SERIAL primary key,
   user_id BIGINT UNSIGNED Not null references users.user_id ON DELETE RESTRICT,
-  order_status ENUM ('PENDING', 'COMPLETED', 'FAILED', 'REFUNDED') not null default 'PENDING',
+  order_status ENUM ('PENDING', 'COMPLETED', 'REFUNDED') not null default 'PENDING',
   total_purchase_price INT,
   create_time TIMESTAMP Not null default current_timestamp
 );
 create table orders_cl (
   change_log_id SERIAL not null primary key,
   order_id BIGINT UNSIGNED Not null,
-  old_order_status ENUM ('PENDING', 'COMPLETED', 'FAILED', 'REFUNDED'),
-  new_order_status ENUM ('PENDING', 'COMPLETED', 'FAILED', 'REFUNDED'),
+  old_order_status ENUM ('PENDING', 'COMPLETED', 'REFUNDED'),
+  new_order_status ENUM ('PENDING', 'COMPLETED', 'REFUNDED'),
   total_purchase_price INT,
   create_time TIMESTAMP Not null default current_timestamp,
-  change_action enum('INSERT', 'UPDATE', 'delete') not null,
+  change_action enum('INSERT', 'UPDATE', 'DELETE') not null,
   change_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
---
-delimiter //
-create trigger orders_insert
-after insert on orders
-for each row
-begin
-  insert into orders_cl(order_id,old_order_status,new_order_status,total_purchase_price,create_time,change_action)
-  VALUES (NEW.order_id,null,NEW.order_status,NEW.total_purchase_price,NEW.create_time,'INSERT');
-end;//
-delimiter ;
-delimiter //
-create trigger orders_update
-after update on orders
-for each row
-begin
-  insert into orders_cl(order_id,old_order_status,new_order_status,total_purchase_price,create_time,change_action)
-  VALUES (NEW.order_id,OLD.order_status,NEW.order_status,NEW.total_purchase_price,NEW.create_time,'UPDATE');
-end;//
-delimiter ;
-delimiter //
-create trigger orders_delete
-after delete on orders
-for each row
-begin
-  insert into orders_cl(order_id,old_order_status,new_order_status,total_purchase_price,create_time,change_action)
-  VALUES (OLD.order_id,OLD.order_status,NULL,OLD.total_purchase_price,OLD.create_time,'DELETE');
-end;//
-delimiter ;
---
+
 create table order_items (
   order_item_id SERIAL primary key,
   order_id INT Not null references orders.order_id ON DELETE CASCADE,
@@ -241,6 +153,124 @@ create table purchased_items (
   product_id BIGINT UNSIGNED Not null references product.product_id ON DELETE RESTRICT
 );
 --
+DROP TRIGGER IF EXISTS user_notification_preferences_insert;
+DROP TRIGGER IF EXISTS user_notification_preferences_update;
+DROP TRIGGER IF EXISTS user_notification_preferences_delete;
+DROP TRIGGER IF EXISTS user_subscriptions_insert;
+DROP TRIGGER IF EXISTS user_subscriptions_update;
+DROP TRIGGER IF EXISTS user_subscriptions_delete;
+DROP TRIGGER IF EXISTS orders_insert;
+DROP TRIGGER IF EXISTS orders_update;
+DROP TRIGGER IF EXISTS orders_delete;
+DROP TRIGGER IF EXISTS order_items_insert;
+DROP TRIGGER IF EXISTS order_items_delete;
+DROP TRIGGER IF EXISTS users_delete;
+DROP TRIGGER IF EXISTS users_insert;
+DROP TRIGGER IF EXISTS notification_types_insert;
+
+delimiter //
+create trigger user_notification_preferences_insert
+after insert on user_notification_preferences
+for each row
+begin
+  insert into user_notification_preferences_cl(user_id,notification_type_id,old_is_enabled,new_is_enabled,change_action)
+  VALUES (NEW.user_id,NEW.notification_type_id,NULL,NEW.is_enabled,'INSERT');
+end;//
+delimiter ;
+delimiter //
+create trigger user_notification_preferences_update
+after update on user_notification_preferences
+for each row
+begin
+  if OLD.is_enabled <> NEW.is_enabled then
+    insert into user_notification_preferences_cl(user_id,notification_type_id,old_is_enabled,new_is_enabled,change_action)
+    VALUES (NEW.user_id,NEW.notification_type_id,OLD.is_enabled,NEW.is_enabled,'UPDATE');
+  end if;
+end;//
+delimiter ;
+delimiter //
+create trigger user_notification_preferences_delete
+after delete on user_notification_preferences
+for each row
+begin
+  insert into user_notification_preferences_cl(user_id,notification_type_id,old_is_enabled,new_is_enabled,change_action)
+  VALUES (OLD.user_id,OLD.notification_type_id,OLD.is_enabled,NULL,'DELETE');
+end;//
+delimiter ;
+delimiter //
+create trigger user_subscriptions_insert
+after insert on user_subscriptions
+for each row
+begin
+  insert into user_subscriptions_cl(user_subscription_id,product_id,subscription_start_date,subscription_end_date,billing_period,auto_renewal,change_action)
+  VALUES (NEW.user_subscription_id,NEW.product_id,NEW.subscription_start_date,NEW.subscription_end_date,NEW.billing_period,NEW.auto_renewal,'INSERT');
+end;//
+delimiter ;
+delimiter //
+create trigger user_subscriptions_update
+after update on user_subscriptions
+for each row
+begin
+  insert into user_subscriptions_cl(user_subscription_id,product_id,subscription_start_date,subscription_end_date,billing_period,auto_renewal,change_action)
+  VALUES (NEW.user_subscription_id,NEW.product_id,NEW.subscription_start_date,NEW.subscription_end_date,NEW.billing_period,NEW.auto_renewal,'UPDATE');
+end;//
+delimiter ;
+delimiter //
+create trigger user_subscriptions_delete
+after delete on user_subscriptions
+for each row
+begin
+  insert into user_subscriptions_cl(user_subscription_id,product_id,subscription_start_date,subscription_end_date,billing_period,auto_renewal,change_action)
+  VALUES (OLD.user_subscription_id,OLD.product_id,OLD.subscription_start_date,OLD.subscription_end_date,OLD.billing_period,OLD.auto_renewal,'UPDATE');
+end;//
+delimiter ;
+delimiter //
+create trigger orders_insert
+after insert on orders
+for each row
+begin
+  insert into orders_cl(order_id,old_order_status,new_order_status,total_purchase_price,create_time,change_action)
+  VALUES (NEW.order_id,null,NEW.order_status,NEW.total_purchase_price,NEW.create_time,'INSERT');
+end;//
+delimiter ;
+delimiter //
+create trigger orders_update
+after update on orders
+for each row
+begin
+  insert into orders_cl(order_id,old_order_status,new_order_status,total_purchase_price,create_time,change_action)
+  VALUES (NEW.order_id,OLD.order_status,NEW.order_status,NEW.total_purchase_price,NEW.create_time,'UPDATE');
+end;//
+delimiter ;
+delimiter //
+create trigger orders_delete
+after delete on orders
+for each row
+begin
+  insert into orders_cl(order_id,old_order_status,new_order_status,total_purchase_price,create_time,change_action)
+  VALUES (OLD.order_id,OLD.order_status,NULL,OLD.total_purchase_price,OLD.create_time,'DELETE');
+end;//
+delimiter ;
+delimiter //
+create trigger order_items_insert
+after insert on order_items
+for each row
+begin
+  UPDATE orders SET total_purchase_price = (
+    SELECT SUM(price_at_purchase_cents * quantity) FROM order_items WHERE order_id = NEW.order_id
+  ) WHERE order_id = NEW.order_id;
+end;//
+delimiter ;
+delimiter //
+create trigger order_items_delete
+after delete on order_items
+for each row
+begin
+  UPDATE orders SET total_purchase_price = (
+    SELECT SUM(price_at_purchase_cents * quantity) FROM order_items WHERE order_id = OLD.order_id
+  ) WHERE order_id = OLD.order_id;
+end;//
+delimiter ;
 delimiter //
 create trigger users_delete
 after delete on users
@@ -283,7 +313,6 @@ begin
   WHERE user_id = OLD.user_id;
 end;//
 delimiter ;
-
 delimiter //
 create trigger users_insert
 after insert on users
@@ -294,7 +323,6 @@ begin
   FROM notification_types;
 end;//
 delimiter ;
-
 delimiter //
 create trigger notification_types_insert
 after insert on notification_types
@@ -305,3 +333,10 @@ begin
   FROM notification_types;
 end;//
 delimiter ;
+
+INSERT INTO users (username) VALUES ('Ghost User');
+INSERT INTO notification_types (
+  notification_type,
+  frequency,
+  email_template
+) VALUES ('weekly_newsletter', 'WEEKLY', 'WeeklyNewsletter');
