@@ -11,6 +11,7 @@ import {
     removeInfoMessage,
     addErrorMessage,
 } from '../../redux/api/globalSlice'
+import { setOrder } from '../../redux/api/userSlice'
 import { CONNECTION_ERROR_MESSAGE } from '../../shared/constants'
 
 import '../../styles/App.css'
@@ -123,6 +124,25 @@ const Game = () => {
                     id: `updateOrderSuccess-${(isPresentInOrder && 'remove') || 'add'}-${product.productId}`,
                 }),
             )
+            if (isPresentInOrder) {
+                dispatch(
+                    setOrder({
+                        ...order,
+                        items: order.items.filter(
+                            existingOrderItem => existingOrderItem.productId !== productId,
+                        ),
+                        totalPurchasePrice: order.totalPurchasePrice - product.price,
+                    }),
+                )
+            } else {
+                dispatch(
+                    setOrder({
+                        ...order,
+                        items: [...order.items, product],
+                        totalPurchasePrice: order.totalPurchasePrice + product.price,
+                    }),
+                )
+            }
         }
     }, [updateOrderIsSuccess])
 

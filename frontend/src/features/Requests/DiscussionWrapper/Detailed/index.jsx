@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { get } from 'lodash'
 
 import {
@@ -14,6 +14,7 @@ import {
     useCloseBugReportMutation,
     useReopenBugReportMutation,
 } from '../../api/requestsEndpoints'
+import { setBugReports, setDiscussionThreads, setSupportRequests } from '../../api/requestsSlice'
 import {
     addSuccessMessage,
     addInfoMessage,
@@ -164,9 +165,9 @@ const DiscussionDetailed = props => {
 const DiscussionWrapperDetailed = props => {
     const dispatch = useDispatch()
     const threadId = window.location.pathname.split('/')[2]
-    useEffect(() => {}, [])
     const { type } = props
 
+    const { bugReports, supportRequests } = useSelector(state => state.requestsReducer)
     const [
         triggerGetSupportRequest,
         {
@@ -571,6 +572,7 @@ const DiscussionWrapperDetailed = props => {
         if (input.description.trim()) {
             setData({
                 ...data,
+                status: 'CLOSE',
                 comments: [...data.comments, response],
             })
         }
@@ -578,6 +580,26 @@ const DiscussionWrapperDetailed = props => {
     const handleClose = input => {
         try {
             closeAction(input)
+            let indexOfData = undefined
+            let newData = undefined
+            switch (type) {
+                case FORUM_PAGES.SUPPORT:
+                    indexOfData = supportRequests.indexOf(
+                        supportRequest => (supportRequest.threadId = data.threadId),
+                    )
+                    newData = [...supportRequests]
+                    newData[indexOfData] = { ...data }
+                    dispatch(setSupportRequests(newData))
+                    break
+                case FORUM_TYPE.BUG_REPORT:
+                    indexOfData = bugReports.indexOf(
+                        bugReport => (supportRequest.threadId = data.threadId),
+                    )
+                    newData = [...bugReports]
+                    newData[indexOfData] = { ...data }
+                    dispatch(setBugReports(newData))
+                    break
+            }
         } catch (e) {}
     }
     const reopenAction = async input => {
@@ -600,13 +622,34 @@ const DiscussionWrapperDetailed = props => {
         if (input.description.trim()) {
             setData({
                 ...data,
+                status: 'OPEN',
                 comments: [...data.comments, response],
             })
         }
     }
     const handleReopen = input => {
         try {
-            closeAction(input)
+            reopenAction(input)
+            let indexOfData = undefined
+            let newData = undefined
+            switch (type) {
+                case FORUM_PAGES.SUPPORT:
+                    indexOfData = supportRequests.indexOf(
+                        supportRequest => (supportRequest.threadId = data.threadId),
+                    )
+                    newData = [...supportRequests]
+                    newData[indexOfData] = { ...data }
+                    dispatch(setSupportRequests(newData))
+                    break
+                case FORUM_TYPE.BUG_REPORT:
+                    indexOfData = bugReports.indexOf(
+                        bugReport => (supportRequest.threadId = data.threadId),
+                    )
+                    newData = [...bugReports]
+                    newData[indexOfData] = { ...data }
+                    dispatch(setBugReports(newData))
+                    break
+            }
         } catch (e) {}
     }
     return (

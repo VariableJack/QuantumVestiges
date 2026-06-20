@@ -122,10 +122,8 @@ const DiscussionComponent = props => {
                     }}
                 />
             </span>
-            {type === FORUM_PAGES.SUPPORT && (
+            {(type !== FORUM_PAGES.SUPPORT && (
                 <span>
-                    <></>
-                    ||{' '}
                     <Toggle
                         items={[
                             { title: 'All', author: undefined, id: 'all', disabled: false },
@@ -142,7 +140,7 @@ const DiscussionComponent = props => {
                         }}
                     />
                 </span>
-            )}
+            )) || <></>}
         </div>
     )
 }
