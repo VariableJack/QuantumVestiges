@@ -25,21 +25,27 @@ const toggleShow = index => {
 const Dropdown = ({ url, title, elements, index }) => {
     return (
         <div className="dropdown">
-            <button
-                onClick={() => {
-                    toggleShow(index)
-                }}
-                className="dropbtn"
-            >
-                {title}
-            </button>
-            <span id={`dropdown${index}`} className="dropdown-content">
+            <div className="dropbtn-container">
+                <a
+                    onClick={() => {
+                        toggleShow(index)
+                    }}
+                    className="dropbtn"
+                >
+                    {title}
+                </a>
+            </div>
+            <div id={`dropdown${index}`} className="dropdown-content">
                 {elements.map(element => (
-                    <a href={`${url}${element.path}`} key={element.path}>
-                        {element.menubarHeader}
+                    <a
+                        className="dropdown-content-item"
+                        href={`${url}${element.path}`}
+                        key={element.path}
+                    >
+                        <span className="dropdown-content-item-text">{element.menubarHeader}</span>
                     </a>
                 ))}
-            </span>
+            </div>
         </div>
     )
 }
@@ -48,18 +54,18 @@ const Menubar = props => {
     const { items, url, actionButtons } = props
 
     return (
-        <div>
+        <div className="pl-xs menubar">
             {items.map((item, index) => {
                 return (
                     <Dropdown url={url} title={item.title} elements={item.elements} index={index} />
                 )
             })}
-            <div className="f-r">
+            <div className="action-button-container f-r">
                 {actionButtons.map(({ label, onClick, type }) => {
                     return (
-                        <button className={`action-button-${type}`} onClick={onClick}>
+                        <a className={`action-button-${type}`} onClick={onClick}>
                             {label}
-                        </button>
+                        </a>
                     )
                 })}
             </div>

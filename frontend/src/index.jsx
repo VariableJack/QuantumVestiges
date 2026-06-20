@@ -196,6 +196,11 @@ const RouterWrapper = props => {
     )
 }
 
+document.body.style.setProperty(
+    '--quantum-vestiges-bg-url',
+    `url("${getConfig('assetsS3Bucket')}FuturisticRamenOsaka.png")`,
+)
+
 const root = ReactDOM.createRoot(document.getElementById('root'))
 const App = () => {
     const dispatch = useDispatch()
@@ -273,7 +278,9 @@ const App = () => {
                             ]}
                         />
                     </div>
-                    <RouterWrapper />
+                    <div className="mh-10 content-container">
+                        <RouterWrapper />
+                    </div>
                 </AuthProvider>
             </React.StrictMode>
         </div>

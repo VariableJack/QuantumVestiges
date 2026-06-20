@@ -1,5 +1,6 @@
 {
     "local": {
+        "assetsS3Bucket": "https://quantumvestiges-assets-devo.s3.us-west-2.amazonaws.com/",
         "region": "us-west-2",
         "userPoolId": "us-west-2_A9tCE18yj",
         "clientId": "4scl48210u7hq1mha2j1vbcqe9",
@@ -8,6 +9,7 @@
         "cognitoDomain": "devo-quantumvestiges.auth.us-west-2.amazoncognito.com"
     },
     "devo": {
+        "assetsS3Bucket": "https://quantumvestiges-assets-devo.s3.us-west-2.amazonaws.com/",
         "region": "us-west-2",
         "userPoolId": "us-west-2_A9tCE18yj",
         "clientId": "4scl48210u7hq1mha2j1vbcqe9",
@@ -16,6 +18,7 @@
         "cognitoDomain": "devo-quantumvestiges.auth.us-west-2.amazoncognito.com"
     },
     "pre-prod": {
+        "assetsS3Bucket": "https://quantumvestiges-assets-pre-prod.s3.us-west-2.amazonaws.com/",
         "region": "us-west-2",
         "userPoolId": "",
         "clientId": "",
@@ -24,6 +27,7 @@
         "cognitoDomain": "pre-prod-quantumvestiges.auth.us-west-2.amazoncognito.com"
     },
     "prod": {
+        "assetsS3Bucket": "https://quantumvestiges-assets-prod.s3.us-west-2.amazonaws.com/",
         "region": "us-west-2",
         "userPoolId": "",
         "clientId": "",
