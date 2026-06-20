@@ -12,7 +12,9 @@ import { getUserPoolId } from '../../shared/utils'
 const initialState = {
     username: undefined,
     group: '',
-    order: {},
+    order: {
+        items: [],
+    },
     purchasedGames: [],
     error: null,
     preferences: [],

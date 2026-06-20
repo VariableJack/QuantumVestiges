@@ -76,7 +76,7 @@ const DiscussionComponent = props => {
             )}
             Closed
             {getThreadHeaders(
-                filterData(data, pagination, selectedAuthor.author, 'CLOSED'),
+                filterData(data, pagination, selectedAuthor.author, 'CLOSE'),
                 FORUM_PAGE_ITEMS[type].allViewUrl(),
             )}
             <span>

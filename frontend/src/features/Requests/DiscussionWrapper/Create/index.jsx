@@ -142,6 +142,7 @@ const DiscussionWrapperCreate = props => {
     const { supportRequests, bugReports, discussionThreads } = useSelector(
         state => state.requestsReducer,
     )
+    const [sidebarItems, setSidebarItems] = useState([])
 
     useEffect(() => {
         let infoMessage = undefined
@@ -174,7 +175,6 @@ const DiscussionWrapperCreate = props => {
         }
         if (infoMessage) dispatch(addInfoMessage(infoMessage))
     }, [supportRequestIsSubmitting, bugReportIsSubmitting, discussionThreadIsSubmitting])
-
     useEffect(() => {
         let errorMessage = undefined
         if (supportRequestIsError) {
@@ -200,39 +200,6 @@ const DiscussionWrapperCreate = props => {
         }
         if (errorMessage) dispatch(addErrorMessage(errorMessage))
     }, [supportRequestIsError, bugReportIsError, discussionThreadIsError])
-
-    useEffect(() => {
-        let successMessage = undefined
-        if (supportRequestIsSuccess) {
-            const createdLink = `/support-request/${supportRequests[0].threadId}`
-            successMessage = {
-                title: 'Successfully created new support request',
-                description: `Your support request has been successfully created and can be accessed ${(<a href={createdLink}>'here'</a>)}`,
-                id: 'supportRequestSuccess',
-            }
-            dispatch(setSupportRequests([response, ...supportRequests]))
-        }
-        if (bugReportIsSuccess) {
-            const createdLink = `/bug-report/${bugReports[0].threadId}`
-            successMessage = {
-                title: 'Successfully created new bug report',
-                description: `Your bug report has been successfully created and can be accessed ${(<a href={createdLink}>'here'</a>)}`,
-                id: 'bugReportSuccess',
-            }
-            dispatch(setBugReports([response, ...bugReports]))
-        }
-        if (discussionThreadIsSuccess) {
-            const createdLink = `/discussion/${discussionThreads[0].threadId}`
-            successMessage = {
-                title: 'Successfully created new discussion',
-                description: `Your discussion has been successfully created and can be accessed ${(<a href={createdLink}>'here'</a>)}`,
-                id: 'discussionThreadSuccess',
-            }
-            dispatch(setDiscussionThreads([response, ...discussionThreads]))
-        }
-        if (successMessage) dispatch(addSuccessMessage(successMessage))
-    }, [supportRequestIsSuccess, bugReportIsSuccess, discussionThreadIsSuccess])
-    const [sidebarItems, setSidebarItems] = useState([])
     useEffect(() => {
         switch (type) {
             case FORUM_PAGES.SUPPORT:
@@ -250,20 +217,44 @@ const DiscussionWrapperCreate = props => {
         let response = {
             threadId: -1,
         }
+        let successMessage = undefined
+        let createdLink = undefined
         try {
             switch (type) {
                 case FORUM_PAGES.SUPPORT:
                     response = await submitSupportRequest(input).unwrap()
+                    createdLink = `/support/${response.threadId}`
+                    successMessage = {
+                        title: 'Successfully created new support request',
+                        description: 'Your support request has been successfully created',
+                        id: 'supportRequestSuccess',
+                    }
+                    dispatch(setSupportRequests([response, ...supportRequests]))
                     break
                 case FORUM_PAGES.BUG_REPORT:
                     response = await submitBugReport(input).unwrap()
+                    createdLink = `/bug-report/${response.threadId}`
+                    successMessage = {
+                        title: 'Successfully created new bug report',
+                        description: 'Your bug report has been successfully created',
+                        id: 'bugReportSuccess',
+                    }
+                    dispatch(setBugReports([response, ...bugReports]))
                     break
                 case FORUM_PAGES.DISCUSSION:
                     response = await submitDiscussionThread(input).unwrap()
+                    createdLink = `/discussion/${response.threadId}`
+                    successMessage = {
+                        title: 'Successfully created new discussion',
+                        description: 'Your discussion has been successfully created',
+                        id: 'discussionThreadSuccess',
+                    }
+                    dispatch(setDiscussionThreads([response, ...discussionThreads]))
                     break
             }
+            dispatch(addSuccessMessage(successMessage))
+            window.location.href = createdLink
         } catch (e) {}
-        return response
     }
 
     return (

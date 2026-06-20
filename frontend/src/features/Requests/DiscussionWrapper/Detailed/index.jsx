@@ -25,32 +25,35 @@ import {
     FORUM_PAGES,
     FORUM_PAGE_ITEMS,
     CONNECTION_ERROR_MESSAGE,
+    FORUM_MESSAGE_TYPES,
+    FORUM_MESSAGE_PREFIXES,
 } from '../../../../shared/constants'
-
+import { formatTimestamp } from '../../../../shared/utils'
+import '../../../../styles/App.css'
 const DiscussionDetailed = props => {
     const { data, type, submitAction, closeAction, reopenAction } = props
     const [inputDescription, setInputDescription] = useState('')
     const [mainCommentResetBoolean, setMainCommentResetBoolean] = useState(true)
+    const comments = get(data, 'comments', [])
 
     const [modalIsOpen, setModalIsOpen] = useState(false)
     const [modalInputDescription, setModalInputDescription] = useState('')
     const [modalCommentResetBoolean, setModalCommentResetBoolean] = useState(true)
     return (
         <div>
-            <div className="d-f">
-                <h1>{FORUM_PAGE_ITEMS[type].detailedPageTitle}</h1>
-                <div className="f-r">
-                    <button onClick={() => setModalIsOpen(true)}>
-                        {(data.status === 'OPEN' && 'Close out') || 'Reopen'}{' '}
-                        {FORUM_PAGE_ITEMS[type].detailedPageTitle}
-                    </button>
-                </div>
+            <div className="pt-s">
+                <h1 className="d-i">{FORUM_PAGE_ITEMS[type].detailedPageTitle()}</h1>
+                <button className="d-i f-r forum-status" onClick={() => setModalIsOpen(true)}>
+                    {(data.status === 'OPEN' && 'Close out') || 'Reopen'}{' '}
+                    {FORUM_PAGE_ITEMS[type].detailedPageTitle()}
+                </button>
+                <br />
             </div>
             {(modalIsOpen && (
                 <Modal
-                    header={`Do you wish to put a comment as you ${(data.status === 'OPEN' && 'close out') || 'reopen'} this ${FORUM_PAGE_ITEMS[type].detailedPageTitle}?`}
+                    header={`Do you wish to put a comment as you ${(data.status === 'OPEN' && 'close out') || 'reopen'} this ${FORUM_PAGE_ITEMS[type].detailedPageTitle()}?`}
                     footer={
-                        <div>
+                        <div className="f-r">
                             <button
                                 className="f-l secondary"
                                 onClick={() => {
@@ -84,17 +87,19 @@ const DiscussionDetailed = props => {
                         </div>
                     }
                 >
-                    <input
-                        className={`medium-border description ${(!modalCommentResetBoolean && 'error-text') || 'no-error-text'}`}
-                        placeholder="Enter your comment here (not required)"
-                        value={modalInputDescription}
-                        onChange={event => {
-                            setModalInputDescription(event.nativeEvent.srcElement.value)
-                            setModalCommentResetBoolean(
-                                event.nativeEvent.srcElement.value.length > 0,
-                            )
-                        }}
-                    />
+                    <div className="mh-xs">
+                        <input
+                            className={`medium-border comment ${(!modalCommentResetBoolean && 'error-text') || 'no-error-text'}`}
+                            placeholder="Enter your comment here (not required)"
+                            value={modalInputDescription}
+                            onChange={event => {
+                                setModalInputDescription(event.nativeEvent.srcElement.value)
+                                setModalCommentResetBoolean(
+                                    event.nativeEvent.srcElement.value.length > 0,
+                                )
+                            }}
+                        />
+                    </div>
                 </Modal>
             )) || <></>}
             <ThreadHeader
@@ -106,9 +111,9 @@ const DiscussionDetailed = props => {
             <br />
             {(data.status === 'OPEN' && (
                 <>
-                    <div>
+                    <div className="mh-xs">
                         <input
-                            className={`medium-border description ${(!mainCommentResetBoolean && 'error-text') || 'no-error-text'}`}
+                            className={`medium-border comment ${(!mainCommentResetBoolean && 'error-text') || 'no-error-text'}`}
                             placeholder="Enter your comment here..."
                             value={inputDescription}
                             onChange={event => {
@@ -118,6 +123,8 @@ const DiscussionDetailed = props => {
                                 )
                             }}
                         />
+                        <br />
+                        <br />
                         <button
                             onClick={() => {
                                 if (inputDescription.length !== 0) {
@@ -136,12 +143,19 @@ const DiscussionDetailed = props => {
                     <br />
                 </>
             )) || <></>}
-            {get(data, 'comments', []).map(comment => {
-                ;<div className="d-f">
-                    <span>{comment.author}</span>
-                    <span className="mh-xl">{comment.description}</span>
-                    <span>Commented on {comment.createTime}</span>
-                </div>
+            {comments.map(comment => {
+                return (
+                    <div>
+                        <br />
+                        <span>{comment.author}</span>
+                        <span className="f-r">
+                            Commented on {formatTimestamp(comment.createTime)}
+                        </span>
+                        <br />
+                        <span>{comment.description}</span>
+                        <hr />
+                    </div>
+                )
             })}
         </div>
     )
@@ -202,6 +216,43 @@ const DiscussionWrapperDetailed = props => {
         },
     ] = useSubmitDiscussionThreadCommentMutation()
 
+    const [
+        closeSupportRequest,
+        {
+            isLoading: closeSupportRequestIsLoading,
+            isError: closeSupportRequestIsError,
+            error: closeSupportRequestError,
+            isSuccess: closeSupportRequestIsSuccess,
+        },
+    ] = useCloseSupportRequestMutation()
+    const [
+        reopenSupportRequest,
+        {
+            isLoading: reopenSupportRequestIsLoading,
+            isError: reopenSupportRequestIsError,
+            error: reopenSupportRequestError,
+            isSuccess: reopenSupportRequestIsSuccess,
+        },
+    ] = useReopenSupportRequestMutation()
+    const [
+        closeBugReport,
+        {
+            isLoading: closeBugReportIsLoading,
+            isError: closeBugReportIsError,
+            error: closeBugReportError,
+            isSuccess: closeBugReportIsSuccess,
+        },
+    ] = useCloseBugReportMutation()
+    const [
+        reopenBugReport,
+        {
+            isLoading: reopenBugReportIsLoading,
+            isError: reopenBugReportIsError,
+            error: reopenBugReportError,
+            isSuccess: reopenBugReportIsSuccess,
+        },
+    ] = useReopenBugReportMutation()
+
     const [data, setData] = useState({
         threadId: -1,
         title: '',
@@ -212,162 +263,237 @@ const DiscussionWrapperDetailed = props => {
     })
     const [getDataErrorStatusCode, setGetDataErrorStatusCode] = useState(0)
 
+    const isLoadingArray = [
+        {
+            isLoading: supportRequestIsLoading,
+            type: 'support request',
+            id: 'supportRequestFetch',
+            messageType: FORUM_MESSAGE_TYPES.LOADING,
+        },
+        {
+            isLoading: bugReportIsLoading,
+            type: 'bug report',
+            id: 'bugReportFetch',
+            messageType: FORUM_MESSAGE_TYPES.LOADING,
+        },
+        {
+            isLoading: discussionThreadIsLoading,
+            type: 'discussion',
+            id: 'discussionThreadFetch',
+            messageType: FORUM_MESSAGE_TYPES.LOADING,
+        },
+        {
+            isLoading: supportRequestCommentIsSubmitting,
+            type: 'support request',
+            id: 'supportRequestCommentSubmit',
+            messageType: FORUM_MESSAGE_TYPES.ADD_COMMENT_LOADING,
+        },
+        {
+            isLoading: bugReportCommentIsSubmitting,
+            type: 'bug report',
+            id: 'bugReportCommentSubmit',
+            messageType: FORUM_MESSAGE_TYPES.ADD_COMMENT_LOADING,
+        },
+        {
+            isLoading: discussionThreadCommentIsSubmitting,
+            type: 'discussion',
+            id: 'discussionThreadCommentSubmit',
+            messageType: FORUM_MESSAGE_TYPES.ADD_COMMENT_LOADING,
+        },
+        {
+            isLoading: closeSupportRequestIsLoading,
+            type: 'support request',
+            id: 'supportRequestClose',
+            messageType: FORUM_MESSAGE_TYPES.CLOSE_THREAD_LOADING,
+        },
+        {
+            isLoading: closeBugReportIsLoading,
+            type: 'bug report',
+            id: 'bugReportClose',
+            messageType: FORUM_MESSAGE_TYPES.CLOSE_THREAD_LOADING,
+        },
+        {
+            isLoading: reopenSupportRequestIsLoading,
+            type: 'support request',
+            id: 'supportRequestReopen',
+            messageType: FORUM_MESSAGE_TYPES.REOPEN_THREAD_LOADING,
+        },
+        {
+            isLoading: reopenBugReportIsLoading,
+            type: 'bug report',
+            id: 'bugReportReopen',
+            messageType: FORUM_MESSAGE_TYPES.REOPEN_THREAD_LOADING,
+        },
+    ]
+    const isErrorArray = [
+        {
+            isError: supportRequestIsError,
+            error: supportRequestError,
+            type: 'support request',
+            id: 'supportRequestFetchError',
+            messageType: FORUM_MESSAGE_TYPES.LOADING_ERROR,
+        },
+        {
+            isError: bugReportIsError,
+            error: bugReportError,
+            type: 'bug report',
+            id: 'bugReportFetchError',
+            messageType: FORUM_MESSAGE_TYPES.LOADING_ERROR,
+        },
+        {
+            isError: discussionThreadIsError,
+            error: discussionThreadError,
+            type: 'discussion',
+            id: 'discussionThreadFetchError',
+            messageType: FORUM_MESSAGE_TYPES.LOADING_ERROR,
+        },
+        {
+            isError: supportRequestCommentIsError,
+            error: supportRequestCommentError,
+            type: 'support request',
+            id: 'supportRequestCommentSubmitError',
+            messageType: FORUM_MESSAGE_TYPES.ADD_COMMENT_ERROR,
+        },
+        {
+            isError: bugReportCommentIsError,
+            error: bugReportCommentError,
+            type: 'bug report',
+            id: 'bugReportCommentSubmitError',
+            messageType: FORUM_MESSAGE_TYPES.ADD_COMMENT_ERROR,
+        },
+        {
+            isError: discussionThreadCommentIsError,
+            error: discussionThreadCommentError,
+            type: 'discussion',
+            id: 'discussionThreadCommentSubmitError',
+            messageType: FORUM_MESSAGE_TYPES.ADD_COMMENT_ERROR,
+        },
+        {
+            isError: closeSupportRequestIsError,
+            error: closeSupportRequestError,
+            type: 'support request',
+            id: 'closeSupportRequestError',
+            messageType: FORUM_MESSAGE_TYPES.CLOSE_THREAD_ERROR,
+        },
+        {
+            isError: closeBugReportIsError,
+            error: closeBugReportError,
+            type: 'bug report',
+            id: 'closeBugReportError',
+            messageType: FORUM_MESSAGE_TYPES.CLOSE_THREAD_ERROR,
+        },
+        {
+            isError: reopenSupportRequestIsError,
+            error: reopenSupportRequestError,
+            type: 'support request',
+            id: 'reopenSupportRequestError',
+            messageType: FORUM_MESSAGE_TYPES.REOPEN_THREAD_ERROR,
+        },
+        {
+            isError: reopenBugReportIsError,
+            error: reopenBugReportError,
+            type: 'bug report',
+            id: 'reopenBugReportError',
+            messageType: FORUM_MESSAGE_TYPES.REOPEN_THREAD_ERROR,
+        },
+    ]
+    const isSuccessArray = [
+        {
+            isSuccess: supportRequestCommentIsSuccess,
+            type: 'support request',
+            id: 'supportRequestCommentIsSuccess',
+            messageType: FORUM_MESSAGE_TYPES.ADD_COMMENT_SUCCESS,
+        },
+        {
+            isSuccess: bugReportCommentIsSuccess,
+            type: 'bug report',
+            id: 'bugReportCommentIsSuccess',
+            messageType: FORUM_MESSAGE_TYPES.ADD_COMMENT_SUCCESS,
+        },
+        {
+            isSuccess: discussionThreadCommentIsSuccess,
+            type: 'discussion',
+            id: 'discussionThreadCommentIsSuccess',
+            messageType: FORUM_MESSAGE_TYPES.ADD_COMMENT_SUCCESS,
+        },
+        {
+            isSuccess: closeSupportRequestIsSuccess,
+            type: 'support request',
+            id: 'closeSupportRequestIsSuccess',
+            messageType: FORUM_MESSAGE_TYPES.CLOSE_THREAD_SUCCESS,
+        },
+        {
+            isSuccess: closeBugReportIsSuccess,
+            type: 'bug report',
+            id: 'closeBugReportIsSuccess',
+            messageType: FORUM_MESSAGE_TYPES.CLOSE_THREAD_SUCCESS,
+        },
+        {
+            isSuccess: reopenSupportRequestIsSuccess,
+            type: 'support request',
+            id: 'reopenSupportRequestIsSuccess',
+            messageType: FORUM_MESSAGE_TYPES.REOPEN_THREAD_SUCCESS,
+        },
+        {
+            isSuccess: reopenBugReportIsSuccess,
+            type: 'bug report',
+            id: 'reopenBugReportIsSuccess',
+            messageType: FORUM_MESSAGE_TYPES.REOPEN_THREAD_SUCCESS,
+        },
+    ]
     useEffect(() => {
         let infoMessage = undefined
-        if (supportRequestIsLoading) {
-            infoMessage = {
-                title: 'Fetching support request',
-                description: 'Please wait as the system retrieves the support request',
-                id: 'supportRequestFetch',
+        isLoadingArray.forEach(isLoadingObj => {
+            const { isLoading, type, id, messageType } = isLoadingObj
+            const { title, description } = FORUM_MESSAGE_PREFIXES[messageType]
+            if (isLoading) {
+                infoMessage = {
+                    title: `${title}${type}`,
+                    description: `${description}${type}`,
+                    id,
+                }
+            } else {
+                dispatch(removeInfoMessage(id))
             }
-        } else {
-            dispatch(removeInfoMessage('supportRequestInfo'))
-        }
-        if (bugReportIsLoading) {
-            infoMessage = {
-                title: 'Fetching bug report',
-                description: 'Please wait as the system retrieves the bug report',
-                id: 'bugReportFetch',
-            }
-        } else {
-            dispatch(removeInfoMessage('bugReportInfo'))
-        }
-        if (discussionThreadIsLoading) {
-            infoMessage = {
-                title: 'Fetching discussion',
-                description: 'Please wait as the system retrieves the discussion',
-                id: 'discussionThreadFetch',
-            }
-        } else {
-            dispatch(removeInfoMessage('discussionThreadInfo'))
-        }
+        })
         if (infoMessage) dispatch(addInfoMessage(infoMessage))
-    }, [supportRequestIsLoading, bugReportIsLoading, discussionThreadIsLoading])
-
-    useEffect(() => {
-        let errorMessage = undefined
-        if (supportRequestIsError) {
-            errorMessage = {
-                title: 'Failed to fetch support request',
-                description: get(supportRequestError, 'data.error', CONNECTION_ERROR_MESSAGE),
-                id: 'supportRequestFetchError',
-            }
-        }
-        if (bugReportIsError) {
-            errorMessage = {
-                title: 'Failed to fetch bug report',
-                description: get(bugReportError, 'data.error', CONNECTION_ERROR_MESSAGE),
-                id: 'bugReportFetchError',
-            }
-        }
-        if (discussionThreadIsError) {
-            errorMessage = {
-                title: 'Failed to fetch discussion',
-                description: get(discussionThreadError, 'data.error', CONNECTION_ERROR_MESSAGE),
-                id: 'discussionThreadFetchError',
-            }
-        }
-        if (errorMessage) dispatch(addErrorMessage(errorMessage))
-    }, [supportRequestIsError, bugReportIsError, discussionThreadIsError])
-
-    useEffect(() => {
-        let infoMessage = undefined
-        if (supportRequestCommentIsSubmitting) {
-            infoMessage = {
-                title: 'Adding comment to support request',
-                description:
-                    'Please wait as the system saves the comment to the current support request',
-                id: 'supportRequestCommentSubmit',
-            }
-        } else {
-            dispatch(removeInfoMessage('supportRequestInfo'))
-        }
-        if (bugReportCommentIsSubmitting) {
-            infoMessage = {
-                title: 'Adding comment to bug report',
-                description:
-                    'Please wait as the system saves the comment to the current bug report',
-                id: 'bugReportCommentSubmit',
-            }
-        } else {
-            dispatch(removeInfoMessage('bugReportInfo'))
-        }
-        if (discussionThreadCommentIsSubmitting) {
-            infoMessage = {
-                title: 'Adding comment to new discussion',
-                description:
-                    'Please wait as the system saves the comment to the current discussion',
-                id: 'discussionThreadCommentSubmit',
-            }
-        } else {
-            dispatch(removeInfoMessage('discussionThreadInfo'))
-        }
-        if (infoMessage) dispatch(addInfoMessage(infoMessage))
-    }, [
-        supportRequestCommentIsSubmitting,
-        bugReportCommentIsSubmitting,
-        discussionThreadCommentIsSubmitting,
-    ])
-
-    useEffect(() => {
-        let errorMessage = undefined
-        if (supportRequestCommentIsError) {
-            errorMessage = {
-                title: 'Failed to add comment to support request',
-                description: supportRequestCommentError.data.error,
-                id: 'supportRequestCommentSubmitError',
-            }
-            setGetDataErrorStatusCode(supportRequestCommentError.statusCode)
-        }
-        if (bugReportCommentIsError) {
-            errorMessage = {
-                title: 'Failed to add comment to bug report',
-                description: bugReportCommentError.data.error,
-                id: 'bugReportCommentSubmitError',
-            }
-            setGetDataErrorStatusCode(bugReportCommentError.statusCode)
-        }
-        if (discussionThreadCommentIsError) {
-            errorMessage = {
-                title: 'Failed to add comment to discussion',
-                description: discussionThreadCommentError.data.error,
-                id: 'discussionThreadCommentSubmitError',
-            }
-            setGetDataErrorStatusCode(discussionThreadCommentError.statusCode)
-        }
-        if (errorMessage) dispatch(addErrorMessage(errorMessage))
-    }, [supportRequestCommentIsError, bugReportCommentIsError, discussionThreadCommentIsError])
-
-    useEffect(() => {
-        let successMessage = undefined
-        if (supportRequestCommentIsSuccess) {
-            successMessage = {
-                title: 'Successfully added comment to support request',
-                description: 'Your comment has been successfully saved to the support request',
-                id: 'supportRequestCommentSubmitSuccess',
-            }
-        }
-        if (bugReportCommentIsSuccess) {
-            successMessage = {
-                title: 'Successfully added comment to bug report',
-                description: 'Your comment has been successfully saved to the bug report',
-                id: 'bugReportCommentSubmitSuccess',
-            }
-        }
-        if (discussionThreadCommentIsSuccess) {
-            successMessage = {
-                title: 'Successfully added comment to discussion',
-                description: 'Your comment has been successfully saved to the discussion',
-                id: 'discussionThreadCommentSubmitSuccess',
-            }
-        }
-        if (successMessage) dispatch(addSuccessMessage(successMessage))
-    }, [
-        supportRequestCommentIsSuccess,
-        bugReportCommentIsSuccess,
-        discussionThreadCommentIsSuccess,
-    ])
-
+    }, [...isLoadingArray.map(isLoadingObj => isLoadingObj.isLoading)])
+    useEffect(
+        () => {
+            let errorMessage = undefined
+            isErrorArray.forEach(isErrorObj => {
+                const { isError, error, type, id, messageType } = isErrorObj
+                const { title } = FORUM_MESSAGE_PREFIXES[messageType]
+                if (isError) {
+                    errorMessage = {
+                        title: `${title}${type}`,
+                        description: get(error, 'data.error', CONNECTION_ERROR_MESSAGE),
+                        id,
+                    }
+                }
+            })
+            if (errorMessage) dispatch(addErrorMessage(errorMessage))
+        },
+        isErrorArray.map(isErrorObj => isErrorObj.isError),
+    )
+    useEffect(
+        () => {
+            let successMessage = undefined
+            isSuccessArray.forEach(isSuccessObj => {
+                const { isSuccess, type, id, messageType } = isSuccessObj
+                const { title, description } = FORUM_MESSAGE_PREFIXES[messageType]
+                if (isSuccess) {
+                    successMessage = {
+                        title: `${title}${type}`,
+                        description: `${description}${type}`,
+                        id,
+                    }
+                }
+            })
+            if (successMessage) dispatch(addSuccessMessage(successMessage))
+        },
+        isSuccessArray.map(isSuccessObj => isSuccessObj.isSuccess),
+    )
     const getData = async () => {
         let response = {
             threadId: -1,
@@ -417,16 +543,81 @@ const DiscussionWrapperDetailed = props => {
                     break
             }
         } catch (e) {}
-        return response
-    }
-    const handleSubmitAndSave = input => {
-        const response = submitAction(input)
         setData({
             ...data,
             comments: [...data.comments, response],
         })
     }
-    return <DiscussionDetailed data={data} type={type} submitAction={handleSubmitAndSave} />
+    const handleSubmitAndSave = input => {
+        submitAction(input)
+    }
+    const closeAction = async input => {
+        let response = {
+            threadId: -1,
+            title: '',
+            author: '',
+            description: '',
+            createTime: 0,
+            comments: [],
+        }
+        switch (type) {
+            case FORUM_PAGES.SUPPORT:
+                response = await closeSupportRequest(input).unwrap()
+                break
+            case FORUM_TYPE.BUG_REPORT:
+                response = await closeBugReport(input).unwrap()
+                break
+        }
+        if (input.description.trim()) {
+            setData({
+                ...data,
+                comments: [...data.comments, response],
+            })
+        }
+    }
+    const handleClose = input => {
+        try {
+            closeAction(input)
+        } catch (e) {}
+    }
+    const reopenAction = async input => {
+        let response = {
+            threadId: -1,
+            title: '',
+            author: '',
+            description: '',
+            createTime: 0,
+            comments: [],
+        }
+        switch (type) {
+            case FORUM_PAGES.SUPPORT:
+                response = await reopenSupportRequest(input).unwrap()
+                break
+            case FORUM_TYPE.BUG_REPORT:
+                response = await reopenBugReport(input).unwrap()
+                break
+        }
+        if (input.description.trim()) {
+            setData({
+                ...data,
+                comments: [...data.comments, response],
+            })
+        }
+    }
+    const handleReopen = input => {
+        try {
+            closeAction(input)
+        } catch (e) {}
+    }
+    return (
+        <DiscussionDetailed
+            data={data}
+            type={type}
+            submitAction={handleSubmitAndSave}
+            closeAction={closeAction}
+            reopenAction={reopenAction}
+        />
+    )
 }
 
 export default DiscussionWrapperDetailed

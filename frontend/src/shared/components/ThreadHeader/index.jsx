@@ -16,27 +16,26 @@ const ThreadHeader = props => {
     } = props
     const header = (url && (
         <a href={`${url}/${threadId}`}>
-            <h3>{title}</h3>
+            <h3 className="d-i">{title}</h3>
         </a>
-    )) || <h3>{title}</h3>
+    )) || <h3 className="d-i">{title}</h3>
     return (
         <div>
-            <span className="f-l">{header}</span>
-            <span className="f-r">
-                {author} - {formatTimestamp(createTime)}
-                {(status && lastUpdateBy && (
-                    <>
-                        <br />
-                        {(status === 'CLOSED' && 'Closed by ') || 'Re-opened by '}
-                        {lastUpdateBy} on {formatTimestamp(lastUpdateTime)}
-                    </>
-                )) || <></>}
-            </span>
+            <div>
+                <span className="d-i">{header}</span>
+                <span className="d-i f-r">
+                    {createTime && `${author} - ${formatTimestamp(createTime)}`}
+                    {(status && lastUpdateBy && (
+                        <>
+                            <br />
+                            {(status === 'CLOSE' && 'Closed by ') || 'Re-opened by '}
+                            {lastUpdateBy} on {formatTimestamp(lastUpdateTime)}
+                        </>
+                    )) || <></>}
+                </span>
+            </div>
             <br />
-            <span className="f-l">{description}</span>
-            <br />
-            <br />
-            <br />
+            <span>{description}</span>
         </div>
     )
 }
