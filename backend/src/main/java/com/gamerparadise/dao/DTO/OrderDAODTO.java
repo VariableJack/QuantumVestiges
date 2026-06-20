@@ -14,7 +14,7 @@ import com.gamerparadise.dao.dto.OrderItemDAODTO;
 @AllArgsConstructor
 @NoArgsConstructor
 public class OrderDAODTO {
-    private long orderId;
+    private Long orderId;
     private String username;
     private String orderStatus;
     private Integer totalPurchasePrice;

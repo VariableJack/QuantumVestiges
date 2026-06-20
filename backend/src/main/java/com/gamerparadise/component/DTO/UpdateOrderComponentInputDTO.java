@@ -8,6 +8,6 @@ import lombok.Data;
 public class UpdateOrderComponentInputDTO {
     private Integer orderId;
     private Integer productId;
-    private int quantity;
     private String action;
+    private Integer quantity;
 }

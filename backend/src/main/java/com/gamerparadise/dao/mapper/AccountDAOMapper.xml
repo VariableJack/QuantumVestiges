@@ -13,7 +13,7 @@
     </resultMap>
     <resultMap id="OrderItemResultMap" type="OrderItemDAODTO">
         <id property="orderItemId" column="order_item_id"/>
-        <result property="orderId" column="order_id"/>
+        <result property="orderId" column="order_item_id_order_id"/>
         <result property="productId" column="product_id"/>
         <result property="productName" column="product_name"/>
         <result property="franchiseName" column="franchise_name"/>
@@ -35,7 +35,7 @@
             orders.total_purchase_price,
             orders.create_time,
             order_items.order_item_id,
-            order_items.order_id,
+            order_items.order_id as order_item_id_order_id,
             order_items.product_id,
             order_items.product_name,
             order_items.franchise_name,

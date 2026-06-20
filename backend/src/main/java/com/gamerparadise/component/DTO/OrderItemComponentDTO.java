@@ -7,11 +7,11 @@ import lombok.Data;
 @Builder
 @Data
 public class OrderItemComponentDTO {
-    private long orderItemId;
-    private long orderId;
-    private long productId;
+    private Long orderItemId;
+    private Long orderId;
+    private Integer productId;
     private String productName;
     private String franchiseName;
     private Integer purchasePrice;
-    private int quantity;
+    private Integer quantity;
 }
