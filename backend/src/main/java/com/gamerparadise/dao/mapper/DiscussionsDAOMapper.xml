@@ -77,7 +77,7 @@
     </insert>
 
     <update id="closeSupportRequest" parameterType="ThreadCommentDAODTO">
-        UPDATE support_requests SET last_update_time = CURRENT_TIME(), last_update_by = (SELECT user_id FROM users WHERE username = #{input.author}), status = "CLOSED"
+        UPDATE support_requests SET last_update_time = CURRENT_TIME(), last_update_by = (SELECT user_id FROM users WHERE username = #{input.author}), status = "CLOSE"
         WHERE thread_id = #{input.threadId};
     </update>
 
@@ -138,7 +138,7 @@
     </insert>
 
     <update id="closeDiscussion" parameterType="ThreadCommentDAODTO">
-        UPDATE discussions SET last_update_time = CURRENT_TIME(), last_update_by = (SELECT user_id FROM users WHERE username = #{input.author}), status = "CLOSED"
+        UPDATE discussions SET last_update_time = CURRENT_TIME(), last_update_by = (SELECT user_id FROM users WHERE username = #{input.author}), status = "CLOSE"
         WHERE thread_id = #{input.threadId};
     </update>
     <!-- Bug reports -->
@@ -194,7 +194,7 @@
     </insert>
 
     <update id="closeBugReport" parameterType="ThreadCommentDAODTO">
-        UPDATE bug_report SET last_update_time = CURRENT_TIME(), last_update_by = (SELECT user_id FROM users WHERE username = #{input.author}), status = "CLOSED"
+        UPDATE bug_report SET last_update_time = CURRENT_TIME(), last_update_by = (SELECT user_id FROM users WHERE username = #{input.author}), status = "CLOSE"
         WHERE thread_id = #{input.threadId};
     </update>
 
