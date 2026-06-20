@@ -18,7 +18,7 @@ import '../../styles/App.css'
 
 const Game = () => {
     const dispatch = useDispatch()
-    const { order, purchasedGames } = useSelector(state => state.userReducer)
+    const { order, purchasedItems } = useSelector(state => state.userReducer)
     const { search } = useLocation()
     const params = new URLSearchParams(search)
     const productId = params.get('productId')
@@ -175,7 +175,7 @@ const Game = () => {
                     )) || <b>Removing from order...</b>}
                 </div>
             )) ||
-                (!purchasedGames.find(
+                (!purchasedItems.find(
                     purchasedGame => purchasedGame.productId === product.productId,
                 ) && (
                     <div>

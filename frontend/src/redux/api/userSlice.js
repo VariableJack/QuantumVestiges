@@ -15,7 +15,7 @@ const initialState = {
     order: {
         items: [],
     },
-    purchasedGames: [],
+    purchasedItems: [],
     error: null,
     preferences: [],
     subscriptions: [],
@@ -43,11 +43,11 @@ const userSlice = createSlice({
         clearOrder: state => {
             state.order = {}
         },
-        setPurchasedGames: (state, action) => {
-            state.purchasedGames = [...action.payload]
+        setPurchasedItems: (state, action) => {
+            state.purchasedItems = [...action.payload]
         },
         clearPurchasedGames: state => {
-            state.purchasedGames = []
+            state.purchasedItems = []
         },
         setError: (state, action) => {
             state.error = action.payload
@@ -77,7 +77,7 @@ const {
     clearGroup,
     setOrder,
     clearOrder,
-    setPurchasedGames,
+    setPurchasedItems,
     clearPurchasedGames,
     setError,
     clearError,
@@ -93,7 +93,7 @@ export {
     clearGroup,
     setOrder,
     clearOrder,
-    setPurchasedGames,
+    setPurchasedItems,
     clearPurchasedGames,
     setError,
     clearError,

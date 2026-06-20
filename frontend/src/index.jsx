@@ -18,7 +18,7 @@ import {
     setAccessToken,
     setGroup,
     setOrder,
-    setPurchasedGames,
+    setPurchasedItems,
 } from './redux/api/userSlice'
 
 // Support components
@@ -93,9 +93,9 @@ const RouterWrapper = props => {
     const getDetails = async auth => {
         try {
             const orderResults = await triggerGetOrder().unwrap()
-            const purchasedGamesResults = await triggerGetPurchasedItems().unwrap()
+            const purchasedItemsResults = await triggerGetPurchasedItems().unwrap()
             dispatch(setOrder(orderResults))
-            dispatch(setPurchasedGames([...purchasedGamesResults]))
+            dispatch(setPurchasedItems([...purchasedItemsResults]))
         } catch (e) {}
     }
     useEffect(() => {

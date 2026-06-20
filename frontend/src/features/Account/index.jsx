@@ -6,6 +6,8 @@ import {
     clearGroup,
     clearPurchasedGames,
     clearOrder,
+    setPurchasedItems,
+    setOrder,
     setPreferences,
     setSubscriptions,
     clearPreferences,
@@ -146,7 +148,7 @@ const Login = props => {
 }
 
 const Account = props => {
-    const { username, order, purchasedGames } = useSelector(state => state.userReducer)
+    const { username, order, purchasedItems } = useSelector(state => state.userReducer)
     const { auth } = props
     const dispatch = useDispatch()
 
@@ -262,7 +264,7 @@ const Account = props => {
 
     useEffect(() => {
         const messageId = 'checkoutOrderInfo'
-        if (updateOrderIsUpdating) {
+        if (checkoutOrderIsLoading) {
             dispatch(
                 addInfoMessage({
                     title: 'Checking out order...',
@@ -273,24 +275,20 @@ const Account = props => {
         } else {
             dispatch(removeInfoMessage(messageId))
         }
-    }, [updateOrderIsUpdating])
+    }, [checkoutOrderIsLoading])
     useEffect(() => {
-        if (updateOrderIsError) {
+        if (checkoutOrderError) {
             dispatch(
                 addErrorMessage({
                     title: 'Failed to check out your order',
-                    description: get(
-                        updateNotificationPreferencesError,
-                        'data.error',
-                        CONNECTION_ERROR_MESSAGE,
-                    ),
+                    description: get(checkoutOrderError, 'data.error', CONNECTION_ERROR_MESSAGE),
                     id: 'checkoutOrderError',
                 }),
             )
         }
-    }, [updateOrderIsError])
+    }, [checkoutOrderError])
     useEffect(() => {
-        if (updateOrderIsSuccess) {
+        if (checkoutOrderIsSuccess) {
             dispatch(
                 addSuccessMessage({
                     title: 'Successfully checked out your order',
@@ -299,8 +297,19 @@ const Account = props => {
                     id: 'checkoutOrderSuccess',
                 }),
             )
+            dispatch(
+                setPurchasedItems(
+				[...purchasedItems,
+                    ...order.items.map(({ franchiseName, productId, productName }) => ({
+                        franchiseName,
+                        productId,
+                        productName,
+                    })),
+                ]),
+            )
+            dispatch(setOrder({ items: [] }))
         }
-    }, [updateOrderIsSuccess])
+    }, [checkoutOrderIsSuccess])
 
     useEffect(() => {
         const messageId = 'updateNotificationPreferencesInfo'
@@ -343,6 +352,24 @@ const Account = props => {
         }
     }, [updateNotificationPreferencesIsSuccess])
 
+    const removeItem = async input => {
+        try {
+            await updateOrder(input)
+            setLastProductRemoved({
+                productId: item.productId,
+                productName: item.productName,
+            })
+            dispatch(
+                setOrder({
+                    ...order,
+                    items: order.items.filter(orderItem => orderItem.productId !== item.productId),
+                }),
+            )
+        } catch (e) {}
+    }
+    const handleRemove = input => {
+        removeItem(input)
+    }
     if (auth.isLoading) {
         return <div>Loading...</div>
     }
@@ -361,11 +388,7 @@ const Account = props => {
                         {(!updateOrderIsUpdating && (
                             <button
                                 onClick={() => {
-                                    updateOrder({ action: 'remove', productId: item.productId })
-                                    setLastProductRemoved({
-                                        productId: item.productId,
-                                        productName: item.productName,
-                                    })
+                                    handleRemove({ action: 'remove', productId: item.productId })
                                 }}
                             >
                                 Remove from Order
@@ -375,15 +398,16 @@ const Account = props => {
                 ))}
                 <br />
                 {
-                    (!checkoutOrderIsLoading && (
-                        <button onClick={checkoutOrder}>Checkout order</button>
-                    )) || <b>Checking out...</b>
+                    (!order.items.length && <></>) ||
+                        (!checkoutOrderIsLoading && (
+                            <button onClick={checkoutOrder}>Checkout order</button>
+                        )) || <b>Checking out...</b>
                     // TODO - integrate payment processing here
                 }
                 <br />
                 Games you own
                 <br />
-                {purchasedGames.map(item => (
+                {purchasedItems.map(item => (
                     <div>
                         {item.franchiseName} || {item.gameName}
                         <br />
