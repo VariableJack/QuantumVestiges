@@ -298,8 +298,8 @@ const Account = props => {
                 }),
             )
             dispatch(
-                setPurchasedItems(
-				[...purchasedItems,
+                setPurchasedItems([
+                    ...purchasedItems,
                     ...order.items.map(({ franchiseName, productId, productName }) => ({
                         franchiseName,
                         productId,
@@ -409,7 +409,7 @@ const Account = props => {
                 <br />
                 {purchasedItems.map(item => (
                     <div>
-                        {item.franchiseName} || {item.gameName}
+                        <a href={`/franchise?franchiseId=${item.franchiseId}`}>{item.franchiseName}</a> || <a href={`/product?productId=${item.productId}`}>{item.productName}</a>
                         <br />
                     </div>
                 ))}
