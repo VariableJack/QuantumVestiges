@@ -52,8 +52,9 @@ const FranchisePageCreate = () => {
         }
     }, [createFranchiseIsError])
 
-    useEffect(() => {
-        if (createFranchiseIsSuccess) {
+    const createFranchise = async input => {
+        try {
+            const response = await triggerCreateFranchise({ franchiseName }).unwrap()
             dispatch(
                 addSuccessMessage({
                     title: 'Successfully finalized franchise',
@@ -61,8 +62,9 @@ const FranchisePageCreate = () => {
                     id: 'createFranchiseSuccess',
                 }),
             )
-        }
-    }, [createFranchiseIsSuccess])
+            window.location.href = `/franchise?franchiseId=${response.franchiseId}`
+        } catch (e) {}
+    }
     return (
         (group !== 'admin' && (
             <div>
@@ -90,7 +92,7 @@ const FranchisePageCreate = () => {
                     <button
                         onClick={() => {
                             setError(franchiseName.length === 0)
-                            if (franchiseName) triggerCreateFranchise({ franchiseName })
+                            if (franchiseName) createFranchise({ franchiseName })
                         }}
                     >
                         Finalize and upload

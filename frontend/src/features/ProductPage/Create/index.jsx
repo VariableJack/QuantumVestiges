@@ -69,7 +69,6 @@ const ProductPageCreate = () => {
             dispatch(removeInfoMessage('presignedURLFetch'))
         }
     }, [getProductPresignedUrlsIsLoading])
-
     useEffect(() => {
         if (getProductPresignedUrlsIsError) {
             dispatch(
@@ -85,7 +84,6 @@ const ProductPageCreate = () => {
             )
         }
     }, [getProductPresignedUrlsIsError])
-
     useEffect(() => {
         if (getProductPresignedUrlsIsSuccess) {
             dispatch(
@@ -97,7 +95,6 @@ const ProductPageCreate = () => {
             )
         }
     }, [getProductPresignedUrlsIsSuccess])
-
     useEffect(() => {
         if (createProductIsLoading) {
             dispatch(
@@ -111,7 +108,6 @@ const ProductPageCreate = () => {
             dispatch(removeInfoMessage('createProductInfo'))
         }
     }, [createProductIsLoading])
-
     useEffect(() => {
         if (createProductIsError) {
             dispatch(
@@ -123,19 +119,6 @@ const ProductPageCreate = () => {
             )
         }
     }, [createProductIsError])
-
-    useEffect(() => {
-        if (createProductIsSuccess) {
-            dispatch(
-                addSuccessMessage({
-                    title: 'Successfully finalized product',
-                    description: 'Product has been successfully created',
-                    id: 'createProductSuccess',
-                }),
-            )
-        }
-    }, [createProductIsSuccess])
-
     useEffect(() => {
         if (isUploadingFiles) {
             dispatch(
@@ -149,7 +132,6 @@ const ProductPageCreate = () => {
             dispatch(removeInfoMessage('uploadFilesInfo'))
         }
     }, [isUploadingFiles])
-
     useEffect(() => {
         if (isUploadingFilesSuccess) {
             dispatch(
@@ -160,7 +142,7 @@ const ProductPageCreate = () => {
                 }),
             )
             try {
-                const product = triggerCreateProduct({
+                createProduct({
                     productName,
                     franchiseId: selectedFranchise.franchiseId,
                     price: 5,
@@ -205,7 +187,19 @@ const ProductPageCreate = () => {
         }
         setIsUploadingFiles(false)
     }
-
+    const createProduct = async input => {
+        try {
+            const response = await triggerCreateProduct(input).unwrap()
+            dispatch(
+                addSuccessMessage({
+                    title: 'Successfully finalized product',
+                    description: 'Product has been successfully created',
+                    id: 'createProductSuccess',
+                }),
+            )
+            window.location.href = `/product?productId=${response.productId}`
+        } catch (e) {}
+    }
     return (
         (group !== 'admin' && (
             <div>

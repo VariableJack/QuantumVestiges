@@ -40,15 +40,17 @@ const Game = () => {
         franchiseName: '',
     })
     const getProduct = async () => {
-        const response = await triggerGetProduct({ productId }).unwrap()
-        setProduct(response)
+        try {
+            const response = await triggerGetProduct({ productId }).unwrap()
+            setProduct(response)
+        } catch (e) {}
     }
     const isPresentInOrder = order.items.find(
         orderItem => orderItem.productId === product.productId,
     )
     useEffect(() => {
         if (!productId) {
-            window.location.href('/not-found')
+            window.location.href = '/not-found'
         } else {
             getProduct()
         }
