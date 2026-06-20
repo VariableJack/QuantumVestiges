@@ -61,8 +61,7 @@
             JOIN users ON support_request_comments.user_id = users.user_id
         ) support_request_comments_table ON support_requests.thread_id = support_request_comments_table.comment_thread_id
         JOIN users ON support_requests.user_id = users.user_id
-        WHERE support_requests.thread_id = #{threadId}
-        LIMIT 1;
+        WHERE support_requests.thread_id = #{threadId};
     </select>
 
     <insert id="createSupportRequest" parameterType="ThreadDAODTO"
@@ -73,7 +72,7 @@
 
     <insert id="addSupportRequestComment" parameterType="ThreadCommentDAODTO"
         useGeneratedKeys="true" keyColumn="comment_id" keyProperty="commentId">
-        INSERT INTO support_request_comments(thread_id, description, user_id)
+        INSERT INTO support_request_comments(thread_id, comment, user_id)
         SELECT #{comment.threadId}, #{comment.description}, user_id FROM users WHERE username = #{comment.author};
     </insert>
 
@@ -98,7 +97,7 @@
             discussions.last_update_by,
             discussions.status
         FROM discussions
-        JOIN users ON discussions.user_id = users.user_id
+        JOIN users ON discussions.user_id = users.user_id;
     </select>
 
     <select id="getDetailedDiscussion" parameterType="Integer" resultMap="ThreadResultMap">
@@ -112,7 +111,7 @@
             discussions.last_update_by,
             discussions.status,
             discussion_comments_table.*
-        FROM support_requests
+        FROM (SELECT * FROM discussions WHERE discussions.thread_id = #{threadId})
         LEFT JOIN (
             SELECT
                 discussion_comments.comment_id,
@@ -123,9 +122,7 @@
             FROM discussion_comments
             JOIN users ON discussion_comments.user_id = users.user_id
         ) discussion_comments_table ON discussions.thread_id = discussion_comments_table.comment_thread_id
-        JOIN users ON discussions.user_id = users.user_id
-        WHERE discussions.thread_id = #{threadId}
-        LIMIT 1;
+        JOIN users ON discussions.user_id = users.user_id;
     </select>
 
     <insert id="createDiscussion" parameterType="ThreadDAODTO"
@@ -136,7 +133,7 @@
 
     <insert id="addDiscussionComment" parameterType="ThreadCommentDAODTO"
         useGeneratedKeys="true" keyColumn="comment_id" keyProperty="commentId">
-        INSERT INTO discussion_comments(thread_id, description, user_id)
+        INSERT INTO discussion_comments(thread_id, comment, user_id)
         SELECT #{comment.threadId}, #{comment.description}, user_id FROM users WHERE username = #{comment.author};
     </insert>
 
@@ -156,7 +153,7 @@
             bug_reports.last_update_by,
             bug_reports.status
         FROM bug_reports
-        JOIN users ON bug_reports.user_id = users.user_id
+        JOIN users ON bug_reports.user_id = users.user_id;
     </select>
 
     <select id="getDetailedBugReport" parameterType="Integer" resultMap="ThreadResultMap">
@@ -170,7 +167,7 @@
             bug_reports.last_update_by,
             bug_reports.status,
             bug_report_comments_table.*
-        FROM bug_reports
+        FROM (SELECT * FROM bug_reports WHERE bug_reports.thread_id = #{threadId}) bug_reports
         LEFT JOIN (
             SELECT
                 bug_report_comments.comment_id,
@@ -181,9 +178,7 @@
             FROM bug_report_comments
             JOIN users ON bug_report_comments.user_id = users.user_id
         ) bug_report_comments_table ON bug_reports.thread_id = bug_report_comments_table.comment_thread_id
-        JOIN users ON bug_reports.user_id = users.user_id
-        WHERE bug_reports.thread_id = #{threadId}
-        LIMIT 1;
+        JOIN users ON bug_reports.user_id = users.user_id;
     </select>
 
     <insert id="createBugReport" parameterType="ThreadDAODTO"
@@ -194,7 +189,7 @@
 
     <insert id="addBugReportComment" parameterType="ThreadCommentDAODTO"
         useGeneratedKeys="true" keyColumn="comment_id" keyProperty="commentId">
-        INSERT INTO bug_report_comments(thread_id, description, user_id)
+        INSERT INTO bug_report_comments(thread_id, comment, user_id)
         SELECT #{comment.threadId}, #{comment.description}, user_id FROM users WHERE username = #{comment.author};
     </insert>
 

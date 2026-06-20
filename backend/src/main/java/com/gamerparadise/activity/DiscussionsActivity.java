@@ -107,25 +107,29 @@ public class DiscussionsActivity {
     }
 
     @PostMapping(name="CloseSupportRequest",path="/support-request/close")
-    public void closeSupportRequest(
+    public ThreadCommentActivityDTO closeSupportRequest(
         @AuthenticationPrincipal Jwt jwt,
         @NonNull @RequestBody ThreadCommentActivityDTO input) {
         final String username = jwt.getClaimAsString("username");
         final String group = jwt.getClaimAsStringList("cognito:groups").stream().filter(item -> item.equals("admin")).findFirst().orElse("user");
         logger.info("Beginning to process closeSupportRequest for user {}, with input {}", username, input);
-        discussionsComponent.closeSupportRequest(discussionsActivityConverter.convertThreadCommentActivityDTOToComponentDTO(input, username), group);
+        final ThreadCommentComponentDTO output = discussionsComponent.closeSupportRequest(discussionsActivityConverter.convertThreadCommentActivityDTOToComponentDTO(input, username), group);
+        final ThreadCommentActivityDTO supportRequestComment = discussionsActivityConverter.convertThreadCommentComponentDTOToActivityDTO(output);
         logger.info("Finished processing closeSupportRequest");
+        return supportRequestComment;
     }
 
     @PostMapping(name="ReopenSupportRequest",path="/support-request/reopen")
-    public void reopenSupportRequest(
+    public ThreadCommentActivityDTO reopenSupportRequest(
         @AuthenticationPrincipal Jwt jwt,
         @NonNull @RequestBody ThreadCommentActivityDTO input) {
         final String username = jwt.getClaimAsString("username");
         final String group = jwt.getClaimAsStringList("cognito:groups").stream().filter(item -> item.equals("admin")).findFirst().orElse("user");
         logger.info("Beginning to process reopenSupportRequest for user {}, with input {}", username, input);
-        discussionsComponent.reopenSupportRequest(discussionsActivityConverter.convertThreadCommentActivityDTOToComponentDTO(input, username), group);
+        final ThreadCommentComponentDTO output = discussionsComponent.reopenSupportRequest(discussionsActivityConverter.convertThreadCommentActivityDTOToComponentDTO(input, username), group);
+        final ThreadCommentActivityDTO supportRequestComment = discussionsActivityConverter.convertThreadCommentComponentDTOToActivityDTO(output);
         logger.info("Finished processing reopenSupportRequest");
+        return supportRequestComment;
     }
     /* "Standard" discussion thread APIs*/
     @PublicEndpoint
@@ -178,14 +182,16 @@ public class DiscussionsActivity {
     }
 
     @PostMapping(name="CloseDiscussion",path="/discussion/close")
-    public void closeDiscussion(
+    public ThreadCommentActivityDTO closeDiscussion(
         @AuthenticationPrincipal Jwt jwt,
         @NonNull @RequestBody ThreadCommentActivityDTO input) {
         final String username = jwt.getClaimAsString("username");
         final String group = jwt.getClaimAsStringList("cognito:groups").stream().filter(item -> item.equals("admin")).findFirst().orElse("user");
         logger.info("Beginning to process closeDiscussion for user {}, with input {}", username, input);
-        discussionsComponent.closeDiscussion(discussionsActivityConverter.convertThreadCommentActivityDTOToComponentDTO(input, username), group);
+        final ThreadCommentComponentDTO output = discussionsComponent.closeDiscussion(discussionsActivityConverter.convertThreadCommentActivityDTOToComponentDTO(input, username), group);
+        final ThreadCommentActivityDTO discussionComment = discussionsActivityConverter.convertThreadCommentComponentDTOToActivityDTO(output);
         logger.info("Finished processing closeDiscussion");
+        return discussionComment;
     }
     /* Bug report APIs */
     @PublicEndpoint
@@ -238,24 +244,28 @@ public class DiscussionsActivity {
     }
 
     @PostMapping(name="CloseBugReport",path="/bug-report/close")
-    public void closeBugReport(
+    public ThreadCommentActivityDTO closeBugReport(
         @AuthenticationPrincipal Jwt jwt,
         @NonNull @RequestBody ThreadCommentActivityDTO input) {
         final String username = jwt.getClaimAsString("username");
         final String group = jwt.getClaimAsStringList("cognito:groups").stream().filter(item -> item.equals("admin")).findFirst().orElse("user");
         logger.info("Beginning to process closeBugReport for user {}, with input {}", username, input);
-        discussionsComponent.closeBugReport(discussionsActivityConverter.convertThreadCommentActivityDTOToComponentDTO(input, username));
+        final ThreadCommentComponentDTO output = discussionsComponent.closeBugReport(discussionsActivityConverter.convertThreadCommentActivityDTOToComponentDTO(input, username));
+        final ThreadCommentActivityDTO bugReportComment = discussionsActivityConverter.convertThreadCommentComponentDTOToActivityDTO(output);
         logger.info("Finished processing closeBugReport");
+        return bugReportComment;
     }
 
     @PostMapping(name="ReopenBugReport",path="/bug-report/reopen")
-    public void reopenBugReport(
+    public ThreadCommentActivityDTO reopenBugReport(
         @AuthenticationPrincipal Jwt jwt,
         @NonNull @RequestBody ThreadCommentActivityDTO input) {
         final String username = jwt.getClaimAsString("username");
         final String group = jwt.getClaimAsStringList("cognito:groups").stream().filter(item -> item.equals("admin")).findFirst().orElse("user");
         logger.info("Beginning to process reopenBugReport for user {}, with input {}", username, input);
-        discussionsComponent.reopenBugReport(discussionsActivityConverter.convertThreadCommentActivityDTOToComponentDTO(input, username));
+        final ThreadCommentComponentDTO output = discussionsComponent.reopenBugReport(discussionsActivityConverter.convertThreadCommentActivityDTOToComponentDTO(input, username)); 
+        final ThreadCommentActivityDTO bugReportComment = discussionsActivityConverter.convertThreadCommentComponentDTOToActivityDTO(output);
         logger.info("Finished processing reopenBugReport");
+        return bugReportComment;
     }
 }

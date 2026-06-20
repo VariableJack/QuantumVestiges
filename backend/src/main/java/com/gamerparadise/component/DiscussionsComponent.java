@@ -50,19 +50,20 @@ public class DiscussionsComponent {
         return discussionsBuilder.addSupportRequestComment(comment);
     }
 
-    public void closeSupportRequest(@NonNull ThreadCommentComponentDTO input, @NonNull String group) {
+    public ThreadCommentComponentDTO closeSupportRequest(@NonNull ThreadCommentComponentDTO input, @NonNull String group) {
         final Integer threadId = input.getThreadId();
         final ThreadComponentDTO thread = this.getDetailedSupportRequest(input.getAuthor(), group, threadId);
         if (thread.getStatus().equals("CLOSE")) {
             logger.warn("Support request {} is already closed", threadId);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("Support request at id %s is already closed", threadId));
         }
-        if (!input.getDescription().trim().isEmpty())
-            discussionsBuilder.addSupportRequestComment(input);
         discussionsBuilder.closeSupportRequest(input);
+        if (!input.getDescription().trim().isEmpty())
+            return discussionsBuilder.addSupportRequestComment(input);
+        return ThreadCommentComponentDTO.builder().build();
     }
 
-    public void reopenSupportRequest(@NonNull ThreadCommentComponentDTO input, @NonNull String group) {
+    public ThreadCommentComponentDTO reopenSupportRequest(@NonNull ThreadCommentComponentDTO input, @NonNull String group) {
         final Integer threadId = input.getThreadId();
         final ThreadComponentDTO thread = this.getDetailedSupportRequest(input.getAuthor(), group, threadId);
         if (thread.getStatus().equals("OPEN")) {
@@ -74,9 +75,10 @@ public class DiscussionsComponent {
             logger.warn("Bug Report {} has been closed for over a week and cannot be re-opened", threadId);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("Bug Report {} has been closed for over a week and cannot be re-opened", threadId));
         }
-        if (!input.getDescription().trim().isEmpty())
-            discussionsBuilder.addSupportRequestComment(input);
         discussionsBuilder.reopenSupportRequest(input);
+        if (!input.getDescription().trim().isEmpty())
+            return discussionsBuilder.addSupportRequestComment(input);
+        return ThreadCommentComponentDTO.builder().build();
     }
 
     public List<ThreadComponentDTO> getDiscussions() {
@@ -106,7 +108,7 @@ public class DiscussionsComponent {
         return discussionsBuilder.addDiscussionComment(comment);
     }
 
-    public void closeDiscussion(@NonNull ThreadCommentComponentDTO input, @NonNull String group) {
+    public ThreadCommentComponentDTO closeDiscussion(@NonNull ThreadCommentComponentDTO input, @NonNull String group) {
         final Integer threadId = input.getThreadId();
         final ThreadComponentDTO thread = this.getDetailedDiscussion(threadId);
         if (thread.getStatus().equals("CLOSE")) {
@@ -117,9 +119,10 @@ public class DiscussionsComponent {
             logger.warn("User {} cannot close this discussion, only administrators can close it", input.getAuthor());
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not permitted to close this discussion");
         }
-        if (!input.getDescription().trim().isEmpty())
-            discussionsBuilder.addDiscussionComment(input);
         discussionsBuilder.closeDiscussion(input);
+        if (!input.getDescription().trim().isEmpty())
+            return discussionsBuilder.addDiscussionComment(input);
+        return ThreadCommentComponentDTO.builder().build();
     }
 
     public List<ThreadComponentDTO> getBugReports() {
@@ -144,19 +147,20 @@ public class DiscussionsComponent {
         return discussionsBuilder.addBugReportComment(comment);
     }
 
-    public void closeBugReport(@NonNull ThreadCommentComponentDTO input) {
+    public ThreadCommentComponentDTO closeBugReport(@NonNull ThreadCommentComponentDTO input) {
         final Integer threadId = input.getThreadId();
         final ThreadComponentDTO thread = this.getDetailedDiscussion(threadId);
         if (thread.getStatus().equals("CLOSE")) {
             logger.warn("Bug Report {} is already closed", threadId);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("Bug Report at id %s is already closed", threadId));
         }
-        if (!input.getDescription().trim().isEmpty())
-            discussionsBuilder.addBugReportComment(input);
         discussionsBuilder.closeBugReport(input);
+        if (!input.getDescription().trim().isEmpty())
+            return discussionsBuilder.addBugReportComment(input);
+        return ThreadCommentComponentDTO.builder().build();
     }
 
-    public void reopenBugReport(@NonNull ThreadCommentComponentDTO input) {
+    public ThreadCommentComponentDTO reopenBugReport(@NonNull ThreadCommentComponentDTO input) {
         final Integer threadId = input.getThreadId();
         final ThreadComponentDTO thread = this.getDetailedDiscussion(threadId);
         if (thread.getStatus().equals("OPEN")) {
@@ -168,8 +172,9 @@ public class DiscussionsComponent {
             logger.warn("Bug Report {} has been closed for over a week and cannot be re-opened", threadId);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("Bug Report {} has been closed for over a week and cannot be re-opened", threadId));
         }
-        if (!input.getDescription().trim().isEmpty())
-            discussionsBuilder.addBugReportComment(input);
         discussionsBuilder.reopenBugReport(input);
+        if (!input.getDescription().trim().isEmpty())
+            return discussionsBuilder.addBugReportComment(input);
+        return ThreadCommentComponentDTO.builder().build();
     }
 }
