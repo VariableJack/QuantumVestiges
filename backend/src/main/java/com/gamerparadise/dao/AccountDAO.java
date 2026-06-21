@@ -85,7 +85,7 @@ public class AccountDAO {
     
     public void addItemsToAccount(@NonNull List<PurchasedItemDAODTO> input, @NonNull String username) {
         final Date startDate = new Date();
-        logger.info("Adding {} items to user {}'s account", username);
+        logger.info("Adding {} items to user {}'s account", input.size(), username);
         try {
             mapper.addItemsToAccount(input, username);
         } catch (Exception e) {

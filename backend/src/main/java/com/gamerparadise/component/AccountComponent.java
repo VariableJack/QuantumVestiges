@@ -97,11 +97,11 @@ public class AccountComponent {
                 return false;
             }
         });
-        //if (success) {
-        //} else {
-        //    logger.error("Failed to successfully check out the order");
-        //    accountBuilder.closeOrder(existingOrder.getOrderId(), "FAILED");
-        //}
+        if (success) {
+        } else {
+            logger.error("Failed to successfully check out the order");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to successfully check out the order. You have not been charged. Please create a support request immediately for us to investigate");
+        }
     }
 
     public List<PurchasedItemComponentDTO> getPurchasedItems(@NonNull String username) {

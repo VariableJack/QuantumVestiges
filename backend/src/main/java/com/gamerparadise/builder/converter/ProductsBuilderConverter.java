@@ -23,6 +23,7 @@ public class ProductsBuilderConverter {
     public ProductDAODTO convertProductComponentDTOToDAODTO(@NonNull ProductComponentDTO input, @NonNull String franchiseName) {
         return ProductDAODTO.builder()
             .productName(input.getProductName())
+            .productId(input.getProductId())
             .parentProductId(input.getParentProductId())
             .productType(input.getProductType())
             .franchiseId(input.getFranchiseId())

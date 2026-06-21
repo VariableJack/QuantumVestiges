@@ -25,6 +25,8 @@
         <result property="productId" column="product_id"/>
         <result property="productName" column="product_name"/>
         <result property="productType" column="product_type"/>
+        <result property="franchiseId" column="franchise_id"/>
+        <result property="franchiseName" column="franchise_name"/>
     </resultMap>
 
     <select id="getOrder" parameterType="String" resultMap="OrderResultMap">
@@ -60,24 +62,23 @@
     </insert>
 
     <delete id="removeItem">
-        DELETE FROM order_items WHERE order_id = (SELECT order_id FROM orders JOIN users ON orders.user_id WHERE username = #{username} AND status = 'PENDING') AND product_id = #{item.productId};
+        DELETE FROM order_items WHERE order_id = #{item.orderId} AND product_id = #{item.productId};
     </delete>
 
-    <update id="closeCart">
+    <update id="closeOrder">
         UPDATE orders SET order_status = #{status} WHERE order_id = #{orderId};
     </update>
 
     <insert id="addItemsToAccount">
-        INSERT INTO purchased_items (user_id, id, name, type)
-        VALUES
-        <foreach collection="items" item="item" separator="UNION_ALL">
-            SELECT user_id, #{item.id}, #{item.name}, #{item.type} FROM users WHERE username = #{item.username} LIMIT 1
+        INSERT INTO purchased_items (user_id, product_id)
+        <foreach collection="items" item="item" separator=" UNION ALL ">
+            SELECT user_id, #{item.productId} FROM users WHERE username = #{username}
         </foreach>
         ;
     </insert>
 
     <select id="getPurchasedItems" parameterType="String" resultMap="PurchasedItemResultMap">
-        SELECT users.username, purchased_items.product_id, products.product_name, products.product_type FROM purchased_items
+        SELECT users.username, purchased_items.product_id, products.product_name, products.product_type, products.franchise_id, products.franchise_name FROM purchased_items
         JOIN users ON purchased_items.user_id = users.user_id
         JOIN products ON purchased_items.product_id = products.product_id
         WHERE username = #{username} AND products.product_type in ('GAME', 'DLC');

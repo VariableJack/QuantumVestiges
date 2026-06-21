@@ -69,6 +69,8 @@ public class AccountBuilderConverter {
             .productId(input.getProductId())
             .productName(input.getProductName())
             .productType(input.getProductType())
+            .franchiseId(input.getFranchiseId())
+            .franchiseName(input.getFranchiseName())
             .build();
     }
 }

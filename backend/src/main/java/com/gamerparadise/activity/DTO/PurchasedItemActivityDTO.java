@@ -14,4 +14,6 @@ public class PurchasedItemActivityDTO {
     private long productId;
     private String productName;
     private String productType;
+    private String franchiseId;
+    private String franchiseName;
 }
