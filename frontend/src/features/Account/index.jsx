@@ -409,7 +409,10 @@ const Account = props => {
                 <br />
                 {purchasedItems.map(item => (
                     <div>
-                        <a href={`/franchise?franchiseId=${item.franchiseId}`}>{item.franchiseName}</a> || <a href={`/product?productId=${item.productId}`}>{item.productName}</a>
+                        <a href={`/franchise?franchiseId=${item.franchiseId}`}>
+                            {item.franchiseName}
+                        </a>{' '}
+                        || <a href={`/product?productId=${item.productId}`}>{item.productName}</a>
                         <br />
                     </div>
                 ))}

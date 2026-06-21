@@ -247,7 +247,9 @@ const ProductPageCreate = () => {
                 <div>
                     <button
                         onClick={() => {
-                            handleUpload()
+                            if (files.length) {
+                                handleUpload()
+                            }
                         }}
                     >
                         Finalize and upload
