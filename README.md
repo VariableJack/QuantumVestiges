@@ -2,20 +2,15 @@
 A custom portal to various utilities and calculators for various games, along with personally developed games
 
 ## Setup
-For the backend, you need to have at least one AWS account created and set up. As all of the backend stacks will running on services with a free tier, you shouldn't need to worry about the costs unless you experience significant traffic.
+For the backend, you need to have at least one AWS account created and set up.
 Two different ways to set up your infrastructure are mentioned here:
 - Single AWS account that hosts everything, but the account needs to be set up to segregate between the infrastructure for your Development, Pre-Production, and Production environment
-- Multiple AWS accounts, one for each of your desired environments (Develkopment, Pre-Production, Production)
-
-### Setting up your Windows environment (**WINDOWS ONLY**)
-1. If your "Windows Subsystems for Linux" (WSL) is not already enabled, ensure it is, as all scripts have been designed to run in a Linux-like system.
-2. Restart your computer.
-3. Install any Linux distribution as you desire.
+- Multiple AWS accounts, one for each of your desired environments (Development, Pre-Production, Production)
 
 ### Setting up your AWS account
 Once your account has been created, follow these steps to set it up for use:
 1. Visit the Identity and Access Management (IAM) console
-2. Create a new IAM Role with CloudFormation permissions=
+2. Create a new IAM User with CloudFormation permissions
 3. Create an AWS Access Key, saving the AWS Access Key ID and AWS Secret Access Key ID - these will be used in the next step
 
 ### Common
@@ -26,7 +21,6 @@ Once your account has been created, follow these steps to set it up for use:
  - AWS Access Key ID - saved from when you where setting up your IAM role
  - AWS Secret Access Key - saved from when you where setting up your IAM role
  - Region - this will be your desired region for all of your infrastructure
-    - [RECOMMENDED] Choose the AWS region closest to where you live
  - Default output - "None"
 2. Run the `install.sh` script:
  - Due to how Linux paths are set by default, it can be run via `./install.sh`
