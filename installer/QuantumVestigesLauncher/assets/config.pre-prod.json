@@ -1,0 +1,21 @@
+{
+	"Env": "pre-prod",
+	"DownloadFolder": "https://quantumvestiges-assets-pre-prod.s3.us-west-2.amazonaws.com",
+    "BackendUrl": "https://pre-prod.quatumvestiges.com/api",
+    "Games": [
+        {
+            "ZipFileName": "GameOne.zip",
+            "GameName": "Game One",
+            "GameVersion": "1.0.0",
+            "ThumbnailName": "thumbnail.png",
+            "InternalId": "GameOne"
+        },
+        {
+            "ZipFileName": "GameTwo.zip",
+            "GameName": "Game Two",
+            "GameVersion": "1.0.0",
+            "ThumbnailName": "thumbnail.png",
+            "InternalId": "GameTwo"
+        }
+    ]
+}

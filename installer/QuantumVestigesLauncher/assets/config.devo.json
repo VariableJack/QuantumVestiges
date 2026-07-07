@@ -1,0 +1,21 @@
+{
+	"Env": "devo",
+	"DownloadFolder": "https://quantumvestiges-assets-devo.s3.us-west-2.amazonaws.com",
+    "BackendUrl": "https://devo.quatumvestiges.com/api",
+    "Games": [
+        {
+            "ZipFileName": "GameOne.zip",
+            "GameName": "Game One",
+            "GameVersion": "1.0.0",
+            "BackgroundImagePath": "background.jpg",
+            "InternalId": "GameOne"
+        },
+        {
+            "ZipFileName": "GameTwo.zip",
+            "GameName": "Game Two",
+            "GameVersion": "1.0.0",
+            "BackgroundImagePath": "icon.jpg",
+            "InternalId": "GameTwo"
+        }
+    ]
+}
