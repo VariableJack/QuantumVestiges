@@ -1,0 +1,4 @@
+{
+	"Env": "pre-prod",
+	"DownloadFolder": "https://quantumvestiges-assets-pre-prod.s3.us-west-2.amazonaws.com"
+}
