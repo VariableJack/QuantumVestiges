@@ -2,6 +2,13 @@
 	"Env": "prod",
 	"DownloadFolder": "https://quantumvestiges-assets-prod.s3.us-west-2.amazonaws.com",
     "BackendUrl": "https://prod.quatumvestiges.com/api",
+    "Cognito": {
+        "Region": "us-west-2",
+        "UserPoolId": "us-west-2",
+        "ClientId": "",
+        "CognitoDomain": "prod-quantumvestiges.auth.us-west-2.amazoncognito.com",
+        "RedirectUri": "http://localhost:4200"
+    },
     "Games": [
         {
             "ZipFileName": "GameOne.zip",

@@ -2,6 +2,13 @@
 	"Env": "devo",
 	"DownloadFolder": "https://quantumvestiges-assets-devo.s3.us-west-2.amazonaws.com",
     "BackendUrl": "https://devo.quatumvestiges.com/api",
+    "Cognito": {
+        "Region": "us-west-2",
+        "UserPoolId": "us-west-2_A9tCE18yj",
+        "ClientId": "4scl48210u7hq1mha2j1vbcqe9",
+        "CognitoDomain": "devo-quantumvestiges.auth.us-west-2.amazoncognito.com",
+        "RedirectUri": "http://localhost:4200"
+    },
     "Games": [
         {
             "ZipFileName": "GameOne.zip",

@@ -14,4 +14,7 @@
     <EmbeddedResource Include="assets/*.jpg" Exclude="assets\config.*.json" />
     <EmbeddedResource Include="assets\config.$(DeployEnv).json" Link="assets\config.json" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.19.1" />
+  </ItemGroup>
 </Project>
