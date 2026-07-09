@@ -5,8 +5,7 @@
     }
     public partial class QuantumVestigesWindow : System.Windows.Window {
         [System.STAThread]
-        public static void Main()
-        {
+        public static void Main() {
             System.Windows.Application app = new System.Windows.Application();
             QuantumVestigesWindow windowInstaller = new QuantumVestigesWindow();
             windowInstaller.Show();
@@ -14,17 +13,17 @@
         }
         private const string ResourceFolder = "assets";
         private const string LauncherZip = "QuantumVestigesLauncher.zip";
-        private System.Windows.Controls.TextBlock TxtTitle;
-        private System.Windows.Controls.TextBlock TxtStatus;
-        private System.Windows.Controls.Button BtnAction;
-        private System.Windows.Controls.Grid mainGrid;
+        private System.Windows.Controls.TextBlock TxtTitle = null!;
+        private System.Windows.Controls.TextBlock TxtStatus = null!;
+        private System.Windows.Controls.Button BtnAction = null!;
+        private System.Windows.Controls.Grid mainGrid = null!;
         // Directory setup
         private string CompanyName = "Quantum Vestiges";
         private string ProgramFiles = System.Environment.GetFolderPath(System.Environment.SpecialFolder.ProgramFiles);
         private string ApplicationData = System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData);
         private string LauncherInstallDir;
         private string ApplicationSetupDir;
-        private BaseConfig _config;
+        private BaseConfig _config = null!;
 
         public QuantumVestigesWindow () {
             Title = CompanyName;
@@ -61,9 +60,10 @@
             titlePanel.Children.Add(TxtStatus);
             System.Windows.Controls.Grid.SetRow(titlePanel, 0);
             mainGrid.Children.Add(titlePanel);
+            System.Windows.Controls.Panel.SetZIndex(titlePanel, 1);
             // 2. Set background & icon
             System.Windows.Media.ImageSource backgroundSource = SetupImage("background.jpg");
-            System.Windows.Media.ImageSource iconSource = SetupImage("icon.png");
+            System.Windows.Media.ImageSource iconSource = SetupImage("icon.jpg");
             System.Windows.Controls.Image backgroundImage = new System.Windows.Controls.Image {
                 Stretch = System.Windows.Media.Stretch.UniformToFill,
                 Source = backgroundSource,
@@ -75,6 +75,7 @@
             };
             System.Windows.Controls.Grid.SetRow(backgroundImage, 0);
             mainGrid.Children.Add(backgroundImage);
+            System.Windows.Controls.Panel.SetZIndex(backgroundImage, 0);
             System.Windows.Controls.Image iconImage = new System.Windows.Controls.Image { Source = iconSource, Width = 64, Height = 64, HorizontalAlignment = System.Windows.HorizontalAlignment.Left };
             // 3. Action Button layout
             BtnAction = new System.Windows.Controls.Button {
@@ -95,33 +96,28 @@
         }
 
         private System.Windows.Media.ImageSource SetupImage(string filename) {
-            try {
-                System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
-                string resourceName = $"{assembly.GetName().Name}.{ResourceFolder}.{filename}";
+            System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
+            string resourceName = $"{assembly.GetName().Name}.{ResourceFolder}.{filename}";
 
-                using (System.IO.Stream stream = assembly.GetManifestResourceStream(resourceName)) {
-                    if (stream == null) {
-                        throw new System.IO.FileNotFoundException($"Could not find embedded resource: {resourceName}");
-                    }
-                    // 3. Decode the stream into a safe, thread-detached WriteableBitmap
-                    System.Windows.Media.Imaging.BitmapImage bitmap = new System.Windows.Media.Imaging.BitmapImage();
-                    bitmap.BeginInit();
-                    bitmap.StreamSource = stream;
-                    bitmap.CacheOption = System.Windows.Media.Imaging.BitmapCacheOption.OnLoad;
-                    bitmap.EndInit();
-                    System.Windows.Media.Imaging.WriteableBitmap neutralSource = new System.Windows.Media.Imaging.WriteableBitmap(bitmap);
-                    neutralSource.Freeze();
-                    return neutralSource;
+            using (System.IO.Stream? stream = assembly.GetManifestResourceStream(resourceName)) {
+                if (stream == null) {
+                    System.Windows.MessageBox.Show($"Could not find embedded resource: {resourceName}", "Failed to set up image");
                 }
-            } catch (System.Exception ex) {
-                return null;
+                System.Windows.Media.Imaging.BitmapImage bitmap = new System.Windows.Media.Imaging.BitmapImage();
+                bitmap.BeginInit();
+                bitmap.StreamSource = stream;
+                bitmap.CacheOption = System.Windows.Media.Imaging.BitmapCacheOption.OnLoad;
+                bitmap.EndInit();
+                System.Windows.Media.Imaging.WriteableBitmap neutralSource = new System.Windows.Media.Imaging.WriteableBitmap(bitmap);
+                neutralSource.Freeze();
+                return neutralSource;
             }
         }
 
         private void SetupConfig() {
             System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
             string resourceName = $"{assembly.GetName().Name}.assets.config.json";
-            using (System.IO.Stream stream = assembly.GetManifestResourceStream(resourceName)) {
+            using (System.IO.Stream? stream = assembly.GetManifestResourceStream(resourceName)) {
                 if (stream == null) throw new System.IO.FileNotFoundException("Target configuration missing.");
                 using (System.IO.StreamReader reader = new System.IO.StreamReader(stream)) {
                     string jsonText = reader.ReadToEnd();
@@ -131,21 +127,24 @@
         }
 
         private async void BtnAction_Click(object sender, System.Windows.RoutedEventArgs e) {
-            string launcherZipPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), CompanyName, $"{LauncherZip}");
+            string launcherZipTempPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), CompanyName);
+            string launcherZipFullPath = System.IO.Path.Combine(launcherZipTempPath, $"{LauncherZip}");
             BtnAction.IsEnabled = false;
             try {
-                System.Windows.MessageBox.Show(_config.Env, "Failed to set up launcher", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
+                if (!System.IO.Directory.Exists(launcherZipTempPath)) System.IO.Directory.CreateDirectory(launcherZipTempPath);
                 TxtStatus.Text = $"Downloading {CompanyName}'s Launcher";
-                await DownloadContent($"{_config.DownloadFolder}/${LauncherZip}", launcherZipPath);
+                await DownloadContent($"{_config.DownloadFolder}/{LauncherZip}", launcherZipFullPath);
+                TxtStatus.Text = "Setting up local directories and extracting files";
                 await System.Threading.Tasks.Task.Run(() => {
-                    TxtStatus.Text = "Setting up local directories";
-                    System.IO.Directory.CreateDirectory(ApplicationSetupDir);
-                    System.IO.Directory.CreateDirectory(LauncherInstallDir);
-                    TxtStatus.Text = "Extracting files";
-                    System.IO.Compression.ZipFile.ExtractToDirectory(launcherZipPath, LauncherInstallDir);
-                    System.IO.File.Delete(launcherZipPath);
+                    if (!System.IO.Directory.Exists(ApplicationSetupDir)) System.IO.Directory.CreateDirectory(ApplicationSetupDir);
+                    if (!System.IO.Directory.Exists(LauncherInstallDir)) System.IO.Directory.CreateDirectory(LauncherInstallDir);
+                    System.IO.Compression.ZipFile.ExtractToDirectory(launcherZipFullPath, LauncherInstallDir, true);
+                    System.IO.File.Delete(launcherZipFullPath);
+                    System.IO.Directory.Delete(launcherZipTempPath, recursive: true);
                 });
+                TxtStatus.Text = $"Finished downloading {CompanyName}'s Launcher";
             } catch (System.Exception ex) {
+                TxtStatus.Text = $"Failed to download {CompanyName}'s Launcher";
                 System.Windows.MessageBox.Show(ex.Message, "Failed to set up launcher", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
             } finally {
                 BtnAction.IsEnabled = true;
