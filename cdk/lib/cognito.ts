@@ -54,6 +54,7 @@ export class CognitoStack extends Stack {
             callbackUrls.push('https://localhost:3000')
             callbackUrls.push('https://localhost:3000/account')
         }
+        callbackUrls.push('http://localhost:4200')
         const userPoolClient = new UserPoolClient(
             this,
             `${SERVICE_PREFIX}-UserPoolClient-${stage}`,
