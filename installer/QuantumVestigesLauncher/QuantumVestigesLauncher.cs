@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 
 namespace QuantumVestigesInstaller {
     class Game {
@@ -70,7 +69,7 @@ public partial class QuantumVestigesWindow : System.Windows.Window {
         public QuantumVestigesWindow () {
             Title = CompanyName;
             Height = 768 + 40;
-            Width = 2 * NavigationWidth + ContentWidth + 20;
+            Width = 3 * NavigationWidth + ContentWidth + 15;
             WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen;
             Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(0x12, 0x12, 0x12));
             ApplicationSetupDir = System.IO.Path.Combine(ApplicationData, CompanyName);
@@ -201,15 +200,15 @@ public partial class QuantumVestigesWindow : System.Windows.Window {
             {
                 System.Windows.Controls.Border navBorderRight = new System.Windows.Controls.Border {
                     Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(0x1A, 0x1A, 0x1A)),
-                    BorderThickness = new System.Windows.Thickness(0, 0, 5, 0),
+                    BorderThickness = new System.Windows.Thickness(5, 0, 0, 0),
                     BorderBrush = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(0x2D, 0x2D, 0x2D)),
-                    MaxWidth = NavigationWidth,
+                    Width = NavigationWidth * 2,
                     HorizontalAlignment = System.Windows.HorizontalAlignment.Left,
                     Margin = new System.Windows.Thickness(NavigationWidth + ContentWidth, 0, 0, 0),
                 };
                 NavBarStackPanelRight = new System.Windows.Controls.StackPanel {
                     Margin = new System.Windows.Thickness(0, 0, 0, 0),
-                    MaxWidth = NavigationWidth,
+                    Width = NavigationWidth * 2,
                 };
                 System.Windows.Controls.Grid.SetColumn(navBorderRight, 2);
 
@@ -357,31 +356,54 @@ public partial class QuantumVestigesWindow : System.Windows.Window {
                     UserObject = System.Text.Json.JsonSerializer.Deserialize<User>(jsonText) ?? new User();
                 }
             }
+            if (UserObject.Username.Equals("")) {
+                SwitchBetweenLoginLogout("login");
+            } else {
+                SwitchBetweenLoginLogout("logout");
+            }
+        }
+        private void SwitchBetweenLoginLogout(string destination) {
             string buttonName = null!;
             string buttonTag = null!;
             string buttonContent = null!;
-            if (UserObject.Username.Equals("")) {
+            System.Windows.Controls.TextBlock? usernameBlock = null;
+            if (destination.Equals("login")) {
                 buttonName = "Login";
                 buttonTag = "Login";
                 buttonContent = "Log in";
-            } else {
+            }
+            if (destination.Equals("logout")) {
                 buttonName = "Logout";
                 buttonTag = "Logout";
                 buttonContent = "Log out";
+                usernameBlock = new System.Windows.Controls.TextBlock {
+                    Text = $"Welcome, {UserObject.Username}!",
+                    FontSize = 22,
+                    FontWeight = System.Windows.FontWeights.Bold,
+                    Foreground = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(0x00, 0xFF, 0xCC)),
+                    HorizontalAlignment = System.Windows.HorizontalAlignment.Center,
+                    VerticalAlignment = System.Windows.VerticalAlignment.Top,
+                };
             }
             LogButton = new System.Windows.Controls.Button {
                 Name = buttonName,
                 Tag = buttonTag,
                 Content = buttonContent,
                 Height = 50,
-                Width = 150,
+                Width = NavigationWidth,
                 FontWeight = System.Windows.FontWeights.Bold,
                 BorderThickness = new System.Windows.Thickness(0),
                 Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(0x00, 0xFF, 0xCC)),
                 Foreground = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(0x12, 0x12, 0x12)),
-                Visibility = System.Windows.Visibility.Visible
+                Visibility = System.Windows.Visibility.Visible,
+                HorizontalAlignment = System.Windows.HorizontalAlignment.Center,
+                // VerticalAlignment = System.Windows.VerticalAlignment.Bottom,
             };
             LogButton.Click += Log_BtnAction_Click;
+            NavBarStackPanelRight.Children.Clear();
+            if (usernameBlock != null) {
+                NavBarStackPanelRight.Children.Add(usernameBlock);
+            }
             NavBarStackPanelRight.Children.Add(LogButton);
         }
         private async void Log_BtnAction_Click(object sender, System.Windows.RoutedEventArgs e) {
@@ -400,10 +422,12 @@ public partial class QuantumVestigesWindow : System.Windows.Window {
                         }
                         UserObject.Username = username!;
                         UserObject.AccessToken = accessToken!;
-                        UserObject.PurchasedItems = await GetPurchasedGames();
+                        // UserObject.PurchasedItems = await GetPurchasedGames();
+                        SwitchBetweenLoginLogout("logout");
                     }
                     if (clickedButton.Tag.Equals("Logout")) {
                         UserObject = new User();
+                        SwitchBetweenLoginLogout("login");
                     }
                     System.Text.Json.JsonSerializerOptions options = new System.Text.Json.JsonSerializerOptions {
                         WriteIndented = true
@@ -495,7 +519,7 @@ public partial class QuantumVestigesWindow : System.Windows.Window {
         private string GenerateCodeChallenge(string codeVerifier) {
             using (System.Security.Cryptography.SHA256 sha256 = System.Security.Cryptography.SHA256.Create()) {
                 byte[] challengeBytes = sha256.ComputeHash(System.Text.Encoding.UTF8.GetBytes(codeVerifier));
-                return Convert.ToBase64String(challengeBytes)
+                return System.Convert.ToBase64String(challengeBytes)
                     .Replace("+", "_")
                     .Replace("/", "_")
                     .TrimEnd('=');
