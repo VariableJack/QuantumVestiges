@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { get } from 'lodash'
+import { get, isUndefined } from 'lodash'
 
 import {
     useLazyGetProductPresignedUrlsQuery,
@@ -17,8 +17,8 @@ import { DEFAULT_FRANCHISE, CONNECTION_ERROR_MESSAGE } from '../../../shared/con
 
 import '../../../styles/App.css'
 
-const getFileNamesFromFiles = files => {
-    return files.map(file => file.webkitRelativePath)
+const getFileNamesFromFile = file => {
+    return file.map(file => file.name)
 }
 
 const generateSelectItems = items => {
@@ -51,11 +51,12 @@ const ProductPageCreate = () => {
             isSuccess: createProductIsSuccess,
         },
     ] = useCreateGameMutation()
-    const [files, setFiles] = useState([])
+    const [file, setFile] = useState(undefined)
     const [productName, setProductName] = useState('')
     const [selectedFranchise, setSelectedFranchise] = useState(DEFAULT_FRANCHISE)
-    const [isUploadingFiles, setIsUploadingFiles] = useState(false)
-    const [isUploadingFilesSuccess, setIsUploadingFilesSuccess] = useState(false)
+    const [isUploadingFile, setIsUploadingFile] = useState(false)
+    const [isUploadingFileSuccess, setIsUploadingFileSuccess] = useState(false)
+    const [errors, setErrors] = useState({ file: false, productName: false, franchise: false })
     useEffect(() => {
         if (getProductPresignedUrlsIsLoading) {
             dispatch(
@@ -89,7 +90,7 @@ const ProductPageCreate = () => {
             dispatch(
                 addSuccessMessage({
                     title: 'Successfully generated presigned URLs',
-                    description: `All ${files.length} presigned URLs successfully generated`,
+                    description: 'Presigned URL successfully generated',
                     id: 'presignedURLFetchSuccess',
                 }),
             )
@@ -120,24 +121,24 @@ const ProductPageCreate = () => {
         }
     }, [createProductIsError])
     useEffect(() => {
-        if (isUploadingFiles) {
+        if (isUploadingFile) {
             dispatch(
                 addInfoMessage({
-                    title: 'Uploading files',
-                    description: 'Please wait as the files are being uploaded',
-                    id: 'uploadFilesInfo',
+                    title: 'Uploading file',
+                    description: 'Please wait as the file is being uploaded',
+                    id: 'uploadFileInfo',
                 }),
             )
         } else {
-            dispatch(removeInfoMessage('uploadFilesInfo'))
+            dispatch(removeInfoMessage('uploadFileInfo'))
         }
-    }, [isUploadingFiles])
+    }, [isUploadingFile])
     useEffect(() => {
-        if (isUploadingFilesSuccess) {
+        if (isUploadingFileSuccess) {
             dispatch(
                 addSuccessMessage({
-                    title: 'Files successfully uploaded',
-                    description: `All ${files.length} successfully uploaded`,
+                    title: 'File successfully uploaded',
+                    description: 'File successfully uploaded',
                     id: 'presignedURLUploadSuccess',
                 }),
             )
@@ -149,43 +150,34 @@ const ProductPageCreate = () => {
                 })
             } catch (e) {}
         }
-    }, [isUploadingFilesSuccess])
+    }, [isUploadingFileSuccess])
 
     const handleUpload = async () => {
-        setIsUploadingFiles(true)
-        setIsUploadingFilesSuccess(false)
-        const filesSucceeded = []
-        const filesFailed = []
+        setIsUploadingFile(true)
+        setIsUploadingFileSuccess(false)
         try {
             const { presignedUrls } = await triggerGetProductPresignedUrls({
-                fileNames: getFileNamesFromFiles(files),
+                fileNames: getFileNamesFromFile([file]),
                 method: 'PUT',
             }).unwrap()
-            files.forEach(async file => {
-                try {
-                    await fetch(presignedUrls[file.webkitRelativePath], {
-                        method: 'PUT',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: file,
-                    })
-                    filesSucceeded.push(file)
-                } catch (e) {
-                    filesFailed.push(file)
-                }
-            })
+            try {
+                await fetch(presignedUrls[file.webkitRelativePath], {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: file,
+                })
+                setIsUploadingFileSuccess(true)
+            } catch (e) {
+                dispatch(
+                    addErrorMessage({
+                        title: 'Failed to upload file',
+                        description: 'File failed to be uploaded',
+                        id: 'uploadFileError',
+                    }),
+                )
+            }
         } catch (e) {}
-        if (filesFailed.length) {
-            dispatch(
-                addErrorMessage({
-                    title: 'Failed to upload files',
-                    description: `${filesFailed.length} files failed to be uploaded`,
-                    id: 'uploadFilesError',
-                }),
-            )
-        } else {
-            setIsUploadingFilesSuccess(true)
-        }
-        setIsUploadingFiles(false)
+        setIsUploadingFile(false)
     }
     const createProduct = async input => {
         try {
@@ -207,21 +199,31 @@ const ProductPageCreate = () => {
             </div>
         )) || (
             <div className="ph-xs">
-                <h1>Upload folder here</h1>
+                <h1>Product creation</h1>
+                <h2>Upload files here</h2>
                 <input
                     type="file"
-                    multiple
-                    webkitdirectory=""
-                    directory=""
+                    className={`${errors.file && 'error-text'}`}
                     onChange={event => {
-                        setFiles(Array.from(event.target.files))
-                        const firstFile = event.target.files[0]
-                        setProductName(
-                            firstFile.webkitRelativePath.substring(
-                                0,
-                                firstFile.webkitRelativePath.indexOf('/'),
-                            ),
-                        )
+                        const file = event.target.files[0]
+                        setErrors({
+                            ...errors,
+                            file: isUndefined(file),
+                        })
+                        setFile(file)
+                    }}
+                />
+                <br />
+                <h2>Product name</h2>
+                <input
+                    className={`${errors.productName && 'error-text'}`}
+                    value={productName}
+                    onChange={event => {
+                        setErrors({
+                            ...errors,
+                            productName: event.target.value === 0,
+                        })
+                        setProductName(event.target.value)
                     }}
                 />
                 <h3>Select franchise to create product under</h3>
@@ -241,14 +243,24 @@ const ProductPageCreate = () => {
                         })
                     }}
                 />
-                {(files.length && (
-                    <div className="pv-xs">Detected product name {productName}</div>
-                )) || <></>}
                 <div>
                     <button
                         onClick={() => {
-                            if (files.length) {
+                            console.debug(file)
+                            if (
+                                file &&
+                                productName &&
+                                selectedFranchise.franchiseId !== DEFAULT_FRANCHISE.franchiseId
+                            ) {
                                 handleUpload()
+                            } else {
+                                setErrors({
+                                    file: isUndefined(file),
+                                    productName: productName.length === 0,
+                                    franchise:
+                                        selectedFranchise.franchiseId ===
+                                        DEFAULT_FRANCHISE.franchiseId,
+                                })
                             }
                         }}
                     >
