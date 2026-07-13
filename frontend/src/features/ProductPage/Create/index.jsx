@@ -161,7 +161,7 @@ const ProductPageCreate = () => {
                 method: 'PUT',
             }).unwrap()
             try {
-                await fetch(presignedUrls[file.webkitRelativePath], {
+                await fetch(presignedUrls[file.name], {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: file,
