@@ -1,28 +1,14 @@
 {
-	"Env": "pre-prod",
-	"DownloadFolder": "https://quantumvestiges-assets-pre-prod.s3.us-west-2.amazonaws.com",
-    "BackendUrl": "https://pre-prod.quatumvestiges.com/api",
+    "Env": "pre-prod",
+    "DownloadFolder": "https://quantumvestiges-assets-pre-prod.s3.us-west-2.amazonaws.com",
+    "BackendUrl": "https://pre-prod.quantumvestiges.com/api",
+    "FrontendUrl": "https://pre-prod.quantumvestiges.com",
     "Cognito": {
         "Region": "us-west-2",
-        "UserPoolId": "us-west-2_A9tCE18yj",
+        "UserPoolId": "us-west-2",
         "ClientId": "",
         "CognitoDomain": "pre-prod-quantumvestiges.auth.us-west-2.amazoncognito.com",
         "RedirectUri": "http://localhost:4200"
     },
-    "Games": [
-        {
-            "ZipFileName": "GameOne.zip",
-            "GameName": "Game One",
-            "GameVersion": "1.0.0",
-            "ThumbnailName": "thumbnail.png",
-            "InternalId": "GameOne"
-        },
-        {
-            "ZipFileName": "GameTwo.zip",
-            "GameName": "Game Two",
-            "GameVersion": "1.0.0",
-            "ThumbnailName": "thumbnail.png",
-            "InternalId": "GameTwo"
-        }
-    ]
+    "Games": []
 }

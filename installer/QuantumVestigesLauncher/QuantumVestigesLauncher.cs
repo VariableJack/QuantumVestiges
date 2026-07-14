@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Security.Policy;
 
 namespace QuantumVestigesInstaller {
     class Game {
@@ -7,6 +8,7 @@ namespace QuantumVestigesInstaller {
         public string GameVersion { get; set; } = "";
         public string BackgroundImagePath { get; set; } = "";
         public string InternalId { get; set; } = "";
+        public string ProductId { get; set; } = "";
     }
     class CognitoDetails {
         public string Region { get; set; } = "";
@@ -19,16 +21,17 @@ namespace QuantumVestigesInstaller {
         public string Env { get; set; } = "";
         public string DownloadFolder { get; set; } = "";
         public string BackendUrl { get; set; } = "";
+        public string FrontendUrl { get; set; } = "";
         public Game[] Games { get; set; } = System.Array.Empty<Game>();
         public CognitoDetails Cognito { get; set; } = new CognitoDetails();
     }
     class PurchasedItem {
-        public string Username { get; set; } = "";
-        public long ProductId { get; set; } = 0;
-        public string ProductName { get; set; } = "";
-        public string ProductType { get; set; } = "";
-        public string FranchiseId { get; set; } = "";
-        public string FranchiseName { get; set; } = "";
+        public string username { get; set; } = "";
+        public int productId { get; set; } = 0;
+        public string productName { get; set; } = "";
+        public string productType { get; set; } = "";
+        public string franchiseId { get; set; } = "";
+        public string franchiseName { get; set; } = "";
     }
     class User {
         public string AccessToken { get; set; } = "";
@@ -133,11 +136,9 @@ public partial class QuantumVestigesWindow : System.Windows.Window {
                 contentGrid.Children.Add(titlePanel);
                 System.Windows.Controls.Panel.SetZIndex(titlePanel, 1);
                 // 2. Set background & icon
-                System.Windows.Media.ImageSource backgroundSource = SetupImage(SelectedGame.BackgroundImagePath);
                 System.Windows.Media.ImageSource iconSource = SetupImage("icon.jpg");
                 BackgroundImage = new System.Windows.Controls.Image {
                     Stretch = System.Windows.Media.Stretch.UniformToFill,
-                    Source = backgroundSource,
                     Opacity = 1,
                     MinHeight = 768,
                     MinWidth = 1408,
@@ -179,7 +180,7 @@ public partial class QuantumVestigesWindow : System.Windows.Window {
                 System.Windows.Controls.Grid.SetRow(progressGrid, 2);
                 contentGrid.Children.Add(progressGrid);
                 BtnAction = new System.Windows.Controls.Button {
-                    Content = "INSTALL",
+                    Content = "Log in",
                     Height = 20,
                     Width = 120,
                     VerticalAlignment = System.Windows.VerticalAlignment.Bottom,
@@ -190,7 +191,6 @@ public partial class QuantumVestigesWindow : System.Windows.Window {
                     Foreground = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(0x12, 0x12, 0x12)),
                     Visibility = System.Windows.Visibility.Visible
                 };
-                BtnAction.Click += Install_BtnAction_Click;
                 System.Windows.Controls.Grid.SetRow(BtnAction, 2);
                 contentGrid.Children.Add(BtnAction);
                 System.Windows.Controls.Grid.SetColumn(contentGrid, 1);
@@ -219,6 +219,7 @@ public partial class QuantumVestigesWindow : System.Windows.Window {
             AttachGamesIcons();
             SetupUser();
             Content = mainGrid;
+            SwitchGame(_config.Games[0]);
         }
 
         private System.Windows.Media.ImageSource SetupImage(string filename) {
@@ -249,7 +250,6 @@ public partial class QuantumVestigesWindow : System.Windows.Window {
                     string jsonText = reader.ReadToEnd();
                     _config = System.Text.Json.JsonSerializer.Deserialize<BaseConfig>(jsonText) ?? new BaseConfig();
                 }
-                SelectedGame = _config.Games[0];
             }
         }
 
@@ -283,6 +283,12 @@ public partial class QuantumVestigesWindow : System.Windows.Window {
             }
         }
         
+        private void Buy_BtnAction_Click(object sender, System.Windows.RoutedEventArgs e) {
+            if (sender is System.Windows.Controls.Button clickedButton) {
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo { FileName = $"${_config.FrontendUrl}/product?productId={clickedButton.Tag}", UseShellExecute = true });
+            }
+        }
+
         private void AttachGamesIcons() {
             foreach (Game game in _config.Games) {
                 System.Windows.Controls.Button gameIcon = new System.Windows.Controls.Button {
@@ -304,12 +310,30 @@ public partial class QuantumVestigesWindow : System.Windows.Window {
         
         private void Game_BtnAction_Click(object sender, System.Windows.RoutedEventArgs e) {
             if (sender is System.Windows.Controls.Button clickedButton && clickedButton.Tag is Game gameTarget) {
-                SelectedGame = gameTarget;
-                System.Windows.Media.ImageSource backgroundSource = SetupImage(gameTarget.BackgroundImagePath);
-                BackgroundImage.Source = backgroundSource;
+                SwitchGame(gameTarget);
             }
         }
-        
+        private void SwitchGame(Game game) {
+            System.Windows.Media.ImageSource backgroundSource = SetupImage($"{game.InternalId}.{game.BackgroundImagePath}");
+            BackgroundImage.Source = backgroundSource;
+            SelectedGame = game;
+            BtnAction.Tag = "";
+            BtnAction.Content = "";
+            if (UserObject == null) {
+                BtnAction.Content = "";
+            } else {
+                if (System.Array.Find(UserObject.PurchasedItems, purchasedItem => purchasedItem.productName.Equals(SelectedGame.GameName)) != null) {
+                    BtnAction.Content = "Install";
+                    BtnAction.Click += Install_BtnAction_Click;
+                } else {
+                    BtnAction.Tag = game.ProductId;
+                    BtnAction.Content = "Buy";
+                    BtnAction.Click += Buy_BtnAction_Click;
+                }
+            }
+        }
+
+
         private async System.Threading.Tasks.Task DownloadContent(string url, string destinationPath) {
             System.Windows.MessageBox.Show($"Attempting to download from URL {url}", "Header", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
             try {
@@ -397,7 +421,6 @@ public partial class QuantumVestigesWindow : System.Windows.Window {
                 Foreground = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(0x12, 0x12, 0x12)),
                 Visibility = System.Windows.Visibility.Visible,
                 HorizontalAlignment = System.Windows.HorizontalAlignment.Center,
-                // VerticalAlignment = System.Windows.VerticalAlignment.Bottom,
             };
             LogButton.Click += Log_BtnAction_Click;
             NavBarStackPanelRight.Children.Clear();
@@ -422,7 +445,7 @@ public partial class QuantumVestigesWindow : System.Windows.Window {
                         }
                         UserObject.Username = username!;
                         UserObject.AccessToken = accessToken!;
-                        // UserObject.PurchasedItems = await GetPurchasedGames();
+                        UserObject.PurchasedItems = await GetPurchasedGames();
                         SwitchBetweenLoginLogout("logout");
                     }
                     if (clickedButton.Tag.Equals("Logout")) {
@@ -452,7 +475,7 @@ public partial class QuantumVestigesWindow : System.Windows.Window {
                 $"client_id={_config.Cognito.ClientId}" +
                 $"&code_challenge={codeChallenge}" +
                 $"&code_challenge_method=S256" +
-                $"&redirect_uri={_config.Cognito.RedirectUri}/" +
+                $"&redirect_uri={_config.Cognito.RedirectUri}" +
                 $"&response_type=code" +
                 $"&scope=aws.cognito.signin.user.admin+email+openid+profile" +
                 $"&state={GenerateCryptoString(32).ToLower()}";
@@ -478,7 +501,7 @@ public partial class QuantumVestigesWindow : System.Windows.Window {
                 { "grant_type", "authorization_code" },
                 { "client_id", _config.Cognito.ClientId },
                 { "code", authCode },
-                { "redirect_uri", $"{_config.Cognito.RedirectUri}/" },
+                { "redirect_uri", $"{_config.Cognito.RedirectUri}" },
                 { "code_verifier", codeVerifier },
             };
             System.Collections.Generic.Dictionary<string, string> output = new System.Collections.Generic.Dictionary<string, string>();
@@ -530,10 +553,11 @@ public partial class QuantumVestigesWindow : System.Windows.Window {
             using (System.Net.Http.HttpClient client = new System.Net.Http.HttpClient()) {
                 using (System.Net.Http.HttpRequestMessage req = new System.Net.Http.HttpRequestMessage(System.Net.Http.HttpMethod.Get, $"{_config.BackendUrl}/purchased-games")) {
                     req.Headers.Add("Accept", "application/json");
-                    req.Headers.Add("Authorization", UserObject.AccessToken);
+                    req.Headers.Add("Authorization", $"Bearer {UserObject.AccessToken}");
                     System.Net.Http.HttpResponseMessage response = await client.SendAsync(req).ConfigureAwait(false);
-                    string jsonResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    items = System.Text.Json.JsonSerializer.Deserialize<PurchasedItem[]>(jsonResponse) ?? System.Array.Empty<PurchasedItem>();
+                    string jsonResponse = (await response.Content.ReadAsStringAsync().ConfigureAwait(false)).Trim('"').Replace("\\\"", "\"");
+                    System.Text.Json.JsonSerializerOptions jsonOptions = new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+                    items = System.Text.Json.JsonSerializer.Deserialize<PurchasedItem[]>(jsonResponse, jsonOptions) ?? System.Array.Empty<PurchasedItem>();
                 }
             }
             return items;

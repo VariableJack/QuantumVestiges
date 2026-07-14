@@ -6,20 +6,20 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuantumVestigesLauncher", "QuantumVestigesLauncher.csproj", "{1E6397F8-A421-9B92-366A-F95D5FE72B20}"
 EndProject
 Global
-	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|Any CPU = Debug|Any CPU
-		Release|Any CPU = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{1E6397F8-A421-9B92-366A-F95D5FE72B20}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1E6397F8-A421-9B92-366A-F95D5FE72B20}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1E6397F8-A421-9B92-366A-F95D5FE72B20}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1E6397F8-A421-9B92-366A-F95D5FE72B20}.Release|Any CPU.Build.0 = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {6FDB10E6-7DF4-457A-957D-1C434A4ACDB8}
-	EndGlobalSection
+    GlobalSection(SolutionConfigurationPlatforms) = preSolution
+        Debug|Any CPU = Debug|Any CPU
+        Release|Any CPU = Release|Any CPU
+    EndGlobalSection
+    GlobalSection(ProjectConfigurationPlatforms) = postSolution
+        {1E6397F8-A421-9B92-366A-F95D5FE72B20}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+        {1E6397F8-A421-9B92-366A-F95D5FE72B20}.Debug|Any CPU.Build.0 = Debug|Any CPU
+        {1E6397F8-A421-9B92-366A-F95D5FE72B20}.Release|Any CPU.ActiveCfg = Release|Any CPU
+        {1E6397F8-A421-9B92-366A-F95D5FE72B20}.Release|Any CPU.Build.0 = Release|Any CPU
+    EndGlobalSection
+    GlobalSection(SolutionProperties) = preSolution
+        HideSolutionNode = FALSE
+    EndGlobalSection
+    GlobalSection(ExtensibilityGlobals) = postSolution
+        SolutionGuid = {6FDB10E6-7DF4-457A-957D-1C434A4ACDB8}
+    EndGlobalSection
 EndGlobal

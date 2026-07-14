@@ -1,7 +1,8 @@
 {
-	"Env": "devo",
-	"DownloadFolder": "https://quantumvestiges-assets-devo.s3.us-west-2.amazonaws.com",
-    "BackendUrl": "https://devo.quatumvestiges.com/api",
+    "Env": "devo",
+    "DownloadFolder": "https://quantumvestiges-assets-devo.s3.us-west-2.amazonaws.com",
+    "BackendUrl": "https://devo.quantumvestiges.com/api",
+    "FrontendUrl": "https://devo.quantumvestiges.com",
     "Cognito": {
         "Region": "us-west-2",
         "UserPoolId": "us-west-2_A9tCE18yj",
@@ -11,18 +12,12 @@
     },
     "Games": [
         {
-            "ZipFileName": "GameOne.zip",
-            "GameName": "Game One",
+            "ZipFileName": "TestUnrealProject.zip",
+            "GameName": "PoC Unreal Project",
             "GameVersion": "1.0.0",
             "BackgroundImagePath": "background.jpg",
-            "InternalId": "GameOne"
-        },
-        {
-            "ZipFileName": "GameTwo.zip",
-            "GameName": "Game Two",
-            "GameVersion": "1.0.0",
-            "BackgroundImagePath": "icon.jpg",
-            "InternalId": "GameTwo"
+            "InternalId": "TestUnrealProject",
+            "ProductId": "2"
         }
     ]
 }
