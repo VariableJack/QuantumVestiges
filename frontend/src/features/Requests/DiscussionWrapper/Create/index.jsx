@@ -2,25 +2,21 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { get } from 'lodash'
 
-import { getConfig, getUrl } from '../../../../shared/utils'
 import {
     useSubmitSupportRequestMutation,
     useSubmitBugReportMutation,
     useSubmitDiscussionThreadMutation,
 } from '../../api/requestsEndpoints'
 import { setSupportRequests, setBugReports, setDiscussionThreads } from '../../api/requestsSlice'
-import {
-    addSuccessMessage,
-    addInfoMessage,
-    removeInfoMessage,
-    addErrorMessage,
-} from '../../../../redux/api/globalSlice'
 import { Sidebar } from '../../../../shared/components'
 import {
     FORUM_PAGES,
     FORUM_PAGE_ITEMS,
     CONNECTION_ERROR_MESSAGE,
+    FORUM_MESSAGE_PREFIXES,
+    FORUM_MESSAGE_TYPES,
 } from '../../../../shared/constants'
+import { getConfig, getUrl, createFlashbarMessages } from '../../../../shared/utils'
 
 import '../../../../styles/App.css'
 
@@ -144,62 +140,67 @@ const DiscussionWrapperCreate = props => {
     )
     const [sidebarItems, setSidebarItems] = useState([])
 
-    useEffect(() => {
-        let infoMessage = undefined
-        if (supportRequestIsSubmitting) {
-            infoMessage = {
-                title: 'Creating support request',
-                description: 'Please wait as the system saves the support request',
-                id: 'supportRequestInfo',
-            }
-        } else {
-            dispatch(removeInfoMessage('supportRequestInfo'))
-        }
-        if (bugReportIsSubmitting) {
-            infoMessage = {
-                title: 'Creating bug report',
-                description: 'Please wait as the system saves the bug report',
-                id: 'bugReportInfo',
-            }
-        } else {
-            dispatch(removeInfoMessage('bugReportInfo'))
-        }
-        if (discussionThreadIsSubmitting) {
-            infoMessage = {
-                title: 'Creating new discussion',
-                description: 'Please wait as the system saves the discussion',
-                id: 'discussionThreadInfo',
-            }
-        } else {
-            dispatch(removeInfoMessage('discussionThreadInfo'))
-        }
-        if (infoMessage) dispatch(addInfoMessage(infoMessage))
-    }, [supportRequestIsSubmitting, bugReportIsSubmitting, discussionThreadIsSubmitting])
-    useEffect(() => {
-        let errorMessage = undefined
-        if (supportRequestIsError) {
-            errorMessage = {
-                title: 'Failed to create new support request',
-                description: get(supportRequestError, 'data.error', CONNECTION_ERROR_MESSAGE),
-                id: 'supportRequestError',
-            }
-        }
-        if (bugReportIsError) {
-            errorMessage = {
-                title: 'Failed to create new bug report',
-                description: get(bugReportError, 'data.error', CONNECTION_ERROR_MESSAGE),
-                id: 'bugReportError',
-            }
-        }
-        if (discussionThreadIsError) {
-            errorMessage = {
-                title: 'Failed to create new discussion',
-                description: get(discussionThreadError, 'data.error', CONNECTION_ERROR_MESSAGE),
-                id: 'discussionThreadError',
-            }
-        }
-        if (errorMessage) dispatch(addErrorMessage(errorMessage))
-    }, [supportRequestIsError, bugReportIsError, discussionThreadIsError])
+    const isLoadingArray = [
+        {
+            isLoading: supportRequestIsSubmitting,
+            title: `${FORUM_MESSAGE_PREFIXES[FORUM_MESSAGE_TYPES.CREATE_THREAD_LOADING].title}support request`,
+            description: `${FORUM_MESSAGE_PREFIXES[FORUM_MESSAGE_TYPES.CREATE_THREAD_LOADING].description}support request`,
+            id: 'supportRequestInfo',
+        },
+        {
+            isLoading: bugReportIsSubmitting,
+            title: `${FORUM_MESSAGE_PREFIXES[FORUM_MESSAGE_TYPES.CREATE_THREAD_LOADING].title}bug report`,
+            description: `${FORUM_MESSAGE_PREFIXES[FORUM_MESSAGE_TYPES.CREATE_THREAD_LOADING].description}bug report`,
+            id: 'bugReportInfo',
+        },
+        {
+            isLoading: discussionThreadIsSubmitting,
+            title: `${FORUM_MESSAGE_PREFIXES[FORUM_MESSAGE_TYPES.CREATE_THREAD_LOADING].title}discussion`,
+            description: `${FORUM_MESSAGE_PREFIXES[FORUM_MESSAGE_TYPES.CREATE_THREAD_LOADING].description}discussion`,
+            id: 'discussionThreadInfo',
+        },
+    ]
+    const isErrorArray = [
+        {
+            isError: supportRequestIsError,
+            error: supportRequestError,
+            title: `${FORUM_MESSAGE_PREFIXES[FORUM_MESSAGE_TYPES.CREATE_THREAD_ERROR].title}`,
+            id: 'supportRequestError',
+        },
+        {
+            isError: bugReportIsError,
+            error: bugReportError,
+            title: `${FORUM_MESSAGE_PREFIXES[FORUM_MESSAGE_TYPES.CREATE_THREAD_ERROR].title}`,
+            id: 'bugReportError',
+        },
+        {
+            isError: discussionThreadIsError,
+            error: discussionThreadError,
+            title: `${FORUM_MESSAGE_PREFIXES[FORUM_MESSAGE_TYPES.CREATE_THREAD_ERROR].title}`,
+            id: 'discussionThreadError',
+        },
+    ]
+    const isSuccessArray = [
+        {
+            isSuccess: supportRequestIsSuccess,
+            title: `${FORUM_MESSAGE_PREFIXES[FORUM_MESSAGE_TYPES.CREATE_THREAD_SUCCESS].title}support request`,
+            description: `${FORUM_MESSAGE_PREFIXES[FORUM_MESSAGE_TYPES.CREATE_THREAD_SUCCESS].description}support request`,
+            id: 'supportRequestSuccess',
+        },
+        {
+            isSuccess: bugReportIsSuccess,
+            title: `${FORUM_MESSAGE_PREFIXES[FORUM_MESSAGE_TYPES.CREATE_THREAD_SUCCESS].title}bug report`,
+            description: `${FORUM_MESSAGE_PREFIXES[FORUM_MESSAGE_TYPES.CREATE_THREAD_SUCCESS].description}bug report`,
+            id: 'bugReportSuccess',
+        },
+        {
+            isSuccess: discussionThreadIsSuccess,
+            title: `${FORUM_MESSAGE_PREFIXES[FORUM_MESSAGE_TYPES.CREATE_THREAD_SUCCESS].title}discussion`,
+            description: `${FORUM_MESSAGE_PREFIXES[FORUM_MESSAGE_TYPES.CREATE_THREAD_SUCCESS].description}discussion`,
+            id: 'discussionThreadSuccess',
+        },
+    ]
+    createFlashbarMessages({ isLoadingArray, isErrorArray, isSuccessArray, dispatch })
     useEffect(() => {
         switch (type) {
             case FORUM_PAGES.SUPPORT:
@@ -224,35 +225,19 @@ const DiscussionWrapperCreate = props => {
                 case FORUM_PAGES.SUPPORT:
                     response = await submitSupportRequest(input).unwrap()
                     createdLink = `/support/${response.threadId}`
-                    successMessage = {
-                        title: 'Successfully created new support request',
-                        description: 'Your support request has been successfully created',
-                        id: 'supportRequestSuccess',
-                    }
                     dispatch(setSupportRequests([response, ...supportRequests]))
                     break
                 case FORUM_PAGES.BUG_REPORT:
                     response = await submitBugReport(input).unwrap()
                     createdLink = `/bug-report/${response.threadId}`
-                    successMessage = {
-                        title: 'Successfully created new bug report',
-                        description: 'Your bug report has been successfully created',
-                        id: 'bugReportSuccess',
-                    }
                     dispatch(setBugReports([response, ...bugReports]))
                     break
                 case FORUM_PAGES.DISCUSSION:
                     response = await submitDiscussionThread(input).unwrap()
                     createdLink = `/discussion/${response.threadId}`
-                    successMessage = {
-                        title: 'Successfully created new discussion',
-                        description: 'Your discussion has been successfully created',
-                        id: 'discussionThreadSuccess',
-                    }
                     dispatch(setDiscussionThreads([response, ...discussionThreads]))
                     break
             }
-            dispatch(addSuccessMessage(successMessage))
             window.location.href = createdLink
         } catch (e) {}
     }

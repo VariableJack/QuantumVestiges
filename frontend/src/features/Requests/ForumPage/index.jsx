@@ -7,14 +7,14 @@ import {
     useLazyGetDiscussionThreadsQuery,
     useLazyGetSupportRequestsQuery,
 } from '../api/requestsEndpoints'
-import {
-    addSuccessMessage,
-    addInfoMessage,
-    removeInfoMessage,
-    addErrorMessage,
-} from '../../../redux/api/globalSlice'
 import { setSupportRequests, setBugReports, setDiscussionThreads } from '../api/requestsSlice'
-import { FORUM_PAGES, FORUM_PAGE_ITEMS, CONNECTION_ERROR_MESSAGE } from '../../../shared/constants'
+import {
+    FORUM_PAGES,
+    FORUM_PAGE_ITEMS,
+    FORUM_MESSAGE_TYPES,
+    FORUM_MESSAGE_PREFIXES,
+} from '../../../shared/constants'
+import { createFlashbarMessages } from '../../../shared/utils'
 import { ThreadHeader } from '../../../shared/components'
 import '../../../styles/App.css'
 
@@ -81,64 +81,48 @@ const ForumPage = () => {
         getRequests()
     }, [])
 
-    useEffect(() => {
-        let infoMessage = undefined
-        if (supportRequestsIsLoading) {
-            infoMessage = {
-                title: 'Fetching support requests',
-                description: 'Please wait as the system retrieves all support requests',
-                id: 'supportRequestsFetch',
-            }
-        } else {
-            dispatch(removeInfoMessage('supportRequestInfo'))
-        }
-        if (bugReportsIsLoading) {
-            infoMessage = {
-                title: 'Fetching bug reports',
-                description: 'Please wait as the system retrieves all bug reports',
-                id: 'bugReportsFetch',
-            }
-        } else {
-            dispatch(removeInfoMessage('bugReportInfo'))
-        }
-        if (discussionThreadsIsLoading) {
-            infoMessage = {
-                title: 'Fetching discussions',
-                description: 'Please wait as the system retrieves all discussions',
-                id: 'discussionThreadsFetch',
-            }
-        } else {
-            dispatch(removeInfoMessage('discussionThreadInfo'))
-        }
-        if (infoMessage) dispatch(addInfoMessage(infoMessage))
-    }, [supportRequestsIsLoading, bugReportsIsLoading, discussionThreadsIsLoading])
-
-    useEffect(() => {
-        let errorMessage = undefined
-        if (supportRequestsIsError) {
-            errorMessage = {
-                title: 'Failed to fetch support requests',
-                description: get(supportRequestsError, 'data.error', CONNECTION_ERROR_MESSAGE),
-                id: 'supportRequestsFetchError',
-            }
-        }
-        if (bugReportsIsError) {
-            errorMessage = {
-                title: 'Failed to fetch bug reports',
-                description: get(bugReportsError, 'data.error', CONNECTION_ERROR_MESSAGE),
-                id: 'bugReportsFetchError',
-            }
-        }
-        if (discussionThreadsIsError) {
-            errorMessage = {
-                title: 'Failed to fetch discussions',
-                description: get(discussionThreadsError, 'data.error', CONNECTION_ERROR_MESSAGE),
-                id: 'discussionThreadsFetchError',
-            }
-        }
-        if (errorMessage) dispatch(addErrorMessage(errorMessage))
-    }, [supportRequestsIsError, bugReportsIsError, discussionThreadsIsError])
-
+    const isLoadingArray = [
+        {
+            isLoading: supportRequestsIsLoading,
+            title: `${FORUM_MESSAGE_PREFIXES[FORUM_MESSAGE_TYPES.LOADING_ALL].title}support requests`,
+            description: `${FORUM_MESSAGE_PREFIXES[FORUM_MESSAGE_TYPES.LOADING_ALL].description}support requests`,
+            id: 'supportRequestsInfo',
+        },
+        {
+            isLoading: bugReportsIsLoading,
+            title: `${FORUM_MESSAGE_PREFIXES[FORUM_MESSAGE_TYPES.LOADING_ALL].title}bug reports`,
+            description: `${FORUM_MESSAGE_PREFIXES[FORUM_MESSAGE_TYPES.LOADING_ALL].description}bug reports`,
+            id: 'bugReportsInfo',
+        },
+        {
+            isLoading: discussionThreadsIsLoading,
+            title: `${FORUM_MESSAGE_PREFIXES[FORUM_MESSAGE_TYPES.LOADING_ALL].title}discussions`,
+            description: `${FORUM_MESSAGE_PREFIXES[FORUM_MESSAGE_TYPES.LOADING_ALL].description}discussions`,
+            id: 'discussionThreadsInfo',
+        },
+    ]
+    const isErrorArray = [
+        {
+            isError: supportRequestsIsError,
+            error: supportRequestsError,
+            title: `${FORUM_MESSAGE_PREFIXES[FORUM_MESSAGE_TYPES.LOADING_ALL_ERROR].title}support requests`,
+            id: 'supportRequestsError',
+        },
+        {
+            isError: bugReportsIsError,
+            error: bugReportsError,
+            title: `${FORUM_MESSAGE_PREFIXES[FORUM_MESSAGE_TYPES.LOADING_ALL_ERROR].title}bug reports`,
+            id: 'bugReportsError',
+        },
+        {
+            isError: discussionThreadsIsError,
+            error: discussionThreadsError,
+            title: `${FORUM_MESSAGE_PREFIXES[FORUM_MESSAGE_TYPES.LOADING_ALL_ERROR].title}discussions`,
+            id: 'discussionThreadsError',
+        },
+    ]
+    const isSuccessArray = []
+    createFlashbarMessages({ isLoadingArray, isErrorArray, isSuccessArray, dispatch })
     return (
         <div>
             {Object.values(FORUM_PAGES).map(type => {

@@ -3,13 +3,7 @@ import { useDispatch } from 'react-redux'
 import { get } from 'lodash'
 
 import { useLazyGetInstallerQuery } from '../../redux/api/mediaEndpoints'
-import {
-    addSuccessMessage,
-    addInfoMessage,
-    removeInfoMessage,
-    addErrorMessage,
-} from '../../redux/api/globalSlice'
-import { CONNECTION_ERROR_MESSAGE } from '../../shared/constants'
+import { createFlashbarMessages } from '../../shared/utils'
 
 const DownloadInstaller = () => {
     const dispatch = useDispatch()
@@ -28,53 +22,40 @@ const DownloadInstaller = () => {
         isSuccess: false,
         error: undefined,
     })
-    useEffect(() => {
-        const messageId = 'installerDownload'
-        if (downloadState.isLoading || getInstallerIsLoading) {
-            dispatch(
-                addInfoMessage({
-                    title: 'Downloading files',
-                    description: 'Your installer is beginning to download. Please wait',
-                    id: messageId,
-                }),
-            )
-        } else {
-            dispatch(removeInfoMessage(messageId))
-        }
-    }, [downloadState, getInstallerIsLoading])
 
-    useEffect(() => {
-        if (getInstallerIsError) {
-            dispatch(
-                addErrorMessage({
-                    title: 'Failed to download',
-                    description: `Failed to download installer due to ${get(getInstallerIsError, 'data.error', CONNECTION_ERROR_MESSAGE)}`,
-                    id: 'installerDownloadFailed',
-                }),
-            )
-        }
-        if (downloadState.isError) {
-            dispatch(
-                addErrorMessage({
-                    title: 'Failed to download',
-                    description: `Failed to download installer due to ${downloadState.error}`,
-                    id: 'installerDownloadFailed',
-                }),
-            )
-        }
-    }, [downloadState, getInstallerIsError])
+    const isLoadingArray = [
+        {
+            isLoading: downloadState.isLoading || getInstallerIsLoading,
+            title: 'Downloading installer',
+            description: 'Your installer is beginning to download. Please wait',
+            id: 'installerDownloadFetch',
+        },
+    ]
+    const isErrorArray = [
+        {
+            isError: getInstallerIsError || downloadState.isError,
+            title: 'Failed to download',
+            error: getInstallerIsError
+                ? getInstallerError
+                : { data: { error: downloadState.error } },
+            id: 'installerDownloadError',
+        },
+    ]
+    const isSuccessArray = [
+        {
+            isSuccess: downloadState.isSuccess && getInstallerIsSuccess,
+            title: 'Installer successfully downloaded',
+            description: 'The installer has successfully downloaded',
+            id: 'installerDownloadSuccess',
+        },
+    ]
+    createFlashbarMessages({
+        isLoadingArray,
+        isErrorArray,
+        isSuccessArray,
+        dispatch,
+    })
 
-    useEffect(() => {
-        if (downloadState.isSuccess && getInstallerIsSuccess) {
-            dispatch(
-                addSuccessMessage({
-                    title: 'Installer successfully downloaded',
-                    description: 'The installer has successfully downloaded',
-                    id: 'installerDownloadSuccess',
-                }),
-            )
-        }
-    }, [downloadState, getInstallerIsSuccess])
     const handleDownload = async () => {
         try {
             const { installer } = await triggerGetInstaller().unwrap()

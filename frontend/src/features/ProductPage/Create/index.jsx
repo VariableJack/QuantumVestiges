@@ -14,6 +14,7 @@ import {
 } from '../../../redux/api/globalSlice'
 import { Select } from '../../../shared/components'
 import { DEFAULT_FRANCHISE, CONNECTION_ERROR_MESSAGE } from '../../../shared/constants'
+import { createFlashbarMessages } from '../../../shared/utils'
 
 import '../../../styles/App.css'
 
@@ -57,100 +58,62 @@ const ProductPageCreate = () => {
     const [isUploadingFile, setIsUploadingFile] = useState(false)
     const [isUploadingFileSuccess, setIsUploadingFileSuccess] = useState(false)
     const [errors, setErrors] = useState({ file: false, productName: false, franchise: false })
-    useEffect(() => {
-        if (getProductPresignedUrlsIsLoading) {
-            dispatch(
-                addInfoMessage({
-                    title: 'Generating presigned URLs',
-                    description: 'Please wait as the system generates all of the presigned URLs',
-                    id: 'presignedURLFetch',
-                }),
-            )
-        } else {
-            dispatch(removeInfoMessage('presignedURLFetch'))
-        }
-    }, [getProductPresignedUrlsIsLoading])
-    useEffect(() => {
-        if (getProductPresignedUrlsIsError) {
-            dispatch(
-                addErrorMessage({
-                    title: 'Failed to generate presigned URLs',
-                    description: get(
-                        getProductPresignedUrlsError,
-                        'data.error',
-                        CONNECTION_ERROR_MESSAGE,
-                    ),
-                    id: 'presignedURLFetchError',
-                }),
-            )
-        }
-    }, [getProductPresignedUrlsIsError])
-    useEffect(() => {
-        if (getProductPresignedUrlsIsSuccess) {
-            dispatch(
-                addSuccessMessage({
-                    title: 'Successfully generated presigned URLs',
-                    description: 'Presigned URL successfully generated',
-                    id: 'presignedURLFetchSuccess',
-                }),
-            )
-        }
-    }, [getProductPresignedUrlsIsSuccess])
-    useEffect(() => {
-        if (createProductIsLoading) {
-            dispatch(
-                addInfoMessage({
-                    title: 'Creating product',
-                    description: 'Please wait as the system finalizes the product',
-                    id: 'createProductInfo',
-                }),
-            )
-        } else {
-            dispatch(removeInfoMessage('createProductInfo'))
-        }
-    }, [createProductIsLoading])
-    useEffect(() => {
-        if (createProductIsError) {
-            dispatch(
-                addErrorMessage({
-                    title: 'Failed to finalize product',
-                    description: get(createProductError, 'data.error', CONNECTION_ERROR_MESSAGE),
-                    id: 'createProductError',
-                }),
-            )
-        }
-    }, [createProductIsError])
-    useEffect(() => {
-        if (isUploadingFile) {
-            dispatch(
-                addInfoMessage({
-                    title: 'Uploading file',
-                    description: 'Please wait as the file is being uploaded',
-                    id: 'uploadFileInfo',
-                }),
-            )
-        } else {
-            dispatch(removeInfoMessage('uploadFileInfo'))
-        }
-    }, [isUploadingFile])
-    useEffect(() => {
-        if (isUploadingFileSuccess) {
-            dispatch(
-                addSuccessMessage({
-                    title: 'File successfully uploaded',
-                    description: 'File successfully uploaded',
-                    id: 'presignedURLUploadSuccess',
-                }),
-            )
-            try {
-                createProduct({
-                    productName,
-                    franchiseId: selectedFranchise.franchiseId,
-                    price: 5,
-                })
-            } catch (e) {}
-        }
-    }, [isUploadingFileSuccess])
+
+    const isLoadingArray = [
+        {
+            isLoading: getProductPresignedUrlsIsLoading,
+            title: 'Generating presigned URLs',
+            description: 'Please wait as the system generates all of the presigned URLs',
+            id: 'presignedURLFetch',
+        },
+        {
+            isLoading: createProductIsLoading,
+            title: 'Creating product',
+            description: 'Please wait as the system finalizes the product',
+            id: 'createProductInfo',
+        },
+        {
+            isLoading: isUploadingFile,
+            title: 'Uploading file',
+            description: 'Please wait as the file is being uploaded',
+            id: 'uploadFileInfo',
+        },
+    ]
+    const isErrorArray = [
+        {
+            isError: getProductPresignedUrlsIsError,
+            error: getProductPresignedUrlsError,
+            title: 'Failed to generate presigned URLs',
+            id: 'presignedURLFetchError',
+        },
+        {
+            isError: createProductIsError,
+            error: createProductError,
+            title: 'Failed to finalize product',
+            id: 'createProductError',
+        },
+    ]
+    const isSuccessArray = [
+        {
+            isSuccess: getProductPresignedUrlsIsSuccess,
+            title: 'Successfully generated presigned URLs',
+            description: 'Presigned URL successfully generated',
+            id: 'presignedURLFetchSuccess',
+        },
+        {
+            isSuccess: createProductIsSuccess,
+            title: 'Successfully finalized product',
+            description: 'Product has been successfully created',
+            id: 'createProductSuccess',
+        },
+        {
+            isSuccess: isUploadingFileSuccess,
+            title: 'File successfully uploaded',
+            description: 'File successfully uploaded',
+            id: 'presignedURLUploadSuccess',
+        },
+    ]
+    createFlashbarMessages({ isLoadingArray, isErrorArray, isSuccessArray, dispatch })
 
     const handleUpload = async () => {
         setIsUploadingFile(true)
@@ -182,13 +145,6 @@ const ProductPageCreate = () => {
     const createProduct = async input => {
         try {
             const response = await triggerCreateProduct(input).unwrap()
-            dispatch(
-                addSuccessMessage({
-                    title: 'Successfully finalized product',
-                    description: 'Product has been successfully created',
-                    id: 'createProductSuccess',
-                }),
-            )
             window.location.href = `/product?productId=${response.productId}`
         } catch (e) {}
     }

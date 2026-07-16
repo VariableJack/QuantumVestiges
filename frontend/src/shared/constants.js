@@ -88,9 +88,18 @@ const FORUM_PAGE_ITEMS = {
 
 const DEFAULT_FRANCHISE = { franchiseId: -1, franchiseName: '-' }
 const CONNECTION_ERROR_MESSAGE = 'Connection error'
+const COMMON_LOADING_DESCRIPTION_PREFIX = 'Please wait as the system'
+const COMMON_ERROR_TITLE_PREFIX = 'Failed to'
+const COMMON_SUCCESS_TITLE_PREFIX = 'Successfully'
+const COMMON_SUCCESS_DESCRIPTION_PREFIX = 'The system has successfully'
 const FORUM_MESSAGE_TYPES = {
     LOADING: 'LOADING',
     LOADING_ERROR: 'LOADING_ERROR',
+    LOADING_ALL: 'LOADING_ALL',
+    LOADING_ALL_ERROR: 'LOADING_ALL_ERROR',
+    CREATE_THREAD_LOADING: 'CREATE_THREAD_LOADING',
+    CREATE_THREAD_ERROR: 'CREATE_THREAD_ERROR',
+    CREATE_THREAD_SUCCESS: 'CREATE_THREAD_SUCCESS',
     ADD_COMMENT_LOADING: 'ADD_COMMENT_LOADING',
     ADD_COMMENT_ERROR: 'ADD_COMMENT_ERROR',
     ADD_COMMENT_SUCCESS: 'ADD_COMMENT_SUCCESS',
@@ -101,10 +110,6 @@ const FORUM_MESSAGE_TYPES = {
     REOPEN_THREAD_ERROR: 'REOPEN_THREAD_ERROR',
     REOPEN_THREAD_SUCCESS: 'REOPEN_THREAD_SUCCESS',
 }
-const COMMON_LOADING_DESCRIPTION_PREFIX = 'Please wait as the system'
-const COMMON_ERROR_TITLE_PREFIX = 'Failed to'
-const COMMON_SUCCESS_TITLE_PREFIX = 'Successfully'
-const COMMON_SUCCESS_DESCRIPTION_PREFIX = 'The system has successfully'
 const FORUM_MESSAGE_PREFIXES = {
     [FORUM_MESSAGE_TYPES.LOADING]: {
         title: 'Fetching ',
@@ -114,12 +119,32 @@ const FORUM_MESSAGE_PREFIXES = {
         title: `${COMMON_ERROR_TITLE_PREFIX} fetch `,
         description: '',
     },
+    [FORUM_MESSAGE_TYPES.LOADING_ALL]: {
+        title: 'Fetching ',
+        description: `${COMMON_LOADING_DESCRIPTION_PREFIX} retrieves all `,
+    },
+    [FORUM_MESSAGE_TYPES.LOADING_ALL_ERROR]: {
+        title: `${COMMON_ERROR_TITLE_PREFIX} fetch all `,
+        description: '',
+    },
+    [FORUM_MESSAGE_TYPES.CREATE_THREAD_LOADING]: {
+        title: 'Creating ',
+        description: `${COMMON_LOADING_DESCRIPTION_PREFIX} saves the `,
+    },
+    [FORUM_MESSAGE_TYPES.CREATE_THREAD_ERROR]: {
+        title: `${COMMON_ERROR_TITLE_PREFIX} create new `,
+        description: '',
+    },
+    [FORUM_MESSAGE_TYPES.CREATE_THREAD_SUCCESS]: {
+        title: 'Creating ',
+        description: `${COMMON_LOADING_DESCRIPTION_PREFIX} saves the `,
+    },
     [FORUM_MESSAGE_TYPES.ADD_COMMENT_LOADING]: {
         title: 'Adding comment to ',
         description: `${COMMON_LOADING_DESCRIPTION_PREFIX} saves the comment to the current `,
     },
     [FORUM_MESSAGE_TYPES.ADD_COMMENT_ERROR]: {
-        title: 'Failed to add comment to ',
+        title: `${COMMON_ERROR_TITLE_PREFIX} add comment to `,
         description: '',
     },
     [FORUM_MESSAGE_TYPES.ADD_COMMENT_SUCCESS]: {
@@ -151,6 +176,80 @@ const FORUM_MESSAGE_PREFIXES = {
         description: `${COMMON_SUCCESS_DESCRIPTION_PREFIX} reopened out the `,
     },
 }
+const ACCOUNT_MESSAGE_TYPES = {
+    ADD_TO_LOADING: 'ADD_TO_LOADING',
+    ADD_TO_ERROR: 'ADD_TO_ERROR',
+    ADD_TO_SUCCESS: 'ADD_TO_SUCCESS',
+    REMOVE_FROM_LOADING: 'REMOVE_FROM_LOADING',
+    REMOVE_FROM_ERROR: 'REMOVE_FROM_ERROR',
+    REMOVE_FROM_SUCCESS: 'REMOVE_FROM_SUCCESS',
+    CHECKOUT_CART_LOADING: 'CHECKOUT_CART_LOADING',
+    CHECKOUT_CART_ERROR: 'CHECKOUT_CART_ERROR',
+    CHECKOUT_CART_SUCCESS: 'CHECKOUT_CART_SUCCESS',
+    ACCOUNT_LOADING: 'ACCOUNT_LOADING',
+    ACCOUNT_LOADING_ERROR: 'ACCOUNT_LOADING_ERROR',
+    NOTIFICATION_UPDATE_LOADING: 'NOTIFICATION_UPDATE_LOADING',
+    NOTIFICATION_UPDATE_ERROR: 'NOTIFICATION_UPDATE_ERROR',
+    NOTIFICATION_UPDATE_SUCCESS: 'NOTIFICATION_UPDATE_SUCCESS',
+}
+const ACCOUNT_MESSAGES = {
+    [ACCOUNT_MESSAGE_TYPES.ADD_TO_LOADING]: {
+        title: 'Adding item to order',
+        description: `${COMMON_LOADING_DESCRIPTION_PREFIX} add the item from your order`,
+    },
+    [ACCOUNT_MESSAGE_TYPES.ADD_TO_ERROR]: {
+        title: `${COMMON_ERROR_TITLE_PREFIX} add item to your order`,
+        description: '',
+    },
+    [ACCOUNT_MESSAGE_TYPES.ADD_TO_SUCCESS]: {
+        title: `${COMMON_SUCCESS_TITLE_PREFIX} added item to order`,
+        description: `${COMMON_SUCCESS_DESCRIPTION_PREFIX} added the item to your cart`,
+    },
+    [ACCOUNT_MESSAGE_TYPES.REMOVE_FROM_LOADING]: {
+        title: 'Removing item from order',
+        description: `${COMMON_LOADING_DESCRIPTION_PREFIX} removes the item from your order`,
+    },
+    [ACCOUNT_MESSAGE_TYPES.REMOVE_FROM_ERROR]: {
+        title: `${COMMON_ERROR_TITLE_PREFIX} remove item from your order`,
+        description: '',
+    },
+    [ACCOUNT_MESSAGE_TYPES.REMOVE_FROM_SUCCESS]: {
+        title: `${COMMON_SUCCESS_TITLE_PREFIX} removed item from order`,
+        description: `${COMMON_SUCCESS_DESCRIPTION_PREFIX} removed the item from your order`,
+    },
+    [ACCOUNT_MESSAGE_TYPES.CHECKOUT_CART_LOADING]: {
+        title: 'Checking out order...',
+        description: `${COMMON_SUCCESS_DESCRIPTION_PREFIX} checks out your order`,
+    },
+    [ACCOUNT_MESSAGE_TYPES.CHECKOUT_CART_ERROR]: {
+        title: `${COMMON_ERROR_TITLE_PREFIX} check out your order`,
+        description: '',
+    },
+    [ACCOUNT_MESSAGE_TYPES.CHECKOUT_CART_SUCCESS]: {
+        title: `${COMMON_SUCCESS_TITLE_PREFIX} checked out your order`,
+        description: 'Your Notification Preferences have been successfully updated',
+    },
+    [ACCOUNT_MESSAGE_TYPES.ACCOUNT_LOADING]: {
+        title: 'Loading account',
+        description: `${COMMON_LOADING_DESCRIPTION_PREFIX} loads your account`,
+    },
+    [ACCOUNT_MESSAGE_TYPES.ACCOUNT_LOADING_ERROR]: {
+        title: `${COMMON_ERROR_TITLE_PREFIX} to load account`,
+        description: '',
+    },
+    [ACCOUNT_MESSAGE_TYPES.NOTIFICATION_UPDATE_LOADING]: {
+        title: 'Updating notification preferences',
+        description: `${COMMON_LOADING_DESCRIPTION_PREFIX} updates your notification preferences`,
+    },
+    [ACCOUNT_MESSAGE_TYPES.NOTIFICATION_UPDATE_ERROR]: {
+        title: `${COMMON_ERROR_TITLE_PREFIX} to update notification preferences`,
+        description: '',
+    },
+    [ACCOUNT_MESSAGE_TYPES.NOTIFICATION_UPDATE_SUCCESS]: {
+        title: `${COMMON_SUCCESS_TITLE_PREFIX} updated notification preferences`,
+        description: `${COMMON_SUCCESS_DESCRIPTION_PREFIX} updated notification preferences`,
+    },
+}
 
 export {
     menubarItems,
@@ -161,4 +260,6 @@ export {
     CONNECTION_ERROR_MESSAGE,
     FORUM_MESSAGE_TYPES,
     FORUM_MESSAGE_PREFIXES,
+    ACCOUNT_MESSAGE_TYPES,
+    ACCOUNT_MESSAGES,
 }

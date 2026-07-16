@@ -1,7 +1,13 @@
+import { useEffect } from 'react'
 import { get } from 'lodash'
 import config from '../../configurations/config.json'
-import { FORUM_PAGES } from '../constants'
-
+import { CONNECTION_ERROR_MESSAGE } from '../constants'
+import {
+    addInfoMessage,
+    removeInfoMessage,
+    addErrorMessage,
+    addSuccessMessage,
+} from '../../redux/api/globalSlice'
 const getConfig = key => {
     const env = get(process.env, 'REACT_APP_STAGE', 'local')
     return get(config, [env, key], 'No value')
@@ -41,5 +47,74 @@ const formatTimestamp = timestamp => {
 
     return new Intl.DateTimeFormat('en-US', dateOptions).format(date)
 }
+/*
+interface CreateFlashbarMessagesType {
+isLoadingArray: {
+	isLoading: boolean
+title: string
+description: string
+id: string
+}, 
+isErrorArray: {
+	isError: boolean
+	error: { data: { error: string } }
+	title: string
+	id: string
+}, 
+isSuccessArray: {
+	isSuccess: boolean
+	title: string
+	description: string
+	id: string}, 
+dispatch: any,
+}
+/* */
+const createFlashbarMessages = props => {
+    const { isLoadingArray, isErrorArray, isSuccessArray, dispatch } = props
+    isLoadingArray.forEach(isLoadingObj => {
+        useEffect(() => {
+            let infoMessage = undefined
+            const { isLoading, title, description, id } = isLoadingObj
+            if (isLoading) {
+                infoMessage = {
+                    title,
+                    description,
+                    id,
+                }
+            } else {
+                dispatch(removeInfoMessage(id))
+            }
+            if (infoMessage) dispatch(addInfoMessage(infoMessage))
+        }, [isLoadingObj.isLoading])
+    })
+    isErrorArray.forEach(isErrorObj => {
+        useEffect(() => {
+            let errorMessage = undefined
+            const { isError, title, error, type, id } = isErrorObj
+            if (isError) {
+                errorMessage = {
+                    title,
+                    description: get(error, 'data.error', CONNECTION_ERROR_MESSAGE),
+                    id,
+                }
+            }
+            if (errorMessage) dispatch(addErrorMessage(errorMessage))
+        }, [isErrorObj.isError])
+    })
+    isSuccessArray.forEach(isSuccessObj => {
+        useEffect(() => {
+            let successMessage = undefined
+            const { isSuccess, title, description, id } = isSuccessObj
+            if (isSuccess) {
+                successMessage = {
+                    title,
+                    description,
+                    id,
+                }
+            }
+            if (successMessage) dispatch(addSuccessMessage(successMessage))
+        }, [isSuccessObj.isSuccess])
+    })
+}
 
-export { getConfig, getUrl, formatTimestamp }
+export { getConfig, getUrl, formatTimestamp, createFlashbarMessages }

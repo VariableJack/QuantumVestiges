@@ -15,12 +15,6 @@ import {
     useReopenBugReportMutation,
 } from '../../api/requestsEndpoints'
 import { setBugReports, setDiscussionThreads, setSupportRequests } from '../../api/requestsSlice'
-import {
-    addSuccessMessage,
-    addInfoMessage,
-    removeInfoMessage,
-    addErrorMessage,
-} from '../../../../redux/api/globalSlice'
 import { Modal, ThreadHeader } from '../../../../shared/components'
 import {
     FORUM_PAGES,
@@ -29,8 +23,10 @@ import {
     FORUM_MESSAGE_TYPES,
     FORUM_MESSAGE_PREFIXES,
 } from '../../../../shared/constants'
-import { formatTimestamp } from '../../../../shared/utils'
+import { formatTimestamp, createFlashbarMessages } from '../../../../shared/utils'
+
 import '../../../../styles/App.css'
+
 const DiscussionDetailed = props => {
     const { data, type, submitAction, closeAction, reopenAction } = props
     const [inputDescription, setInputDescription] = useState('')
@@ -267,233 +263,177 @@ const DiscussionWrapperDetailed = props => {
     const isLoadingArray = [
         {
             isLoading: supportRequestIsLoading,
-            type: 'support request',
+            title: `${FORUM_MESSAGE_PREFIXES[FORUM_MESSAGE_TYPES.LOADING].title}support request`,
+            description: `${FORUM_MESSAGE_PREFIXES[FORUM_MESSAGE_TYPES.LOADING].description}support request`,
             id: 'supportRequestFetch',
-            messageType: FORUM_MESSAGE_TYPES.LOADING,
         },
         {
             isLoading: bugReportIsLoading,
-            type: 'bug report',
+            title: `${FORUM_MESSAGE_PREFIXES[FORUM_MESSAGE_TYPES.LOADING].title}bug report`,
+            description: `${FORUM_MESSAGE_PREFIXES[FORUM_MESSAGE_TYPES.LOADING].description}bug report`,
             id: 'bugReportFetch',
-            messageType: FORUM_MESSAGE_TYPES.LOADING,
         },
         {
             isLoading: discussionThreadIsLoading,
-            type: 'discussion',
+            title: `${FORUM_MESSAGE_PREFIXES[FORUM_MESSAGE_TYPES.LOADING].title}discussion`,
+            description: `${FORUM_MESSAGE_PREFIXES[FORUM_MESSAGE_TYPES.LOADING].description}discussion`,
             id: 'discussionThreadFetch',
-            messageType: FORUM_MESSAGE_TYPES.LOADING,
         },
         {
             isLoading: supportRequestCommentIsSubmitting,
-            type: 'support request',
+            title: `${FORUM_MESSAGE_PREFIXES[FORUM_MESSAGE_TYPES.ADD_COMMENT_LOADING].title}support request`,
+            description: `${FORUM_MESSAGE_PREFIXES[FORUM_MESSAGE_TYPES.ADD_COMMENT_LOADING].description}support request`,
             id: 'supportRequestCommentSubmit',
-            messageType: FORUM_MESSAGE_TYPES.ADD_COMMENT_LOADING,
         },
         {
             isLoading: bugReportCommentIsSubmitting,
-            type: 'bug report',
+            title: `${FORUM_MESSAGE_PREFIXES[FORUM_MESSAGE_TYPES.ADD_COMMENT_LOADING].title}bug report`,
+            description: `${FORUM_MESSAGE_PREFIXES[FORUM_MESSAGE_TYPES.ADD_COMMENT_LOADING].description}bug report`,
             id: 'bugReportCommentSubmit',
-            messageType: FORUM_MESSAGE_TYPES.ADD_COMMENT_LOADING,
         },
         {
             isLoading: discussionThreadCommentIsSubmitting,
-            type: 'discussion',
+            title: `${FORUM_MESSAGE_PREFIXES[FORUM_MESSAGE_TYPES.ADD_COMMENT_LOADING].title}discussion`,
+            description: `${FORUM_MESSAGE_PREFIXES[FORUM_MESSAGE_TYPES.ADD_COMMENT_LOADING].description}discussion`,
             id: 'discussionThreadCommentSubmit',
-            messageType: FORUM_MESSAGE_TYPES.ADD_COMMENT_LOADING,
         },
         {
             isLoading: closeSupportRequestIsLoading,
-            type: 'support request',
+            title: `${FORUM_MESSAGE_PREFIXES[FORUM_MESSAGE_TYPES.CLOSE_THREAD_LOADING].title}support request`,
+            description: `${FORUM_MESSAGE_PREFIXES[FORUM_MESSAGE_TYPES.CLOSE_THREAD_LOADING].description}support request`,
             id: 'supportRequestClose',
-            messageType: FORUM_MESSAGE_TYPES.CLOSE_THREAD_LOADING,
         },
         {
             isLoading: closeBugReportIsLoading,
-            type: 'bug report',
+            title: `${FORUM_MESSAGE_PREFIXES[FORUM_MESSAGE_TYPES.CLOSE_THREAD_LOADING].title}bug report`,
+            description: `${FORUM_MESSAGE_PREFIXES[FORUM_MESSAGE_TYPES.CLOSE_THREAD_LOADING].description}bug report`,
             id: 'bugReportClose',
-            messageType: FORUM_MESSAGE_TYPES.CLOSE_THREAD_LOADING,
         },
         {
             isLoading: reopenSupportRequestIsLoading,
-            type: 'support request',
+            title: `${FORUM_MESSAGE_PREFIXES[FORUM_MESSAGE_TYPES.REOPEN_THREAD_LOADING].title}support request`,
+            description: `${FORUM_MESSAGE_PREFIXES[FORUM_MESSAGE_TYPES.REOPEN_THREAD_LOADING].description}support request`,
             id: 'supportRequestReopen',
-            messageType: FORUM_MESSAGE_TYPES.REOPEN_THREAD_LOADING,
         },
         {
             isLoading: reopenBugReportIsLoading,
-            type: 'bug report',
+            title: `${FORUM_MESSAGE_PREFIXES[FORUM_MESSAGE_TYPES.REOPEN_THREAD_LOADING].title}bug report`,
+            description: `${FORUM_MESSAGE_PREFIXES[FORUM_MESSAGE_TYPES.REOPEN_THREAD_LOADING].description}bug report`,
             id: 'bugReportReopen',
-            messageType: FORUM_MESSAGE_TYPES.REOPEN_THREAD_LOADING,
         },
     ]
     const isErrorArray = [
         {
             isError: supportRequestIsError,
             error: supportRequestError,
-            type: 'support request',
+            title: `${FORUM_MESSAGE_PREFIXES[FORUM_MESSAGE_TYPES.LOADING_ERROR].title}support request`,
             id: 'supportRequestFetchError',
-            messageType: FORUM_MESSAGE_TYPES.LOADING_ERROR,
         },
         {
             isError: bugReportIsError,
             error: bugReportError,
-            type: 'bug report',
+            title: `${FORUM_MESSAGE_PREFIXES[FORUM_MESSAGE_TYPES.LOADING_ERROR].title}bug report`,
             id: 'bugReportFetchError',
-            messageType: FORUM_MESSAGE_TYPES.LOADING_ERROR,
         },
         {
             isError: discussionThreadIsError,
             error: discussionThreadError,
-            type: 'discussion',
+            title: `${FORUM_MESSAGE_PREFIXES[FORUM_MESSAGE_TYPES.LOADING_ERROR].title}discussion`,
             id: 'discussionThreadFetchError',
-            messageType: FORUM_MESSAGE_TYPES.LOADING_ERROR,
         },
         {
             isError: supportRequestCommentIsError,
             error: supportRequestCommentError,
-            type: 'support request',
+            title: `${FORUM_MESSAGE_PREFIXES[FORUM_MESSAGE_TYPES.ADD_COMMENT_ERROR].title}support request`,
             id: 'supportRequestCommentSubmitError',
-            messageType: FORUM_MESSAGE_TYPES.ADD_COMMENT_ERROR,
         },
         {
             isError: bugReportCommentIsError,
             error: bugReportCommentError,
-            type: 'bug report',
+            title: `${FORUM_MESSAGE_PREFIXES[FORUM_MESSAGE_TYPES.ADD_COMMENT_ERROR].title}bug report`,
             id: 'bugReportCommentSubmitError',
-            messageType: FORUM_MESSAGE_TYPES.ADD_COMMENT_ERROR,
         },
         {
             isError: discussionThreadCommentIsError,
             error: discussionThreadCommentError,
-            type: 'discussion',
+            title: `${FORUM_MESSAGE_PREFIXES[FORUM_MESSAGE_TYPES.ADD_COMMENT_ERROR].title}discussion`,
             id: 'discussionThreadCommentSubmitError',
-            messageType: FORUM_MESSAGE_TYPES.ADD_COMMENT_ERROR,
         },
         {
             isError: closeSupportRequestIsError,
             error: closeSupportRequestError,
-            type: 'support request',
+            title: `${FORUM_MESSAGE_PREFIXES[FORUM_MESSAGE_TYPES.CLOSE_THREAD_ERROR].title}support request`,
             id: 'closeSupportRequestError',
-            messageType: FORUM_MESSAGE_TYPES.CLOSE_THREAD_ERROR,
         },
         {
             isError: closeBugReportIsError,
             error: closeBugReportError,
-            type: 'bug report',
+            title: `${FORUM_MESSAGE_PREFIXES[FORUM_MESSAGE_TYPES.CLOSE_THREAD_ERROR].title}bug report`,
             id: 'closeBugReportError',
-            messageType: FORUM_MESSAGE_TYPES.CLOSE_THREAD_ERROR,
         },
         {
             isError: reopenSupportRequestIsError,
             error: reopenSupportRequestError,
-            type: 'support request',
+            title: `${FORUM_MESSAGE_PREFIXES[FORUM_MESSAGE_TYPES.REOPEN_THREAD_ERROR].title}support request`,
             id: 'reopenSupportRequestError',
-            messageType: FORUM_MESSAGE_TYPES.REOPEN_THREAD_ERROR,
         },
         {
             isError: reopenBugReportIsError,
             error: reopenBugReportError,
-            type: 'bug report',
+            title: `${FORUM_MESSAGE_PREFIXES[FORUM_MESSAGE_TYPES.REOPEN_THREAD_ERROR].title}bug report`,
             id: 'reopenBugReportError',
-            messageType: FORUM_MESSAGE_TYPES.REOPEN_THREAD_ERROR,
         },
     ]
     const isSuccessArray = [
         {
             isSuccess: supportRequestCommentIsSuccess,
-            type: 'support request',
+            title: `${FORUM_MESSAGE_PREFIXES[FORUM_MESSAGE_TYPES.ADD_COMMENT_SUCCESS].title}support request`,
+            description: `${FORUM_MESSAGE_PREFIXES[FORUM_MESSAGE_TYPES.ADD_COMMENT_SUCCESS].description}support request`,
             id: 'supportRequestCommentIsSuccess',
-            messageType: FORUM_MESSAGE_TYPES.ADD_COMMENT_SUCCESS,
         },
         {
             isSuccess: bugReportCommentIsSuccess,
-            type: 'bug report',
+            title: `${FORUM_MESSAGE_PREFIXES[FORUM_MESSAGE_TYPES.ADD_COMMENT_SUCCESS].title}bug report`,
+            description: `${FORUM_MESSAGE_PREFIXES[FORUM_MESSAGE_TYPES.ADD_COMMENT_SUCCESS].description}bug report`,
             id: 'bugReportCommentIsSuccess',
-            messageType: FORUM_MESSAGE_TYPES.ADD_COMMENT_SUCCESS,
         },
         {
             isSuccess: discussionThreadCommentIsSuccess,
-            type: 'discussion',
+            title: `${FORUM_MESSAGE_PREFIXES[FORUM_MESSAGE_TYPES.ADD_COMMENT_SUCCESS].title}discussion`,
+            description: `${FORUM_MESSAGE_PREFIXES[FORUM_MESSAGE_TYPES.ADD_COMMENT_SUCCESS].description}discussion`,
             id: 'discussionThreadCommentIsSuccess',
-            messageType: FORUM_MESSAGE_TYPES.ADD_COMMENT_SUCCESS,
         },
         {
             isSuccess: closeSupportRequestIsSuccess,
-            type: 'support request',
+            title: `${FORUM_MESSAGE_PREFIXES[FORUM_MESSAGE_TYPES.CLOSE_THREAD_SUCCESS].title}support request`,
+            description: `${FORUM_MESSAGE_PREFIXES[FORUM_MESSAGE_TYPES.CLOSE_THREAD_SUCCESS].description}support request`,
             id: 'closeSupportRequestIsSuccess',
-            messageType: FORUM_MESSAGE_TYPES.CLOSE_THREAD_SUCCESS,
         },
         {
             isSuccess: closeBugReportIsSuccess,
-            type: 'bug report',
+            title: `${FORUM_MESSAGE_PREFIXES[FORUM_MESSAGE_TYPES.CLOSE_THREAD_SUCCESS].title}bug report`,
+            description: `${FORUM_MESSAGE_PREFIXES[FORUM_MESSAGE_TYPES.CLOSE_THREAD_SUCCESS].description}bug report`,
             id: 'closeBugReportIsSuccess',
-            messageType: FORUM_MESSAGE_TYPES.CLOSE_THREAD_SUCCESS,
         },
         {
             isSuccess: reopenSupportRequestIsSuccess,
-            type: 'support request',
+            title: `${FORUM_MESSAGE_PREFIXES[FORUM_MESSAGE_TYPES.REOPEN_THREAD_SUCCESS].title}support request`,
+            description: `${FORUM_MESSAGE_PREFIXES[FORUM_MESSAGE_TYPES.REOPEN_THREAD_SUCCESS].description}support request`,
             id: 'reopenSupportRequestIsSuccess',
-            messageType: FORUM_MESSAGE_TYPES.REOPEN_THREAD_SUCCESS,
         },
         {
             isSuccess: reopenBugReportIsSuccess,
-            type: 'bug report',
+            title: `${FORUM_MESSAGE_PREFIXES[FORUM_MESSAGE_TYPES.REOPEN_THREAD_SUCCESS].title}bug report`,
+            description: `${FORUM_MESSAGE_PREFIXES[FORUM_MESSAGE_TYPES.REOPEN_THREAD_SUCCESS].description}bug report`,
             id: 'reopenBugReportIsSuccess',
-            messageType: FORUM_MESSAGE_TYPES.REOPEN_THREAD_SUCCESS,
         },
     ]
-    useEffect(() => {
-        let infoMessage = undefined
-        isLoadingArray.forEach(isLoadingObj => {
-            const { isLoading, type, id, messageType } = isLoadingObj
-            const { title, description } = FORUM_MESSAGE_PREFIXES[messageType]
-            if (isLoading) {
-                infoMessage = {
-                    title: `${title}${type}`,
-                    description: `${description}${type}`,
-                    id,
-                }
-            } else {
-                dispatch(removeInfoMessage(id))
-            }
-        })
-        if (infoMessage) dispatch(addInfoMessage(infoMessage))
-    }, [...isLoadingArray.map(isLoadingObj => isLoadingObj.isLoading)])
-    useEffect(
-        () => {
-            let errorMessage = undefined
-            isErrorArray.forEach(isErrorObj => {
-                const { isError, error, type, id, messageType } = isErrorObj
-                const { title } = FORUM_MESSAGE_PREFIXES[messageType]
-                if (isError) {
-                    errorMessage = {
-                        title: `${title}${type}`,
-                        description: get(error, 'data.error', CONNECTION_ERROR_MESSAGE),
-                        id,
-                    }
-                }
-            })
-            if (errorMessage) dispatch(addErrorMessage(errorMessage))
-        },
-        isErrorArray.map(isErrorObj => isErrorObj.isError),
-    )
-    useEffect(
-        () => {
-            let successMessage = undefined
-            isSuccessArray.forEach(isSuccessObj => {
-                const { isSuccess, type, id, messageType } = isSuccessObj
-                const { title, description } = FORUM_MESSAGE_PREFIXES[messageType]
-                if (isSuccess) {
-                    successMessage = {
-                        title: `${title}${type}`,
-                        description: `${description}${type}`,
-                        id,
-                    }
-                }
-            })
-            if (successMessage) dispatch(addSuccessMessage(successMessage))
-        },
-        isSuccessArray.map(isSuccessObj => isSuccessObj.isSuccess),
+    createFlashbarMessages(
+        isLoadingArray,
+        isErrorArray,
+        isSuccessArray,
+        dispatch,
+        FORUM_MESSAGE_PREFIXES,
     )
     const getData = async () => {
         let response = {

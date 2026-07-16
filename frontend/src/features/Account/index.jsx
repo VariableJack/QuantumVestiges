@@ -27,8 +27,8 @@ import {
 } from '../../redux/api/accountEndpoints'
 
 import { Toggle } from '../../shared/components'
-import { CONNECTION_ERROR_MESSAGE } from '../../shared/constants'
-import { getConfig } from '../../shared/utils'
+import { ACCOUNT_MESSAGE_TYPES, ACCOUNT_MESSAGES } from '../../shared/constants'
+import { getConfig, createFlashbarMessages } from '../../shared/utils'
 
 import '../../styles/App.css'
 
@@ -219,84 +219,78 @@ const Account = props => {
     useEffect(() => {
         if (auth.isAuthenticated) {
             triggerGetSettings()
+            triggerGetOrderHistory()
         }
     }, [auth])
-    useEffect(() => {
-        const messageId = `updateOrderInfo-remove-${lastProductRemoved.productId}`
-        if (updateOrderIsUpdating) {
-            dispatch(
-                addInfoMessage({
-                    title: 'Updating order...',
-                    description: 'Please wait as the system removes the item from your order',
-                    id: messageId,
-                }),
-            )
-        } else {
-            dispatch(removeInfoMessage(messageId))
-        }
-    }, [updateOrderIsUpdating])
-    useEffect(() => {
-        if (updateOrderIsError) {
-            dispatch(
-                addErrorMessage({
-                    title: 'Failed to remove item from your order',
-                    description: get(
-                        updateNotificationPreferencesError,
-                        'data.error',
-                        CONNECTION_ERROR_MESSAGE,
-                    ),
-                    id: `updateOrderError-remove-${lastProductRemoved.productId}`,
-                }),
-            )
-        }
-    }, [updateOrderIsError])
-    useEffect(() => {
-        if (updateOrderIsSuccess) {
-            dispatch(
-                addSuccessMessage({
-                    title: 'Item successfully removed',
-                    description: 'The system has successfully removed the item from your order',
-                    id: `updateOrderError-remove-${lastProductRemoved.productId}`,
-                }),
-            )
-        }
-    }, [updateOrderIsSuccess])
 
-    useEffect(() => {
-        const messageId = 'checkoutOrderInfo'
-        if (checkoutOrderIsLoading) {
-            dispatch(
-                addInfoMessage({
-                    title: 'Checking out order...',
-                    description: 'Please wait as the system checks out your order',
-                    id: messageId,
-                }),
-            )
-        } else {
-            dispatch(removeInfoMessage(messageId))
-        }
-    }, [checkoutOrderIsLoading])
-    useEffect(() => {
-        if (checkoutOrderError) {
-            dispatch(
-                addErrorMessage({
-                    title: 'Failed to check out your order',
-                    description: get(checkoutOrderError, 'data.error', CONNECTION_ERROR_MESSAGE),
-                    id: 'checkoutOrderError',
-                }),
-            )
-        }
-    }, [checkoutOrderError])
+    const isLoadingArray = [
+        {
+            isLoading: updateOrderIsUpdating,
+            ...ACCOUNT_MESSAGES[ACCOUNT_MESSAGE_TYPES.REMOVE_FROM_LOADING],
+            id: `updateOrder-remove-${lastProductRemoved.productId}`,
+        },
+        {
+            isLoading: checkoutOrderIsLoading,
+            ...ACCOUNT_MESSAGES[ACCOUNT_MESSAGE_TYPES.CHECKOUT_CART_LOADING],
+            id: 'checkoutOrderFetch',
+        },
+        {
+            isLoading: updateNotificationPreferencesIsUpdating,
+            ...ACCOUNT_MESSAGES[ACCOUNT_MESSAGE_TYPES.NOTIFICATION_UPDATE_LOADING],
+            id: 'updateNotificationPreferences',
+        },
+        {
+            isLoading: getSettingsIsLoading,
+            ...ACCOUNT_MESSAGES[ACCOUNT_MESSAGE_TYPES.ACCOUNT_LOADING],
+            id: 'getAccountDetailsFetch',
+        },
+    ]
+    const isErrorArray = [
+        {
+            isError: updateOrderIsError,
+            title: ACCOUNT_MESSAGES[ACCOUNT_MESSAGE_TYPES.REMOVE_FROM_ERROR].title,
+            error: updateOrderError,
+            id: `updateOrderError-remove-${lastProductRemoved.productId}`,
+        },
+        {
+            isError: checkoutOrderIsError,
+            title: ACCOUNT_MESSAGES[ACCOUNT_MESSAGE_TYPES.CHECKOUT_CART_ERROR].title,
+            error: checkoutOrderError,
+            id: 'checkoutOrderError',
+        },
+        {
+            isError: updateNotificationPreferencesIsError,
+            title: ACCOUNT_MESSAGES[ACCOUNT_MESSAGE_TYPES.NOTIFICATION_UPDATE_ERROR].title,
+            error: updateNotificationPreferencesError,
+            id: 'updateNotificationPreferencesError',
+        },
+        {
+            isError: getSettingsIsError,
+            title: ACCOUNT_MESSAGES[ACCOUNT_MESSAGE_TYPES.ACCOUNT_LOADING_ERROR].title,
+            error: getSettingsError,
+            id: 'getAccountDetailsError',
+        },
+    ]
+    const isSuccessArray = [
+        {
+            isSuccess: updateOrderIsSuccess,
+            ...ACCOUNT_MESSAGES[ACCOUNT_MESSAGE_TYPES.REMOVE_FROM_SUCCESS],
+            id: `updateOrderSuccess-remove-${lastProductRemoved.productId}`,
+        },
+        {
+            isSuccess: checkoutOrderIsSuccess,
+            ...ACCOUNT_MESSAGES[ACCOUNT_MESSAGE_TYPES.CHECKOUT_CART_SUCCESS],
+            id: 'checkoutOrderSuccess',
+        },
+        {
+            isSuccess: updateNotificationPreferencesIsSuccess,
+            ...ACCOUNT_MESSAGES[ACCOUNT_MESSAGE_TYPES.NOTIFICATION_UPDATE_SUCCESS],
+            id: 'updateNotificationPreferencesSuccess',
+        },
+    ]
+    createFlashbarMessages({ isLoadingArray, isErrorArray, isSuccessArray, dispatch })
     useEffect(() => {
         if (checkoutOrderIsSuccess) {
-            dispatch(
-                addSuccessMessage({
-                    title: 'Successfully checked out your order',
-                    description:
-                        'Your order has been successfully checked out and all items should now be added to your account',
-                    id: 'checkoutOrderSuccess',
-                }),
-            )
             dispatch(
                 setPurchasedItems([
                     ...purchasedItems,
@@ -310,47 +304,6 @@ const Account = props => {
             dispatch(setOrder({ items: [] }))
         }
     }, [checkoutOrderIsSuccess])
-
-    useEffect(() => {
-        const messageId = 'updateNotificationPreferencesInfo'
-        if (updateOrderIsUpdating) {
-            dispatch(
-                addInfoMessage({
-                    title: 'Updating Notification Preferences',
-                    description: 'Please wait as the system updates your notification preferences',
-                    id: messageId,
-                }),
-            )
-        } else {
-            dispatch(removeInfoMessage(messageId))
-        }
-    }, [updateNotificationPreferencesIsUpdating])
-    useEffect(() => {
-        if (updateNotificationPreferencesIsError) {
-            dispatch(
-                addErrorMessage({
-                    title: 'Failed to update Notification Preferences',
-                    description: get(
-                        updateNotificationPreferencesError,
-                        'data.error',
-                        CONNECTION_ERROR_MESSAGE,
-                    ),
-                    id: 'updateNotificationPreferencesError',
-                }),
-            )
-        }
-    }, [updateNotificationPreferencesIsError])
-    useEffect(() => {
-        if (updateNotificationPreferencesIsSuccess) {
-            dispatch(
-                addSuccessMessage({
-                    title: 'Successfully updated Notification Preferences',
-                    description: 'Your Notification Preferences have been successfully updated',
-                    id: 'updateNotificationPreferencesSuccess',
-                }),
-            )
-        }
-    }, [updateNotificationPreferencesIsSuccess])
 
     const removeItem = async input => {
         try {

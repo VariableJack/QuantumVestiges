@@ -13,6 +13,7 @@ import {
 } from '../../redux/api/globalSlice'
 import { setOrder } from '../../redux/api/userSlice'
 import { CONNECTION_ERROR_MESSAGE } from '../../shared/constants'
+import { createFlashbarMessages } from '../../shared/utils'
 
 import '../../styles/App.css'
 
@@ -23,8 +24,10 @@ const Game = () => {
     const params = new URLSearchParams(search)
     const productId = params.get('productId')
 
-    const [triggerGetProduct, { isLoading, isError: getProductIsError, error: getProductError }] =
-        useLazyGetProductByIdQuery()
+    const [
+        triggerGetProduct,
+        { isLoading: getProductIsLoading, isError: getProductIsError, error: getProductError },
+    ] = useLazyGetProductByIdQuery()
     const [
         updateOrder,
         {
@@ -57,73 +60,46 @@ const Game = () => {
         }
     }, [])
 
-    useEffect(() => {
-        if (getProductIsError) {
-            dispatch(
-                addErrorMessage({
-                    title: 'Failed to fetch product',
-                    description: get(getProductError, 'data.error', CONNECTION_ERROR_MESSAGE),
-                    id: `productFetchError-${product.productId}`,
-                }),
-            )
-        }
-    }, [getProductIsError])
-
-    useEffect(() => {
-        const messageId = `productFetchInfo-${product.productId}`
-        if (isLoading) {
-            dispatch(
-                addInfoMessage({
-                    title: 'Fetching product',
-                    description: 'Please wait while the system retrieves this product',
-                    id: messageId,
-                }),
-            )
-        } else {
-            dispatch(removeInfoMessage(messageId))
-        }
-    }, [isLoading])
-
-    useEffect(() => {
-        const messageId = `updateOrderInfo-${(isPresentInOrder && 'remove') || 'add'}-${product.productId}`
-        if (isUpdating) {
-            dispatch(
-                addInfoMessage({
-                    title:
-                        (isPresentInOrder && 'Removing item from order') || 'Adding item to order',
-                    description:
-                        (isPresentInOrder &&
-                            'Please wait as the system removes the item from your order') ||
-                        'Please wait as the system addes the item to your order',
-                    id: messageId,
-                }),
-            )
-        } else {
-            dispatch(removeInfoMessage(messageId))
-        }
-    }, [isUpdating])
-
-    useEffect(() => {
-        if (updateOrderIsError) {
-            dispatch(
-                addErrorMessage({
-                    title: `Failed to ${(isPresentInOrder && 'remove item from') || 'add item to'} your order`,
-                    description: get(updateOrderError, 'data.error', CONNECTION_ERROR_MESSAGE),
-                    id: `updateOrderError-${(isPresentInOrder && 'remove') || 'add'}-${product.productId}`,
-                }),
-            )
-        }
-    }, [updateOrderIsError])
+    const isLoadingArray = [
+        {
+            isLoading: getProductIsLoading,
+            title: 'Fetching product',
+            description: 'Please wait while the system retrieves this product',
+            id: `productFetchInfo-${product.productId}`,
+        },
+        {
+            isLoading: getProductIsLoading,
+            title: 'Fetching product',
+            description: 'Please wait while the system retrieves this product',
+            id: `updateOrderInfo-${(isPresentInOrder && 'remove') || 'add'}-${product.productId}`,
+        },
+    ]
+    const isErrorArray = [
+        {
+            isError: getProductIsError,
+            error: getProductError,
+            title: 'Failed to fetch product',
+            id: `productFetchError-${product.productId}`,
+        },
+        {
+            isError: updateOrderIsError,
+            error: updateOrderError,
+            title: `Failed to ${(isPresentInOrder && 'remove item from') || 'add item to'} your order`,
+            id: `updateOrderError-${(isPresentInOrder && 'remove') || 'add'}-${product.productId}`,
+        },
+    ]
+    const isSuccessArray = [
+        {
+            isSuccess: updateOrderIsSuccess,
+            title: (isPresentInOrder && 'Removed item from order') || 'Added item to order',
+            description: `The system has successfully ${(isPresentInOrder && 'removed the item from') || 'added the item to'} your order`,
+            id: `updateOrderSuccess-${(isPresentInOrder && 'remove') || 'add'}-${product.productId}`,
+        },
+    ]
+    createFlashbarMessages({ isLoadingArray, isErrorArray, isSuccessArray, dispatch })
 
     useEffect(() => {
         if (updateOrderIsSuccess) {
-            dispatch(
-                addSuccessMessage({
-                    title: (isPresentInOrder && 'Removed item from order') || 'Added item to order',
-                    description: `The system has successfully ${(isPresentInOrder && 'removed the item from') || 'added the item to'} your order`,
-                    id: `updateOrderSuccess-${(isPresentInOrder && 'remove') || 'add'}-${product.productId}`,
-                }),
-            )
             if (isPresentInOrder) {
                 dispatch(
                     setOrder({

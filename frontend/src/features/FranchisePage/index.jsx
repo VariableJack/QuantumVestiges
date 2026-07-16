@@ -6,6 +6,7 @@ import { get } from 'lodash'
 import { useLazyGetProductsQuery } from '../../redux/api/mediaEndpoints'
 import { addInfoMessage, removeInfoMessage, addErrorMessage } from '../../redux/api/globalSlice'
 import { CONNECTION_ERROR_MESSAGE } from '../../shared/constants'
+import { createFlashbarMessages } from '../../shared/utils'
 
 import '../../styles/App.css'
 
@@ -38,33 +39,26 @@ const Franchise = () => {
             getProducts()
         }
     }, [franchises])
-    useEffect(() => {
-        const messageId = `productsFetchError-${franchiseId}`
-        if (isError) {
-            dispatch(
-                addErrorMessage({
-                    title: `Failed to fetch products for ${franchise.franchiseName}`,
-                    description: get(error, 'data.error', CONNECTION_ERROR_MESSAGE),
-                    id: messageId,
-                }),
-            )
-        }
-    }, [isError])
 
-    useEffect(() => {
-        const messageId = `productsFetchInfo-${franchiseId}`
-        if (isLoading) {
-            dispatch(
-                addInfoMessage({
-                    title: 'Fetching products...',
-                    description: `Please wait while the system retrieves the products for ${franchise.franchiseName}`,
-                    id: messageId,
-                }),
-            )
-        } else {
-            dispatch(removeInfoMessage(messageId))
-        }
-    }, [isLoading])
+    const isLoadingArray = [
+        {
+            isLoading,
+            title: 'Fetching products',
+            description: `Please wait while the system retrieves the products for ${franchise.franchiseName}`,
+            id: `productsFetchInfo-${franchiseId}`,
+        },
+    ]
+    const isErrorArray = [
+        {
+            isError,
+            error,
+            title: `Failed to fetch products for ${franchise.franchiseName}`,
+            id: `productsFetchError-${franchiseId}`,
+        },
+    ]
+    const isSuccessArray = []
+    createFlashbarMessages({ isLoadingArray, isErrorArray, isSuccessArray, dispatch })
+
     return (
         <div>
             {franchise.franchiseName}

@@ -9,7 +9,8 @@ import {
     removeInfoMessage,
     addErrorMessage,
 } from '../../../redux/api/globalSlice'
-import { CONNECTION_ERROR_MESSAGE } from '../../../shared/constants'
+import { ACCOUNT_MESSAGE_TYPES, ACCOUNT_MESSAGES } from '../../../shared/constants'
+import { createFlashbarMessages } from '../../../shared/utils'
 
 import '../../../styles/App.css'
 
@@ -27,41 +28,41 @@ const FranchisePageCreate = () => {
     ] = useCreateFranchiseMutation()
     const [franchiseName, setFranchiseName] = useState('')
     const [error, setError] = useState(false)
-    useEffect(() => {
-        if (createFranchiseIsLoading) {
-            dispatch(
-                addInfoMessage({
-                    title: 'Creating franchise',
-                    description: 'Please wait as the system finalizes the franchise',
-                    id: 'createFranchise',
-                }),
-            )
-        } else {
-            dispatch(removeInfoMessage('createFranchise'))
-        }
-    }, [createFranchiseIsLoading])
-    useEffect(() => {
-        if (createFranchiseIsError) {
-            dispatch(
-                addErrorMessage({
-                    title: 'Failed to finalize franchise',
-                    description: get(createFranchiseError, 'data.error', CONNECTION_ERROR_MESSAGE),
-                    id: 'createFranchiseError',
-                }),
-            )
-        }
-    }, [createFranchiseIsError])
+
+    const isLoadingArray = [
+        {
+            isLoading: createFranchiseIsLoading,
+            title: 'Creating franchise',
+            description: 'Please wait as the system finalizes the franchise',
+            id: 'createFranchise',
+        },
+    ]
+    const isErrorArray = [
+        {
+            isError: createFranchiseIsError,
+            title: 'Failed to finalize franchise',
+            error: createFranchiseError,
+            id: 'createFranchiseError',
+        },
+    ]
+    const isSuccessArray = [
+        {
+            isSuccess: createFranchiseIsSuccess,
+            title: 'Successfully finalized franchise',
+            description: 'Franchise has been successfully created',
+            id: 'createFranchiseSuccess',
+        },
+    ]
+    createFlashbarMessages({
+        isLoadingArray,
+        isErrorArray,
+        isSuccessArray,
+        dispatch,
+    })
 
     const createFranchise = async input => {
         try {
             const response = await triggerCreateFranchise({ franchiseName }).unwrap()
-            dispatch(
-                addSuccessMessage({
-                    title: 'Successfully finalized franchise',
-                    description: 'Franchise has been successfully created',
-                    id: 'createFranchiseSuccess',
-                }),
-            )
             window.location.href = `/franchise?franchiseId=${response.franchiseId}`
         } catch (e) {}
     }
