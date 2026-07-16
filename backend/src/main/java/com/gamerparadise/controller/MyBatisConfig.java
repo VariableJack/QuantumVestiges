@@ -51,6 +51,15 @@ public class MyBatisConfig {
             ds.setUser(resultMap.get("username").toString());
             ds.setPassword(resultMap.get("password").toString());
             ds.setDriverClass("com.mysql.cj.jdbc.Driver");
+
+            // C3P0 configuration
+            ds.setMaxIdleTime(14400);
+            ds.setTestConnectionOnCheckout(true);
+            ds.setIdleConnectionTestPeriod(600);
+            ds.setPreferredTestQuery("SELECT 1");
+            ds.setInitialPoolSize(5);
+            ds.setMinPoolSize(5);
+            ds.setMaxPoolSize(20);
         } catch (JsonProcessingException e) {
         } catch (PropertyVetoException e) {
         }
