@@ -36,13 +36,13 @@ public class AdministrationActivity {
     private AdministrationComponent administrationComponent;
     private static final Logger logger = LogManager.getLogger(AccountActivity.class);
 
-    @GetMapping(name="GetSettings",path="/settings")
-    public UserActivityDTO getSettings(@AuthenticationPrincipal Jwt jwt) throws AccessDeniedException {
+    @GetMapping(name="GetAccountDetails",path="/account-details")
+    public UserActivityDTO getAccountDetails(@AuthenticationPrincipal Jwt jwt) throws AccessDeniedException {
         final String username = jwt.getClaimAsString("username");
-        logger.info("Beginning to process getSettings for user {}", username);
+        logger.info("Beginning to process getAccountDetails for user {}", username);
         final UserComponentDTO userComponentDTO = administrationComponent.getOrCreateUser(username);
         final UserActivityDTO userActivityDTO = administrationActivityConverter.convertUserComponentDTOToActivityDTO(userComponentDTO);
-        logger.info("Finished processing getSettings");
+        logger.info("Finished processing getAccountDetails");
         return userActivityDTO;
     }
 
