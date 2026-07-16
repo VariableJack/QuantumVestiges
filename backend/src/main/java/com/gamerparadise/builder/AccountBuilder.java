@@ -51,4 +51,10 @@ public class AccountBuilder {
             .map((purchasedItem) -> accountBuilderConverter.convertPurchasedItemDAODTOToComponentDTO(purchasedItem))
             .toList();
     }
+    public List<OrderComponentDTO> getOrderHistory(@NonNull String username) {
+        return accountDAO.getOrderHistory(username)
+            .stream()
+            .map((order) -> accountBuilderConverter.convertOrderDAODTOToComponentDTO(order))
+            .toList();
+    }
 }

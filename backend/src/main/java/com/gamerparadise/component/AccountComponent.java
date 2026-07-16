@@ -107,4 +107,8 @@ public class AccountComponent {
     public List<PurchasedItemComponentDTO> getPurchasedItems(@NonNull String username) {
         return accountBuilder.getPurchasedItems(username);
     }
+    
+    public List<OrderComponentDTO> getOrderHistory(@NonNull String username) {
+        return accountBuilder.getOrderHistory(username);
+    }
 }

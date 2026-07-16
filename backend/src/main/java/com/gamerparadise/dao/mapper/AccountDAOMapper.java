@@ -21,4 +21,5 @@ public interface AccountDAOMapper {
     public void closeOrder(@Param("orderId") @NonNull long orderId, @Param("status") @NonNull String status);
     public void addItemsToAccount(@Param("items") @NonNull List<PurchasedItemDAODTO> input, @Param("username") @NonNull String username);
     public List<PurchasedItemDAODTO> getPurchasedItems(@Param("username") @NonNull String username);
+    public List<OrderDAODTO> getOrderHistory(@Param("username") @NonNull String username);
 }

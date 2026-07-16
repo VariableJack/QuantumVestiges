@@ -83,4 +83,28 @@
         JOIN products ON purchased_items.product_id = products.product_id
         WHERE username = #{username} AND products.product_type in ('GAME', 'DLC');
     </select>
+
+    <select id="getOrderHistory" parameterType="String" resultMap="OrderResultMap">
+        SELECT
+            orders.order_id,
+            users.username,
+            orders.order_status,
+            orders.total_purchase_price,
+            orders.create_time,
+            order_items.order_item_id,
+            order_items.order_id as order_item_id_order_id,
+            order_items.product_id,
+            order_items.product_name,
+            order_items.franchise_name,
+            order_items.purchase_price,
+            order_items.quantity
+        FROM orders
+        LEFT JOIN (
+            SELECT order_items.*, products.product_name, products.franchise_name FROM order_items 
+            JOIN products ON products.product_id = order_items.product_id
+        ) order_items ON order_items.order_id = orders.order_id
+        JOIN users ON orders.user_id = users.user_id
+        WHERE username = #{username} AND orders.order_status != 'PENDING'
+        ORDER BY create_time DESC;
+    </select>
 </mapper>

@@ -76,4 +76,16 @@ public class AccountActivity {
         logger.info("Finished processing getPurchasedItems, returning {} items", purchasedItems.size());
         return purchasedItems;
     }
+
+    @GetMapping(name="GetOrderHistory",path="/order-history")
+    public List<OrderActivityDTO> getOrderHistory(@AuthenticationPrincipal Jwt jwt) throws AccessDeniedException {
+        final String username = jwt.getClaimAsString("username");
+        logger.info("Beginning to process getOrderHistory for user {}", username);
+        final List<OrderActivityDTO> orderHistory = accountComponent.getOrderHistory(username)
+            .stream()
+            .map(order -> accountActivityConverter.convertOrderComponentDTOToActivityDTO(order))
+            .toList();
+        logger.info("Finished processing getOrderHistory, returning {} orders", orderHistory.size());
+        return orderHistory;
+    }
 }

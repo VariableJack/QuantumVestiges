@@ -108,4 +108,17 @@ public class AccountDAO {
             logger.info("Finished running SQL query in {} ms", Utility.getElapsedTime(startDate));
         }
     }
+    
+    public List<OrderDAODTO> getOrderHistory(@NonNull String username) {
+        final Date startDate = new Date();
+        logger.info("Fetching previous order history for user {}", username);
+        try {
+            return mapper.getOrderHistory(username);
+        } catch (Exception e) {
+            logger.error("getOrderHistory failed due to ", e);
+            throw e;
+        } finally {
+            logger.info("Finished running SQL query in {} ms", Utility.getElapsedTime(startDate));
+        }
+    }
 }
