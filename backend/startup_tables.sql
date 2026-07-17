@@ -4,7 +4,7 @@ use quantumvestiges;
 
 CREATE TABLE users (
   user_id SERIAL PRIMARY KEY,
-  username VARCHAR(64) Not null,
+  username VARCHAR(64) Not null UNIQUE,
   stripe_customer_id VARCHAR(255) UNIQUE
 );
 

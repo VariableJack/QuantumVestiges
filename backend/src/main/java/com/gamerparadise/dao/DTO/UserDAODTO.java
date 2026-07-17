@@ -12,7 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserDAODTO {
-    private long userId;
+    private Integer userId;
     private String username;
     private List<UserNotificationDAODTO> notifications;
     private List<UserSubscriptionDAODTO> subscriptions;

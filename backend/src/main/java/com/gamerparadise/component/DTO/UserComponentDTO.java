@@ -8,7 +8,7 @@ import java.util.List;
 @Builder
 @Data
 public class UserComponentDTO {
-    private long userId;
+    private Integer userId;
     private String username;
     private List<UserNotificationComponentDTO> notifications;
     private List<UserSubscriptionComponentDTO> subscriptions;

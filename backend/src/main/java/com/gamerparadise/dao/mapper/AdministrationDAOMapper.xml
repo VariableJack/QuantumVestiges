@@ -57,7 +57,7 @@
     </select>
 
     <insert id="createUser">
-        INSERT INTO users (username) VALUES (#{username});
+        INSERT IGNORE INTO users (username) VALUES (#{username});
     </insert>
 
     <update id="saveUserPayment">
