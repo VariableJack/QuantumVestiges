@@ -63,17 +63,19 @@ const ForumPage = () => {
         try {
             const supportRequestResponse = await triggerGetSupportRequests().unwrap()
             dispatch(setSupportRequests(supportRequestResponse))
-        } catch (e) {}
+        } catch (e) {
+            dispatch(setSupportRequests([]))
+        }
         try {
             const bugReportsResponse = await triggerGetBugReport().unwrap()
             dispatch(setBugReports(bugReportsResponse))
-        } catch (e) {}
+        } catch (e) {
+            dispatch(setBugReports([]))
+        }
         try {
             const discussionThreadsResponse = await triggerGetDiscussionThreads().unwrap()
             dispatch(setDiscussionThreads(discussionThreadsResponse))
         } catch (e) {
-            dispatch(setDiscussionThreads([]))
-            dispatch(setBugReports([]))
             dispatch(setDiscussionThreads([]))
         }
     }

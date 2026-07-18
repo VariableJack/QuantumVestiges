@@ -80,7 +80,7 @@ const FORUM_PAGE_ITEMS = {
         submitPageTitle: () => 'Start new discussion',
         submitButtonText: () => 'Post',
         recentText: () => 'Recent discussions',
-        detailedPageTitle: () => 'Bug Report',
+        detailedPageTitle: () => 'Discussion',
         allViewUrl: () => '/discussion',
         createUrl: () => '/discussion/create',
     },

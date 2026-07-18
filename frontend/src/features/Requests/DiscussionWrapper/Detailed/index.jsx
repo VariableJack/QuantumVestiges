@@ -448,7 +448,7 @@ const DiscussionWrapperDetailed = props => {
                 case FORUM_PAGES.SUPPORT:
                     response = await triggerGetSupportRequest({ threadId }).unwrap()
                     break
-                case FORUM_TYPE.BUG_REPORT:
+                case FORUM_PAGES.BUG_REPORT:
                     response = await triggerGetBugReport({ threadId }).unwrap()
                     break
                 case FORUM_PAGES.DISCUSSION:
