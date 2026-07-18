@@ -428,13 +428,12 @@ const DiscussionWrapperDetailed = props => {
             id: 'reopenBugReportIsSuccess',
         },
     ]
-    createFlashbarMessages(
+    createFlashbarMessages({
         isLoadingArray,
         isErrorArray,
         isSuccessArray,
         dispatch,
-        FORUM_MESSAGE_PREFIXES,
-    )
+    })
     const getData = async () => {
         let response = {
             threadId: -1,

@@ -1,0 +1,9 @@
+.toggle-item {
+  background-color: #B5B5B5;
+}
+.disabled {
+  background-color: #646464;
+}
+.selected {
+  background-color: #848484;
+}

@@ -4,31 +4,28 @@ import { get, set } from 'lodash'
 import {
     clearUsername,
     clearGroup,
-    clearPurchasedGames,
-    clearOrder,
-    setPurchasedItems,
     setOrder,
+    clearOrder,
+    setOrderHistory,
+    clearOrderHistory,
+    setPurchasedItems,
+    clearPurchasedItems,
     setPreferences,
-    setSubscriptions,
     clearPreferences,
+    setSubscriptions,
     clearSubscriptions,
 } from '../../redux/api/userSlice'
-import {
-    addSuccessMessage,
-    addInfoMessage,
-    removeInfoMessage,
-    addErrorMessage,
-} from '../../redux/api/globalSlice'
 
 import { useUpdateOrderMutation, useCheckoutOrderMutation } from '../../redux/api/mediaEndpoints'
 import {
-    useLazyGetSettingsQuery,
+    useLazyGetAccountDetailsQuery,
+    useLazyGetOrderHistoryQuery,
     useUpdateNotificationPreferencesMutation,
 } from '../../redux/api/accountEndpoints'
 
-import { Toggle } from '../../shared/components'
+import { RadioGroup, Toggle } from '../../shared/components'
 import { ACCOUNT_MESSAGE_TYPES, ACCOUNT_MESSAGES } from '../../shared/constants'
-import { getConfig, createFlashbarMessages } from '../../shared/utils'
+import { getConfig, createFlashbarMessages, formatTimestamp } from '../../shared/utils'
 
 import '../../styles/App.css'
 
@@ -148,7 +145,9 @@ const Login = props => {
 }
 
 const Account = props => {
-    const { username, order, purchasedItems } = useSelector(state => state.userReducer)
+    const { username, order, orderHistory, purchasedItems, preferences } = useSelector(
+        state => state.userReducer,
+    )
     const { auth } = props
     const dispatch = useDispatch()
 
@@ -171,9 +170,21 @@ const Account = props => {
         },
     ] = useCheckoutOrderMutation()
     const [
-        triggerGetSettings,
-        { isLoading: getSettingsIsLoading, isError: getSettingsIsError, error: getSettingsError },
-    ] = useLazyGetSettingsQuery()
+        triggerGetAccountDetails,
+        {
+            isLoading: getAccountDetailsIsLoading,
+            isError: getAccountDetailsIsError,
+            error: getAccountDetailsError,
+        },
+    ] = useLazyGetAccountDetailsQuery()
+    const [
+        triggerGetOrderHistory,
+        {
+            isLoading: getOrderHistoryIsLoading,
+            isError: getOrderHistoryIsError,
+            error: getOrderHistoryError,
+        },
+    ] = useLazyGetOrderHistoryQuery()
     const [
         updateNotificationPreferences,
         {
@@ -216,10 +227,45 @@ const Account = props => {
         setSubmitAgreement(false)
         setPageState(item)
     }
+    const getAccountDetails = async () => {
+        try {
+            const accountDetails = await triggerGetAccountDetails().unwrap()
+            dispatch(
+                setPreferences({ ...preferences, notifications: accountDetails.notifications }),
+            )
+            dispatch(setSubscriptions(accountDetails.subscriptions))
+        } catch (e) {}
+    }
+    const getOrderHistory = async () => {
+        try {
+            const orderHistory = await triggerGetOrderHistory().unwrap()
+            dispatch(setOrderHistory(orderHistory))
+        } catch (e) {}
+    }
+    const handlePreferenceChange = item => {
+        dispatch(
+            setPreferences({
+                ...preferences,
+                notifications: preferences.notifications.map(notificationPreference => {
+                    if (notificationPreference.notificationType === item.subId)
+                        return {
+                            ...notificationPreference,
+                            isEnabled: !notificationPreference.isEnabled,
+                        }
+                    else return notificationPreference
+                }),
+            }),
+        )
+    }
+    const handlePreferenceSave = async () => {
+        updateNotificationPreferences({
+            notifications: preferences.notifications,
+        })
+    }
     useEffect(() => {
         if (auth.isAuthenticated) {
-            triggerGetSettings()
-            triggerGetOrderHistory()
+            getAccountDetails()
+            getOrderHistory()
         }
     }, [auth])
 
@@ -240,7 +286,7 @@ const Account = props => {
             id: 'updateNotificationPreferences',
         },
         {
-            isLoading: getSettingsIsLoading,
+            isLoading: getAccountDetailsIsLoading || getOrderHistoryIsLoading,
             ...ACCOUNT_MESSAGES[ACCOUNT_MESSAGE_TYPES.ACCOUNT_LOADING],
             id: 'getAccountDetailsFetch',
         },
@@ -265,9 +311,9 @@ const Account = props => {
             id: 'updateNotificationPreferencesError',
         },
         {
-            isError: getSettingsIsError,
+            isError: getAccountDetailsIsError || getOrderHistoryIsError,
             title: ACCOUNT_MESSAGES[ACCOUNT_MESSAGE_TYPES.ACCOUNT_LOADING_ERROR].title,
-            error: getSettingsError,
+            error: getAccountDetailsIsError ? getAccountDetailsError : getOrderHistoryError,
             id: 'getAccountDetailsError',
         },
     ]
@@ -301,10 +347,9 @@ const Account = props => {
                     })),
                 ]),
             )
-            dispatch(setOrder({ items: [] }))
+            dispatch(clearOrder())
         }
     }, [checkoutOrderIsSuccess])
-
     const removeItem = async input => {
         try {
             await updateOrder(input)
@@ -332,51 +377,163 @@ const Account = props => {
     if (username) {
         return (
             <div>
-                <pre> Hello: {username} </pre>
-                Order
-                {get(order, 'items', []).map(item => (
-                    <div>
-                        {item.franchiseName} || {item.productName}
-                        <br />
-                        {(!updateOrderIsUpdating && (
-                            <button
-                                onClick={() => {
-                                    handleRemove({ action: 'remove', productId: item.productId })
-                                }}
-                            >
-                                Remove from Order
-                            </button>
-                        )) || <b>Removing from order...</b>}
-                    </div>
-                ))}
+                <h1> Welcome back, {username} !</h1>
+                <span style={{ width: '50%' }} className="f-l">
+                    <h2>Your library</h2>
+                    {(!purchasedItems.length &&
+                        '...is empty! Please consider shopping around at your leisure.') ||
+                        ''}
+                    {purchasedItems.map(item => (
+                        <div>
+                            <a href={`/franchise?franchiseId=${item.franchiseId}`}>
+                                {item.franchiseName}
+                            </a>{' '}
+                            ||{' '}
+                            <a href={`/product?productId=${item.productId}`}>{item.productName}</a>
+                            <br />
+                        </div>
+                    ))}
+                    {(order.items.length && (
+                        <>
+                            <h2>Your current Order</h2>
+                            {order.items.map(item => (
+                                <div>
+                                    <>
+                                        <span style={{ width: '50%' }} className="f-l">
+                                            <a href={`/franchise?franchiseId=${item.franchiseId}`}>
+                                                {item.franchiseName}
+                                            </a>{' '}
+                                            ||{' '}
+                                            <a href={`/product?productId=${item.productId}`}>
+                                                {item.productName}
+                                            </a>
+                                            {(item.quantity > 1 &&
+                                                ` - quantity ${item.quantity}`) ||
+                                                ''}
+                                        </span>
+                                        <span style={{ width: '50%' }} className="f-r">
+                                            ${item.purchasePrice}
+                                        </span>
+                                    </>
+                                    <br />
+                                    {(!updateOrderIsUpdating && (
+                                        <button
+                                            onClick={() => {
+                                                handleRemove({
+                                                    action: 'remove',
+                                                    productId: item.productId,
+                                                })
+                                            }}
+                                        >
+                                            Remove from Order
+                                        </button>
+                                    )) || <b>Removing from order...</b>}
+                                </div>
+                            ))}
+                            Total price: ${order.totalPurchasePrice}
+                            <br />
+                            {(!checkoutOrderIsLoading && (
+                                <button
+                                    onClick={() => {
+                                        checkoutOrder()
+                                        // TODO - integrate payment processing here
+                                    }}
+                                >
+                                    Checkout order
+                                </button>
+                            )) || <b>Checking out...</b> || <></>}
+                        </>
+                    )) || <></>}
+                </span>
+                <span style={{ width: '50%' }} className="f-r">
+                    <h2>Your notification preferences</h2>
+                    <RadioGroup
+                        options={[{ label: 'Disabled' }, { label: 'Enabled' }]}
+                        items={preferences.notifications.map(notificationPreference => ({
+                            subId: notificationPreference.notificationType,
+                            label: `${notificationPreference.notificationType} (${notificationPreference.frequency})`,
+                            isEnabled: notificationPreference.isEnabled,
+                        }))}
+                        onChange={handlePreferenceChange}
+                    />
+                    <button className="notification-button" onClick={handlePreferenceSave}>
+                        Update notification preferences
+                    </button>
+                    <br />
+                    <hr
+                        style={{
+                            width: '95%',
+                            height: '10px',
+                            color: 'black',
+                            backgroundColor: 'black',
+                        }}
+                    />
+                    <h2>Order history</h2>
+                    {(!orderHistory.length &&
+                        '...is empty! Not to worry, this will fill up as you make orders') ||
+                        ''}
+                    {orderHistory.map(order => {
+                        return (
+                            <>
+                                <div>
+                                    <span style={{ width: '50%' }} className="m-n p-n f-l">
+                                        <h3 className="m-n p-n">{order.orderStatus}</h3>
+                                    </span>
+                                    <span style={{ width: '50%' }} className="f-r">
+                                        {(order.orderStatus === 'COMPLETED' &&
+                                            `Checked out at ${formatTimestamp(order.checkoutTime)}`) ||
+                                            `Refunded at ${formatTimestamp(order.refundTime)}`}
+                                    </span>
+                                    <br />
+                                </div>
+                                <br />
+                                <br />
+                                {order.items.map(item => {
+                                    return (
+                                        <>
+                                            <span style={{ width: '50%' }} className="f-l">
+                                                <a
+                                                    href={`/franchise?franchiseId=${item.franchiseId}`}
+                                                >
+                                                    {item.franchiseName}
+                                                </a>{' '}
+                                                ||{' '}
+                                                <a href={`/product?productId=${item.productId}`}>
+                                                    {item.productName}
+                                                </a>
+                                                {(item.quantity > 1 &&
+                                                    ` - quantity ${item.quantity}`) ||
+                                                    ''}
+                                            </span>
+                                            <span style={{ width: '50%' }} className="f-r">
+                                                ${item.purchasePrice}
+                                            </span>
+                                        </>
+                                    )
+                                })}
+                                Total price: ${order.totalPurchasePrice}
+                                <hr
+                                    style={{
+                                        width: '95%',
+                                        height: '6px',
+                                        color: 'black',
+                                        backgroundColor: 'black',
+                                    }}
+                                />
+                            </>
+                        )
+                    })}
+                </span>
                 <br />
-                {
-                    (!order.items.length && <></>) ||
-                        (!checkoutOrderIsLoading && (
-                            <button onClick={checkoutOrder}>Checkout order</button>
-                        )) || <b>Checking out...</b>
-                    // TODO - integrate payment processing here
-                }
-                <br />
-                Games you own
-                <br />
-                {purchasedItems.map(item => (
-                    <div>
-                        <a href={`/franchise?franchiseId=${item.franchiseId}`}>
-                            {item.franchiseName}
-                        </a>{' '}
-                        || <a href={`/product?productId=${item.productId}`}>{item.productName}</a>
-                        <br />
-                    </div>
-                ))}
                 <button
                     onClick={() => {
                         auth.removeUser()
                         dispatch(clearUsername())
                         dispatch(clearGroup())
                         localStorage.setItem('accessToken', '')
-                        dispatch(clearPurchasedGames())
                         dispatch(clearOrder())
+                        dispatch(clearOrderHistory())
+                        dispatch(clearPurchasedItems())
                         dispatch(clearPreferences())
                         dispatch(clearSubscriptions())
                     }}

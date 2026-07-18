@@ -54,10 +54,16 @@ const ProductPageCreate = () => {
     ] = useCreateGameMutation()
     const [file, setFile] = useState(undefined)
     const [productName, setProductName] = useState('')
+    const [price, setPrice] = useState(0)
     const [selectedFranchise, setSelectedFranchise] = useState(DEFAULT_FRANCHISE)
     const [isUploadingFile, setIsUploadingFile] = useState(false)
     const [isUploadingFileSuccess, setIsUploadingFileSuccess] = useState(false)
-    const [errors, setErrors] = useState({ file: false, productName: false, franchise: false })
+    const [errors, setErrors] = useState({
+        file: false,
+        productName: false,
+        franchise: false,
+        price: false,
+    })
 
     const isLoadingArray = [
         {
@@ -148,6 +154,17 @@ const ProductPageCreate = () => {
             window.location.href = `/product?productId=${response.productId}`
         } catch (e) {}
     }
+    useEffect(() => {
+        if (isUploadingFileSuccess) {
+            try {
+                createProduct({
+                    productName,
+                    franchiseId: selectedFranchise.franchiseId,
+                    price,
+                })
+            } catch (e) {}
+        }
+    }, [isUploadingFileSuccess])
     return (
         (group !== 'admin' && (
             <div>
@@ -182,7 +199,7 @@ const ProductPageCreate = () => {
                         setProductName(event.target.value)
                     }}
                 />
-                <h3>Select franchise to create product under</h3>
+                <h2>Select franchise to create product under</h2>
                 <Select
                     items={generateSelectItems([
                         { ...DEFAULT_FRANCHISE, disabled: true },
@@ -199,6 +216,19 @@ const ProductPageCreate = () => {
                         })
                     }}
                 />
+                <h2>Input price</h2>
+                <input
+                    className={`${errors.price && 'error-text'}`}
+                    value={price}
+                    onChange={event => {
+                        const newPrice = parseInt(event.target.value)
+                        setErrors({
+                            ...errors,
+                            price: newPrice <= 0,
+                        })
+                        setPrice(newPrice)
+                    }}
+                />
                 <div>
                     <button
                         onClick={() => {
@@ -206,7 +236,8 @@ const ProductPageCreate = () => {
                             if (
                                 file &&
                                 productName &&
-                                selectedFranchise.franchiseId !== DEFAULT_FRANCHISE.franchiseId
+                                selectedFranchise.franchiseId !== DEFAULT_FRANCHISE.franchiseId &&
+                                price > 0
                             ) {
                                 handleUpload()
                             } else {
@@ -216,6 +247,7 @@ const ProductPageCreate = () => {
                                     franchise:
                                         selectedFranchise.franchiseId ===
                                         DEFAULT_FRANCHISE.franchiseId,
+                                    price: price <= 0,
                                 })
                             }
                         }}

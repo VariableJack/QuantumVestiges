@@ -2,9 +2,15 @@ import gamerParadiseApiSlice from './gamerParadiseApiSlice'
 
 export const accountEndpoints = gamerParadiseApiSlice.injectEndpoints({
     endpoints: builder => ({
-        getSettings: builder.query({
+        getAccountDetails: builder.query({
             query: () => ({
-                url: '/settings',
+                url: '/account-details',
+                method: 'GET',
+            }),
+        }),
+        getOrderHistory: builder.query({
+            query: () => ({
+                url: '/order-history',
                 method: 'GET',
             }),
         }),
@@ -12,11 +18,16 @@ export const accountEndpoints = gamerParadiseApiSlice.injectEndpoints({
             query: ({ notifications }) => ({
                 url: '/notification-preferences',
                 method: 'POST',
-                body: notifications,
+                body: {
+                    notifications,
+                },
             }),
         }),
     }),
 })
 
-export const { useLazyGetSettingsQuery, useUpdateNotificationPreferencesMutation } =
-    accountEndpoints
+export const {
+    useLazyGetAccountDetailsQuery,
+    useLazyGetOrderHistoryQuery,
+    useUpdateNotificationPreferencesMutation,
+} = accountEndpoints

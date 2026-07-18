@@ -15,9 +15,9 @@ const initialState = {
     order: {
         items: [],
     },
+    orderHistory: [],
     purchasedItems: [],
-    error: null,
-    preferences: [],
+    preferences: { notifications: [] },
     subscriptions: [],
 }
 
@@ -41,28 +41,28 @@ const userSlice = createSlice({
             state.order = { ...action.payload }
         },
         clearOrder: state => {
-            state.order = {}
+            state.order = { items: [] }
+        },
+        setOrderHistory: (state, action) => {
+            state.orderHistory = [...action.payload]
+        },
+        clearOrderHistory: state => {
+            state.orderHistory = []
         },
         setPurchasedItems: (state, action) => {
             state.purchasedItems = [...action.payload]
         },
-        clearPurchasedGames: state => {
+        clearPurchasedItems: state => {
             state.purchasedItems = []
         },
-        setError: (state, action) => {
-            state.error = action.payload
-        },
-        clearError: state => {
-            state.error = null
-        },
         setPreferences: (state, action) => {
-            state.preferences = [...action.payload]
+            state.preferences = { ...action.payload }
+        },
+        clearPreferences: state => {
+            state.preferences = { notifications: [] }
         },
         setSubscriptions: (state, action) => {
             state.subscriptions = [...action.payload]
-        },
-        clearPreferences: state => {
-            state.preferences = []
         },
         clearSubscriptions: state => {
             state.subscriptions = []
@@ -77,13 +77,13 @@ const {
     clearGroup,
     setOrder,
     clearOrder,
+    setOrderHistory,
+    clearOrderHistory,
     setPurchasedItems,
-    clearPurchasedGames,
-    setError,
-    clearError,
+    clearPurchasedItems,
     setPreferences,
-    setSubscriptions,
     clearPreferences,
+    setSubscriptions,
     clearSubscriptions,
 } = userSlice.actions
 export {
@@ -93,10 +93,10 @@ export {
     clearGroup,
     setOrder,
     clearOrder,
+    setOrderHistory,
+    clearOrderHistory,
     setPurchasedItems,
-    clearPurchasedGames,
-    setError,
-    clearError,
+    clearPurchasedItems,
     setPreferences,
     setSubscriptions,
     clearPreferences,

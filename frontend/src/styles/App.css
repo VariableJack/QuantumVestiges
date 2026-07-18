@@ -81,6 +81,9 @@ button.secondary {
 button.forum-status {
   width: 230px;
 }
+button.notification-button {
+  width: 250px;
+}
 
 .checkbox-border {
   border: 2px solid;
