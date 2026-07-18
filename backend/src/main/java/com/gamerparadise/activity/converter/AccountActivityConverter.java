@@ -30,7 +30,6 @@ public class AccountActivityConverter {
             .username(input.getUsername())
             .orderStatus(input.getOrderStatus())
             .totalPurchasePrice(input.getTotalPurchasePrice())
-            .createTime(input.getCreateTime())
             .items(input.getItems().stream().map((item) -> this.convertOrderItemActivityDTOToComponentDTO(item)).toList())
             .build();
     }
@@ -53,6 +52,8 @@ public class AccountActivityConverter {
             .orderStatus(input.getOrderStatus())
             .totalPurchasePrice(input.getTotalPurchasePrice())
             .createTime(input.getCreateTime())
+            .checkoutTime(input.getCheckoutTime())
+            .refundTime(input.getRefundTime())
             .items(input.getItems().stream().map((item) -> this.convertOrderItemComponentDTOToActivityDTO(item)).toList())
             .build();
     }

@@ -224,7 +224,7 @@ public class DiscussionsActivity {
         logger.info("Beginning to process createBugReport for user {}, with input {}", username, input);
         this.validateThread(input, "Bug Report");
         final ThreadComponentDTO convertedInput = discussionsActivityConverter.convertThreadActivityDTOToComponentDTO(input, username);
-        final ThreadComponentDTO output = discussionsComponent.createDiscussion(convertedInput);
+        final ThreadComponentDTO output = discussionsComponent.createBugReport(convertedInput);
         final ThreadActivityDTO bugReport = discussionsActivityConverter.convertThreadComponentDTOToActivityDTO(output);
         logger.info("Finished processing createBugReport");
         return bugReport;

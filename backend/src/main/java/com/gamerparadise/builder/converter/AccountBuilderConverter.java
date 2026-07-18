@@ -19,6 +19,8 @@ public class AccountBuilderConverter {
             .orderStatus(input.getOrderStatus())
             .totalPurchasePrice(input.getTotalPurchasePrice())
             .createTime(input.getCreateTime())
+            .checkoutTime(input.getCheckoutTime())
+            .refundTime(input.getRefundTime())
             .items(input.getItems().stream().map((item) -> this.convertOrderItemDAODTOToComponentDTO(item)).toList())
             .build();
     }

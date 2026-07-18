@@ -13,7 +13,7 @@ import java.sql.Timestamp;
 @Data
 public class UserNotificationActivityDTO {
     private String username;
-    private boolean isEnabled;
+    private Boolean isEnabled;
     private String notificationType;
     private String frequency;
     private Timestamp lastUpdateTime;

@@ -19,5 +19,7 @@ public class OrderDAODTO {
     private String orderStatus;
     private Integer totalPurchasePrice;
     private Timestamp createTime;
+    private Timestamp checkoutTime;
+    private Timestamp refundTime;
     private List<OrderItemDAODTO> items;
 }

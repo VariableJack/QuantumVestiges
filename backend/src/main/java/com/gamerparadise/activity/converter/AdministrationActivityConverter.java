@@ -30,7 +30,7 @@ public class AdministrationActivityConverter {
     public UserNotificationActivityDTO convertUserNotificationComponentDTOToActivityDTO(@NonNull UserNotificationComponentDTO input) {
         return UserNotificationActivityDTO.builder()
             .username(input.getUsername())
-            .isEnabled(input.isEnabled())
+            .isEnabled(input.getIsEnabled())
             .notificationType(input.getNotificationType())
             .frequency(input.getFrequency())
             .lastUpdateTime(input.getLastUpdateTime())
@@ -52,7 +52,7 @@ public class AdministrationActivityConverter {
     public UserNotificationComponentDTO convertUserNotificationActivityDTOToComponentDTO(@NonNull UserNotificationActivityDTO input, @NonNull String username) {
         return UserNotificationComponentDTO.builder()
             .username(username)
-            .isEnabled(input.isEnabled())
+            .isEnabled(input.getIsEnabled())
             .notificationType(input.getNotificationType())
             .frequency(input.getFrequency())
             .lastUpdateTime(input.getLastUpdateTime())

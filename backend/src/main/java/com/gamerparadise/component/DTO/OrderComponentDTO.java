@@ -15,5 +15,7 @@ public class OrderComponentDTO {
     private String orderStatus;
     private Integer totalPurchasePrice;
     private Timestamp createTime;
+    private Timestamp checkoutTime;
+    private Timestamp refundTime;
     private List<OrderItemComponentDTO> items;
 }

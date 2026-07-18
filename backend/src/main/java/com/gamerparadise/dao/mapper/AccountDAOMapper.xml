@@ -9,6 +9,8 @@
         <result property="orderStatus" column="order_status"/>
         <result property="totalPurchasePrice" column="total_purchase_price"/>
         <result property="createTime" column="create_time"/>
+        <result property="checkoutTime" column="checkout_time"/>
+        <result property="refundTime" column="refund_time"/>
         <collection property="items" ofType="OrderItemDAODTO" resultMap="OrderItemResultMap"/>
     </resultMap>
     <resultMap id="OrderItemResultMap" type="OrderItemDAODTO">
@@ -36,6 +38,8 @@
             orders.order_status,
             orders.total_purchase_price,
             orders.create_time,
+            orders.checkout_time,
+            orders.refund_time,
             order_items.order_item_id,
             order_items.order_id as order_item_id_order_id,
             order_items.product_id,
@@ -66,7 +70,7 @@
     </delete>
 
     <update id="closeOrder">
-        UPDATE orders SET order_status = #{status} WHERE order_id = #{orderId};
+        UPDATE orders SET order_status = #{status}, checkout_time = CURRENT_TIMESTAMP() WHERE order_id = #{orderId};
     </update>
 
     <insert id="addItemsToAccount">
