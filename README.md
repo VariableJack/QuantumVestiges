@@ -1,4 +1,4 @@
-# GamerParadise
+# Quantum Vestiges
 A custom portal to various utilities and calculators for various games, along with personally developed games
 
 ## Setup
@@ -33,19 +33,19 @@ Go through the "Setting up your AWS account" section once for each account
 Sample configuration file
 ```
 [default]
-region = us-west-1
+region = us-west-2
 output = None
 
 [devo]
-region = us-west-1
+region = us-west-2
 output = None
 
 [pre-prod]
-region = us-west-1
+region = us-west-2
 output = None
 
 [prod]
-region = us-west-1
+region = us-west-2
 output = None
 ```
 

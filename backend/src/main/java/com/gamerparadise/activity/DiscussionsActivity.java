@@ -78,7 +78,7 @@ public class DiscussionsActivity {
         return supportRequest;
     }
 
-    @PostMapping(name="CreateSupportRequest",path="/support-request")
+    @PostMapping(name="CreateSupportRequest",path="/support-request/create")
     public ThreadActivityDTO createSupportRequest(
         @AuthenticationPrincipal Jwt jwt,
         @NonNull @RequestBody ThreadActivityDTO input) {
@@ -154,7 +154,7 @@ public class DiscussionsActivity {
         return discussion;
     }
 
-    @PostMapping(name="CreateDiscussion",path="/discussion")
+    @PostMapping(name="CreateDiscussion",path="/discussion/create")
     public ThreadActivityDTO createDiscussion(
         @AuthenticationPrincipal Jwt jwt,
         @NonNull @RequestBody ThreadActivityDTO input) {
@@ -216,7 +216,7 @@ public class DiscussionsActivity {
         return bugReport;
     }
 
-    @PostMapping(name="CreateBugReport",path="/bug-report")
+    @PostMapping(name="CreateBugReport",path="/bug-report/create")
     public ThreadActivityDTO createBugReport(
         @AuthenticationPrincipal Jwt jwt,
         @NonNull @RequestBody ThreadActivityDTO input) {

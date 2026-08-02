@@ -56,7 +56,7 @@ export const requestsEndpoints = gamerParadiseApiSlice.injectEndpoints({
         // Post APIs
         submitSupportRequest: builder.mutation({
             query: ({ title, description }) => ({
-                url: '/support-request',
+                url: '/support-request/create',
                 body: { title, description },
                 method: 'POST',
             }),
@@ -64,7 +64,7 @@ export const requestsEndpoints = gamerParadiseApiSlice.injectEndpoints({
         }),
         submitBugReport: builder.mutation({
             query: ({ title, description }) => ({
-                url: '/bug-report',
+                url: '/bug-report/create',
                 body: { title, description },
                 method: 'POST',
             }),
@@ -72,7 +72,7 @@ export const requestsEndpoints = gamerParadiseApiSlice.injectEndpoints({
         }),
         submitDiscussionThread: builder.mutation({
             query: ({ title, description }) => ({
-                url: '/discussion',
+                url: '/discussion/create',
                 body: { title, description },
                 method: 'POST',
             }),
