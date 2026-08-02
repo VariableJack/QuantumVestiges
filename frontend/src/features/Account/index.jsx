@@ -30,8 +30,16 @@ import { getConfig, createFlashbarMessages, formatTimestamp } from '../../shared
 import '../../styles/App.css'
 
 const Login = props => {
-    const { auth, submitAgreement, setSubmitAgreement, pageState, setPageState, handleTabChange } =
-        props
+    const {
+        auth,
+        areCheckboxesChecked,
+        setAreCheckboxesChecked,
+        submitAgreement,
+        setSubmitAgreement,
+        pageState,
+        setPageState,
+        handleTabChange,
+    } = props
     return (
         <div>
             {(pageState.id === 'login' && (
@@ -44,8 +52,12 @@ const Login = props => {
             )) || (
                 <div>
                     <h2>
-                        By creating an account with us, you agree to our Privacy Policy and our TOS.
-                        Please review and confirm
+                        By creating an account with us, you agree to our{' '}
+                        <a href={`${getConfig('assetsS3Bucket')}PrivacyPolicy.pdf`}>
+                            Privacy Policy
+                        </a>{' '}
+                        and our <a href={`${getConfig('assetsS3Bucket')}ToS.pdf`}>TOS</a>. Please
+                        review and confirm
                     </h2>
                     <span
                         onClick={() => {
