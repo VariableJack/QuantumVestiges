@@ -53,23 +53,23 @@ deploymentEnvironments.forEach(deploymentEnvironment => {
         certificate,
         vpc,
     })
-    ecsStack.addDependency(iamStack)
-    ecsStack.addDependency(vpcStack)
-    ecsStack.addDependency(commonNetworkingStack)
-    ecsStack.addDependency(cognitoStack)
+    ecsStack.addStackDependency(iamStack)
+    ecsStack.addStackDependency(vpcStack)
+    ecsStack.addStackDependency(commonNetworkingStack)
+    ecsStack.addStackDependency(cognitoStack)
     const { ecsConnections } = ecsStack
     const rdsStack = new RdsStack(app, `RdsStack-${stage}`, {
         ...deploymentEnvironment,
         vpc,
         ecsConnections,
     })
-    rdsStack.addDependency(vpcStack)
-    rdsStack.addDependency(ecsStack)
+    rdsStack.addStackDependency(vpcStack)
+    rdsStack.addStackDependency(ecsStack)
 
     const cloudWatchStack = new CloudWatchStack(
         app,
         `CloudWatchStack-${stage}`,
         deploymentEnvironment,
     )
-    cloudWatchStack.addDependency(ecsStack)
+    cloudWatchStack.addStackDependency(ecsStack)
 })
