@@ -10,6 +10,8 @@
         <result property="productType" column="product_type"/>
         <result property="franchiseId" column="franchise_id"/>
         <result property="franchiseName" column="franchise_name"/>
+        <result property="description" column="description"/>
+        <result property="thumbnailUri" column="thumbnail_uri"/>
         <result property="price" column="price"/>
     </resultMap>
 
@@ -32,7 +34,25 @@
 
     <insert id="insertProduct" parameterType="ProductDAODTO"
         useGeneratedKeys="true" keyColumn="product_id" keyProperty="productId">
-        INSERT INTO products(product_name, parent_product_id, product_type, franchise_id, franchise_name, price)
-        VALUES(#{product.productName}, #{product.parentProductId}, #{product.productType}, #{product.franchiseId}, #{product.franchiseName}, #{product.price});
+        INSERT INTO products(
+            product_name,
+            parent_product_id,
+            product_type,
+            franchise_id,
+            franchise_name,
+            description,
+            thumbnailUri,
+            price
+        )
+        VALUES(
+            #{product.productName},
+            #{product.parentProductId},
+            #{product.productType},
+            #{product.franchiseId},
+            #{product.franchiseName},
+            #{product.description},
+            #{product.thumbnailUri},
+            #{product.price}
+        );
     </insert>
 </mapper>

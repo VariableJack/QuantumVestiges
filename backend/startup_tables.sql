@@ -42,6 +42,8 @@ create table products (
   product_type VARCHAR(16) Not null,
   franchise_id INT Not null references franchises.franchise_id ON DELETE RESTRICT,
   franchise_name VARCHAR(32) Not null references franchises.franchise_name ON DELETE RESTRICT,
+  description TEXT Not null default '',
+  thumbnail_uri VARCHAR(64) Not null default '',
   price INT Not null check (price > 0),
   INDEX parent_product_id_index (parent_product_id)
 );

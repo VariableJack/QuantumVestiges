@@ -16,6 +16,8 @@ public class ProductsBuilderConverter {
             .productType(input.getProductType())
             .franchiseId(input.getFranchiseId())
             .franchiseName(input.getFranchiseName())
+            .description(input.getDescription())
+            .thumbnailUri(input.getThumbnailUri())
             .price(input.getPrice())
             .build();
     }
@@ -28,6 +30,8 @@ public class ProductsBuilderConverter {
             .productType(input.getProductType())
             .franchiseId(input.getFranchiseId())
             .franchiseName(franchiseName)
+            .description(input.getDescription())
+            .thumbnailUri(input.getThumbnailUri())
             .price(input.getPrice())
             .build();
     }

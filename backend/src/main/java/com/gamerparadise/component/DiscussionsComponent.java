@@ -53,7 +53,7 @@ public class DiscussionsComponent {
     public ThreadCommentComponentDTO closeSupportRequest(@NonNull ThreadCommentComponentDTO input, @NonNull String group) {
         final Integer threadId = input.getThreadId();
         final ThreadComponentDTO thread = this.getDetailedSupportRequest(input.getAuthor(), group, threadId);
-        if (thread.getStatus().equals("CLOSE")) {
+        if (thread.getStatus().equals("CLOSED")) {
             logger.warn("Support request {} is already closed", threadId);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("Support request at id %s is already closed", threadId));
         }
@@ -111,7 +111,7 @@ public class DiscussionsComponent {
     public ThreadCommentComponentDTO closeDiscussion(@NonNull ThreadCommentComponentDTO input, @NonNull String group) {
         final Integer threadId = input.getThreadId();
         final ThreadComponentDTO thread = this.getDetailedDiscussion(threadId);
-        if (thread.getStatus().equals("CLOSE")) {
+        if (thread.getStatus().equals("CLOSED")) {
             logger.warn("Discussion {} is already closed", threadId);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("Discussion at id %s is already closed", threadId));
         }
@@ -150,7 +150,7 @@ public class DiscussionsComponent {
     public ThreadCommentComponentDTO closeBugReport(@NonNull ThreadCommentComponentDTO input) {
         final Integer threadId = input.getThreadId();
         final ThreadComponentDTO thread = this.getDetailedDiscussion(threadId);
-        if (thread.getStatus().equals("CLOSE")) {
+        if (thread.getStatus().equals("CLOSED")) {
             logger.warn("Bug Report {} is already closed", threadId);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("Bug Report at id %s is already closed", threadId));
         }

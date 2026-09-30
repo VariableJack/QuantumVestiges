@@ -17,4 +17,7 @@ public class Constants {
     public final static int S3_MAX_KEYS = 1000;
     public final static Duration PRESIGNED_URL_DURATION = Duration.ofHours(1);
     public final static String INSTALLER_FILE_NAME = "GamerParadise-Installer.exe";
+
+    public final static String CLOSED_STATUS = "CLOSED";
+    public final static String OPEN_STATUS = "OPEN";
 }

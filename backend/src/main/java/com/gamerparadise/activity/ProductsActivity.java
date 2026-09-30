@@ -16,6 +16,8 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import org.apache.commons.lang3.StringUtils;
+
 import lombok.NonNull;
 import java.util.List;
 import java.util.Objects;
@@ -71,6 +73,13 @@ public class ProductsActivity {
         if (!group.equals("admin")) {
             logger.warn("User {} cannot create a new product", username);
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not permitted to create a new product");
+        }
+        if (StringUtils.isAllBlank(input.getProductName())
+            || StringUtils.isAllBlank(input.getProductType())
+            || StringUtils.isAllBlank(input.getFranchiseName())
+            || StringUtils.isAllBlank(input.getDescription())
+            || StringUtils.isAllBlank(input.getThumbnailUri())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "One or more required inputs is/are empty: product name, product type, franchise name, description, thumbnail URI");
         }
         logger.info("Beginning to process uploadProduct with input {} for user {} under group", input, username, group);
         final ProductComponentDTO convertedInput = productsActivityConverter.convertProductActivityDTOToComponentDTO(input);
