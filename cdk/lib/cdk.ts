@@ -10,6 +10,7 @@ import { VpcStack } from './vpc'
 import { EcsStack } from './ecs'
 import { RdsStack } from './rds'
 import { CloudWatchStack } from './cloudWatchStack'
+import { PostServiceSetupStack } from './postServiceSetup'
 const deploymentEnvironments: {
     stage: string
     env: {
@@ -44,6 +45,12 @@ deploymentEnvironments.forEach(deploymentEnvironment => {
     const { backendLogGroup, frontendLogGroup } = foundationalStack
     const { vpc } = vpcStack
     const { hostedZone, certificate } = commonNetworkingStack
+    const rdsStack = new RdsStack(app, `RdsStack-${stage}`, {
+        ...deploymentEnvironment,
+        vpc,
+    })
+    rdsStack.addStackDependency(vpcStack)
+    const { rdsConnections } = rdsStack
     const ecsStack = new EcsStack(app, `EcsStack-${stage}`, {
         ...deploymentEnvironment,
         ecsExecutionRole,
@@ -58,14 +65,13 @@ deploymentEnvironments.forEach(deploymentEnvironment => {
     ecsStack.addStackDependency(commonNetworkingStack)
     ecsStack.addStackDependency(cognitoStack)
     const { ecsConnections } = ecsStack
-    const rdsStack = new RdsStack(app, `RdsStack-${stage}`, {
+    const postServiceSetupStack = new PostServiceSetupStack(app, `PostServiceSetupStack-${stage}`, {
         ...deploymentEnvironment,
-        vpc,
         ecsConnections,
+        rdsConnections,
     })
-    rdsStack.addStackDependency(vpcStack)
-    rdsStack.addStackDependency(ecsStack)
-
+    postServiceSetupStack.addStackDependency(ecsStack)
+    postServiceSetupStack.addStackDependency(rdsStack)
     const cloudWatchStack = new CloudWatchStack(
         app,
         `CloudWatchStack-${stage}`,

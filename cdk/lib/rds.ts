@@ -20,12 +20,12 @@ import { SERVICE_PREFIX } from './shared/constants'
 interface RdsProps extends StackProps {
     stage: string
     vpc: Vpc
-    ecsConnections: Connections
 }
 export class RdsStack extends Stack {
+    public readonly rdsConnections: Connections
     constructor(scope: App, id: string, props: RdsProps) {
         super(scope, id, props)
-        const { stage, vpc, ecsConnections } = props
+        const { stage, vpc } = props
 
         const bastion = new BastionHostLinux(this, `BastionHost-${stage}`, {
             vpc,
@@ -46,7 +46,7 @@ export class RdsStack extends Stack {
             }),
             instanceIdentifier: `${SERVICE_PREFIX.toLowerCase()}-${stage}`,
         })
-        rdsInstance.connections.allowDefaultPortFrom(ecsConnections)
+        this.rdsConnections = rdsInstance.connections
         rdsInstance.connections.allowDefaultPortFrom(bastion)
     }
 }
