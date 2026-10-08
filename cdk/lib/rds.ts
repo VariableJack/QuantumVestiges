@@ -1,4 +1,4 @@
-import { App, Stack, StackProps } from 'aws-cdk-lib'
+import { App, Duration, Stack, StackProps } from 'aws-cdk-lib'
 import {
     BastionHostLinux,
     Connections,
@@ -13,6 +13,7 @@ import {
     DatabaseInstance,
     DatabaseInstanceEngine,
     MysqlEngineVersion,
+    ParameterGroup,
     StorageType,
 } from 'aws-cdk-lib/aws-rds'
 import { SERVICE_PREFIX } from './shared/constants'
@@ -32,6 +33,19 @@ export class RdsStack extends Stack {
             instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.NANO),
             subnetSelection: { subnetType: SubnetType.PUBLIC },
         })
+        const quantumVestigesParameterGroup = new ParameterGroup(
+            this,
+            `QuantumVestigesParameterGroup-${stage}`,
+            {
+                engine: DatabaseInstanceEngine.mysql({
+                    version: MysqlEngineVersion.VER_8_4_8,
+                }),
+                parameters: {
+                    log_bin_trust_function_creators: '1',
+                    binlog_format: 'ROW',
+                },
+            },
+        )
         const rdsInstance = new DatabaseInstance(this, `${SERVICE_PREFIX}RDSInstance-${stage}`, {
             engine: DatabaseInstanceEngine.mysql({
                 version: MysqlEngineVersion.VER_8_4_8,
@@ -45,6 +59,8 @@ export class RdsStack extends Stack {
                 secretName: `${SERVICE_PREFIX}-${stage}`,
             }),
             instanceIdentifier: `${SERVICE_PREFIX.toLowerCase()}-${stage}`,
+            parameterGroup: quantumVestigesParameterGroup,
+            backupRetention: Duration.days(7),
         })
         this.rdsConnections = rdsInstance.connections
         rdsInstance.connections.allowDefaultPortFrom(bastion)
