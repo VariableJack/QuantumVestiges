@@ -70,6 +70,16 @@
             <artifactId>spring-jdbc</artifactId>
             <version>7.0.7</version>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jdbc</artifactId>
+            <version>4.2.0-M2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.liquibase</groupId>
+            <artifactId>liquibase-core</artifactId>
+            <version>5.0.4</version>
+        </dependency>
         <!-- AWS SDK -->
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
@@ -106,6 +116,11 @@
             <artifactId>jackson-databind</artifactId>
             <version>3.2.3</version>
         </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>2.22</version>
+        </dependency>
         <!-- Others -->
         <dependency>
             <groupId>org.apache.maven.plugins</groupId>
@@ -140,7 +155,7 @@
             <resource>
                 <directory>src/main/resources</directory>
                 <includes>
-                    <include>*</include>
+                    <include>**/*</include>
                 </includes>
             </resource>
             <resource>
@@ -171,7 +186,7 @@
                                 <resource>
                                     <directory>src/main/resources</directory>
                                     <includes>
-                                        <include>*</include>
+                                        <include>**/*</include>
                                     </includes>
                                 </resource>
                                 <resource>

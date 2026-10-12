@@ -16,12 +16,14 @@ import java.beans.PropertyVetoException;
 import java.util.Map;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
+import liquibase.integration.spring.SpringLiquibase;
+
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient;
 import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRequest;
 import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueResponse;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 
 @Configuration
 public class MyBatisConfig {
@@ -47,7 +49,7 @@ public class MyBatisConfig {
         final String secretData = response.secretString();
         try {
             final Map<String, Object> resultMap = mapper.readValue(secretData, Map.class);
-            ds.setJdbcUrl(String.format("jdbc:mysql://%s/quantumvestiges", resultMap.get("host").toString()));
+            ds.setJdbcUrl(String.format("jdbc:mysql://%s/quantumvestiges?createDatabaseIfNotExist=true", resultMap.get("host").toString()));
             ds.setUser(resultMap.get("username").toString());
             ds.setPassword(resultMap.get("password").toString());
             ds.setDriverClass("com.mysql.cj.jdbc.Driver");
@@ -60,7 +62,7 @@ public class MyBatisConfig {
             ds.setInitialPoolSize(5);
             ds.setMinPoolSize(5);
             ds.setMaxPoolSize(20);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
         } catch (PropertyVetoException e) {
         }
         return ds;
@@ -77,5 +79,13 @@ public class MyBatisConfig {
     @Bean
     public SqlSessionTemplate sqlSessionTemplate(SqlSessionFactory sqlSessionFactory) {
         return new SqlSessionTemplate(sqlSessionFactory);
+    }
+
+    @Bean
+    public SpringLiquibase liquibase(DataSource dataSource) {
+        SpringLiquibase liquibase = new SpringLiquibase();
+        liquibase.setDataSource(dataSource);
+        liquibase.setChangeLog(changeLog);
+        return liquibase;
     }
 }
