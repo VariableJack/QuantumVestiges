@@ -31,6 +31,8 @@ public class MyBatisConfig {
     private SecretsManagerClient secretsManagerClient;
     @Value("${rds.secret}")
     private String rdsSecretId;
+    @Value("${spring.liquibase.change-log}")
+    private String changeLog;
     private static final Logger logger = LogManager.getLogger(MyBatisConfig.class);
 
     @Bean

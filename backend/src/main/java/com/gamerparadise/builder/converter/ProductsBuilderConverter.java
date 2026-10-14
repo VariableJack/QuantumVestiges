@@ -17,7 +17,8 @@ public class ProductsBuilderConverter {
             .franchiseId(input.getFranchiseId())
             .franchiseName(input.getFranchiseName())
             .description(input.getDescription())
-            .thumbnailUri(input.getThumbnailUri())
+            .thumbnail(input.getThumbnail())
+            .assets(input.getAssets())
             .price(input.getPrice())
             .build();
     }
@@ -31,7 +32,8 @@ public class ProductsBuilderConverter {
             .franchiseId(input.getFranchiseId())
             .franchiseName(franchiseName)
             .description(input.getDescription())
-            .thumbnailUri(input.getThumbnailUri())
+            .thumbnail(input.getThumbnail())
+            .assets(input.getAssets())
             .price(input.getPrice())
             .build();
     }

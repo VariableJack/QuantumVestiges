@@ -40,7 +40,8 @@ CREATE TABLE IF NOT EXISTS products (
   franchise_id INT NOT NULL REFERENCES franchises.franchise_id ON DELETE RESTRICT,
   franchise_name VARCHAR(32) NOT NULL REFERENCES franchises.franchise_name ON DELETE RESTRICT,
   description VARCHAR(4096) NOT NULL DEFAULT '',
-  thumbnail_uri VARCHAR(64) NOT NULL DEFAULT '',
+  thumbnail VARCHAR(64) NOT NULL DEFAULT '',
+  assets VARCHAR(1024) NOT NULL DEFAULT '',
   price INT NOT NULL check (price > 0),
   INDEX parent_product_id_index (parent_product_id)
 );

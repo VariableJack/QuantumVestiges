@@ -78,8 +78,11 @@ public class ProductsActivity {
             || StringUtils.isAllBlank(input.getProductType())
             || StringUtils.isAllBlank(input.getFranchiseName())
             || StringUtils.isAllBlank(input.getDescription())
-            || StringUtils.isAllBlank(input.getThumbnailUri())) {
+            || StringUtils.isAllBlank(input.getThumbnail())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "One or more required inputs is/are empty: product name, product type, franchise name, description, thumbnail URI");
+        }
+        if (StringUtils.isAllBlank(input.getAssets())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Asset list must contain at least one asset");
         }
         logger.info("Beginning to process uploadProduct with input {} for user {} under group", input, username, group);
         final ProductComponentDTO convertedInput = productsActivityConverter.convertProductActivityDTOToComponentDTO(input);

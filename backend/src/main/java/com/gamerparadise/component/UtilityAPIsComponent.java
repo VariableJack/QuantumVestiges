@@ -22,6 +22,7 @@ public class UtilityAPIsComponent {
 
     private static final Logger logger = LogManager.getLogger(UtilityAPIsComponent.class);
     public GeneratePresignedUrlsOutputComponentDTO generatePresignedUrls(@NonNull GeneratePresignedUrlsComponentDTO input) {
+        logger.info("Generating {} URLs", input.getFileNames().size());
         final Map<String, String> presignedUrls = new HashMap<>();
         input.getFileNames().forEach((fileName) -> {
             presignedUrls.put(fileName, utilityAPIsBuilder.generatePresignedUrl(fileName, input.getMethod(), input.getBucketName()));

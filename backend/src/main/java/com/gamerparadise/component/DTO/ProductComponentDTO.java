@@ -13,6 +13,7 @@ public class ProductComponentDTO {
     private Integer franchiseId;
     private String franchiseName;
     private String description;
-    private String thumbnailUri;
+    private String thumbnail;
+	private String assets;
     private Integer price;
 }

@@ -11,7 +11,8 @@
         <result property="franchiseId" column="franchise_id"/>
         <result property="franchiseName" column="franchise_name"/>
         <result property="description" column="description"/>
-        <result property="thumbnailUri" column="thumbnail_uri"/>
+        <result property="thumbnail" column="thumbnail"/>
+        <result property="assets" column="assets"/>
         <result property="price" column="price"/>
     </resultMap>
 
@@ -41,7 +42,8 @@
             franchise_id,
             franchise_name,
             description,
-            thumbnailUri,
+            thumbnail,
+            assets,
             price
         )
         VALUES(
@@ -51,7 +53,8 @@
             #{product.franchiseId},
             #{product.franchiseName},
             #{product.description},
-            #{product.thumbnailUri},
+            #{product.thumbnail},
+            #{product.assets},
             #{product.price}
         );
     </insert>
