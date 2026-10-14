@@ -19,7 +19,6 @@ public class AnnotationRequestMatcher implements RequestMatcher {
     @Override
     public boolean matches(HttpServletRequest request) {
         try {
-            // Look up which controller/method matches the incoming URL path
             HandlerExecutionChain handlerExecutionChain = handlerMapping.getHandler(request);
             if (handlerExecutionChain == null) {
                 return false;
@@ -27,12 +26,10 @@ public class AnnotationRequestMatcher implements RequestMatcher {
 
             Object handler = handlerExecutionChain.getHandler();
             if (handler instanceof HandlerMethod handlerMethod) {
-                // Check if the method OR the parent class has the @PublicEndpoint annotation
                 return handlerMethod.hasMethodAnnotation(PublicEndpoint.class) ||
                        handlerMethod.getBeanType().isAnnotationPresent(PublicEndpoint.class);
             }
         } catch (Exception e) {
-            // Fallback to securing the route if mapping lookups fail
             return false;
         }
         return false;
