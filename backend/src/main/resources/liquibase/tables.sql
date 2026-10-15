@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS notification_types (
 CREATE TABLE IF NOT EXISTS user_notification_preferences (
   user_id BIGINT UNSIGNED NOT NULL REFERENCES users.user_id ON DELETE CASCADE,
   notification_type_id INT NOT NULL REFERENCES notification_types.notification_type_id ON DELETE RESTRICT,
-  is_enabled boolean NOT NULL DEFAULT false,
+  is_enabled BOOLEAN NOT NULL DEFAULT false,
   last_update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 CREATE TABLE IF NOT EXISTS user_notification_preferences_cl (
@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS franchises (
 CREATE TABLE IF NOT EXISTS products (
   product_id BIGINT AUTO_INCREMENT PRIMARY KEY,
   product_name VARCHAR(64) NOT NULL unique,
-  parent_product_id BIGINT UNSIGNED DEFAULT null REFERENCES product_id ON DELETE RESTRICT,
+  parent_product_id BIGINT UNSIGNED DEFAULT NULL REFERENCES product_id ON DELETE RESTRICT,
   product_type VARCHAR(16) NOT NULL,
   franchise_id INT NOT NULL REFERENCES franchises.franchise_id ON DELETE RESTRICT,
   franchise_name VARCHAR(32) NOT NULL REFERENCES franchises.franchise_name ON DELETE RESTRICT,
@@ -43,16 +43,23 @@ CREATE TABLE IF NOT EXISTS products (
   thumbnail VARCHAR(64) NOT NULL DEFAULT '',
   assets VARCHAR(1024) NOT NULL DEFAULT '',
   price INT NOT NULL check (price > 0),
+  release_date TIMESTAMP DEFAULT NULL,
+  owner BIGINT UNSIGNED NOT NULL REFERENCES users.user_id ON DELETE CASCADE,
+  release_state ENUM('development', 'release') DEFAULT 'development'
   INDEX parent_product_id_index (parent_product_id)
+);
+CREATE TABLE IF NOT EXISTS release_schedule (
+  product_id BIGINT UNSIGNED NOT NULL REFERENCES products.product_id ON DELETE CASCADE,
+  release_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 );
 CREATE TABLE IF NOT EXISTS user_subscriptions (
   user_subscription_id BIGINT AUTO_INCREMENT PRIMARY KEY,
   user_id BIGINT UNSIGNED NOT NULL REFERENCES users.user_id ON DELETE RESTRICT,
   product_id BIGINT UNSIGNED NOT NULL REFERENCES products.product_id ON DELETE RESTRICT,
-  subscription_start_date timestamp NOT NULL,
-  subscription_end_date timestamp NOT NULL,
-  billing_period enum('1-MONTH', '3-MONTH', '6-MONTH', '12-MONTH') NOT NULL,
-  auto_renewal boolean NOT NULL,
+  subscription_start_date TIMESTAMP NOT NULL,
+  subscription_end_date TIMESTAMP NOT NULL,
+  billing_period ENUM('1-MONTH', '3-MONTH', '6-MONTH', '12-MONTH') NOT NULL,
+  auto_renewal BOOLEAN NOT NULL,
   INDEX user_id_index (user_id),
   INDEX product_id_index (product_id)
 );
@@ -60,11 +67,11 @@ CREATE TABLE IF NOT EXISTS user_subscriptions_cl (
   change_log_id BIGINT AUTO_INCREMENT NOT NULL PRIMARY KEY,
   user_subscription_id BIGINT UNSIGNED NOT NULL,
   product_id BIGINT UNSIGNED NOT NULL,
-  subscription_start_date timestamp NOT NULL,
-  subscription_end_date timestamp NOT NULL,
-  billing_period enum('1-MONTH', '3-MONTH', '6-MONTH', '12-MONTH') NOT NULL,
-  auto_renewal boolean NOT NULL,
-  change_action enum('INSERT', 'UPDATE', 'DELETE') NOT NULL,
+  subscription_start_date TIMESTAMP NOT NULL,
+  subscription_end_date TIMESTAMP NOT NULL,
+  billing_period ENUM('1-MONTH', '3-MONTH', '6-MONTH', '12-MONTH') NOT NULL,
+  auto_renewal BOOLEAN NOT NULL,
+  change_action ENUM('INSERT', 'UPDATE', 'DELETE') NOT NULL,
   change_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   INDEX user_subscription_id_index (user_subscription_id),
   INDEX product_id_index (product_id)
@@ -72,7 +79,7 @@ CREATE TABLE IF NOT EXISTS user_subscriptions_cl (
 CREATE TABLE IF NOT EXISTS orders (
   order_id BIGINT AUTO_INCREMENT PRIMARY KEY,
   user_id BIGINT UNSIGNED NOT NULL REFERENCES users.user_id ON DELETE RESTRICT,
-  order_status ENUM ('PENDING', 'COMPLETED', 'REFUNDED') NOT NULL DEFAULT 'PENDING',
+  order_status ENUM('PENDING', 'COMPLETED', 'REFUNDED') NOT NULL DEFAULT 'PENDING',
   total_purchase_price INT,
   create_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   checkout_time TIMESTAMP,
@@ -83,13 +90,13 @@ CREATE TABLE IF NOT EXISTS orders (
 CREATE TABLE IF NOT EXISTS orders_cl (
   change_log_id BIGINT AUTO_INCREMENT NOT NULL PRIMARY KEY,
   order_id BIGINT UNSIGNED NOT NULL,
-  old_order_status ENUM ('PENDING', 'COMPLETED', 'REFUNDED'),
-  new_order_status ENUM ('PENDING', 'COMPLETED', 'REFUNDED'),
+  old_order_status ENUM('PENDING', 'COMPLETED', 'REFUNDED'),
+  new_order_status ENUM('PENDING', 'COMPLETED', 'REFUNDED'),
   total_purchase_price INT,
   create_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   checkout_time TIMESTAMP,
   refund_time TIMESTAMP,
-  change_action enum('INSERT', 'UPDATE', 'DELETE') NOT NULL,
+  change_action ENUM('INSERT', 'UPDATE', 'DELETE') NOT NULL,
   change_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   INDEX order_id_index (order_id)
 );
