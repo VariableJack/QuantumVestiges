@@ -15,4 +15,6 @@ public interface ProductsDAOMapper {
     public List<ProductDAODTO> getProducts(@Param("franchiseId") @NonNull Integer franchiseId);
     public ProductDAODTO getProductByFilters(@Param("product") @NonNull ProductDAODTO productFilters);
     public void insertProduct(@Param("product") @NonNull ProductDAODTO product);
+    public List<ProductDAODTO> getProductsByOwner(@Param("username") @NonNull String username);
+    public void releaseProduct(@Param("product") @NonNull ProductDAODTO product);
 }

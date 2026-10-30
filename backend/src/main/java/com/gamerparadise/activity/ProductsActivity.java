@@ -53,7 +53,6 @@ public class ProductsActivity {
             .toList();
         logger.info("Finished fetching {} products(s)", convertedOutput.size());
         return convertedOutput;
-
     }
 
     @PublicEndpoint
@@ -86,6 +85,7 @@ public class ProductsActivity {
         }
         logger.info("Beginning to process uploadProduct with input {} for user {} under group", input, username, group);
         final ProductComponentDTO convertedInput = productsActivityConverter.convertProductActivityDTOToComponentDTO(input);
+        convertedInput.setOwner(username);
         final ProductComponentDTO output = productsComponent.insertProduct(convertedInput);
         final ProductActivityDTO convertedOutput = productsActivityConverter.convertProductComponentDTOToActivityDTO(output);
         logger.info("Finished processing uploadProduct on {}", convertedOutput);
@@ -110,5 +110,33 @@ public class ProductsActivity {
         final GetInstallerOutputActivityDTO convertedOutput = productsActivityConverter.convertGetInstallerOutputComponentDTOToActivityDTO(output);
         logger.info("Finished processing getInstaller on {}", convertedOutput);
         return convertedOutput;
+    }
+
+    @GetMapping(name="GetProductsAsOwner",path="/owner-products")
+    public List<ProductActivityDTO> getProductsAsOwner(@AuthenticationPrincipal Jwt jwt) {
+        final String username = jwt.getClaimAsString("username");
+        logger.info("Beginning to process getProductsAsOwner for user {}", username);
+        final List<ProductComponentDTO> getProductsComponentOutput = productsComponent.getProductsByOwner(username);
+        final List<ProductActivityDTO> convertedOutput = getProductsComponentOutput
+            .stream()
+            .map((game) -> productsActivityConverter.convertProductComponentDTOToActivityDTO(game))
+            .toList();
+        logger.info("Finished fetching {} products(s)", convertedOutput.size());
+        return convertedOutput;
+    }
+
+    @PostMapping(name="ReleaseProduct",path="/product/release")
+    public void releaseProduct (@AuthenticationPrincipal Jwt jwt, @NonNull @RequestBody ProductActivityDTO input) {
+        final String username = jwt.getClaimAsString("username");
+        final String group = jwt.getClaimAsStringList("cognito:groups").stream().filter(item -> item.equals("admin")).findFirst().orElse("user");
+        if (!group.equals("admin")) {
+            logger.warn("User {} cannot release a product", username);
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not permitted to release a product");
+        }
+        logger.info("Beginning to process releaseProduct with input {} for user {} under group", input, username, group);
+        final ProductComponentDTO convertedInput = productsActivityConverter.convertProductActivityDTOToComponentDTO(input);
+        convertedInput.setOwner(username);
+        productsComponent.releaseProduct(convertedInput);
+        logger.info("Finished releasing products");
     }
 }

@@ -45,12 +45,12 @@ CREATE TABLE IF NOT EXISTS products (
   price INT NOT NULL check (price > 0),
   release_date TIMESTAMP DEFAULT NULL,
   owner BIGINT UNSIGNED NOT NULL REFERENCES users.user_id ON DELETE CASCADE,
-  release_state ENUM('development', 'release') DEFAULT 'development'
+  release_state ENUM('DEVELOPMENT', 'RELEASE') DEFAULT 'DEVELOPMENT',
   INDEX parent_product_id_index (parent_product_id)
 );
 CREATE TABLE IF NOT EXISTS release_schedule (
   product_id BIGINT UNSIGNED NOT NULL REFERENCES products.product_id ON DELETE CASCADE,
-  release_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  release_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 CREATE TABLE IF NOT EXISTS user_subscriptions (
   user_subscription_id BIGINT AUTO_INCREMENT PRIMARY KEY,

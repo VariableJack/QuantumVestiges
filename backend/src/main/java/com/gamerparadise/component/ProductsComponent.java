@@ -23,6 +23,7 @@ import com.gamerparadise.component.dto.GetFileNamesForGameOutputComponentDTO;
 import com.gamerparadise.component.dto.GetInstallerOutputComponentDTO;
 import com.gamerparadise.component.dto.GeneratePresignedUrlsComponentDTO;
 import com.gamerparadise.component.dto.GeneratePresignedUrlsOutputComponentDTO;
+import com.gamerparadise.shared.Constants;
 
 @Component
 public class ProductsComponent {
@@ -37,7 +38,22 @@ public class ProductsComponent {
     private static final Logger logger = LogManager.getLogger(ProductsComponent.class);
 
     public List<ProductComponentDTO> getProducts(@NonNull Integer franchiseId) {
-        return productsBuilder.getProducts(franchiseId);
+        final List<ProductComponentDTO> products = productsBuilder.getProducts(franchiseId);
+        final List<String> fileNames = new ArrayList<>();
+        products.stream().forEach((product) -> {
+            fileNames.add(product.getThumbnail());
+        });
+        final GeneratePresignedUrlsComponentDTO generatePresignedUrlsInput = GeneratePresignedUrlsComponentDTO
+            .builder()
+            .fileNames(fileNames)
+            .method("GET")
+            .bucketName(gameS3BucketName)
+            .build();
+        final GeneratePresignedUrlsOutputComponentDTO generatePresignedUrlsOutput = utilityAPIsComponent.generatePresignedUrls(generatePresignedUrlsInput);
+        products.stream().forEach((product) -> {
+            product.setThumbnail(generatePresignedUrlsOutput.getPresignedUrls().get(product.getThumbnail()));
+        });
+        return products;
     }
 
     public ProductComponentDTO getProductById(@NonNull Integer productId) {
@@ -64,8 +80,8 @@ public class ProductsComponent {
     }
 
     public ProductComponentDTO insertProduct(@NonNull ProductComponentDTO input) {
-        final String productName = input.getProductName();
-        final ProductComponentDTO product = productsBuilder.getProductByFilters(ProductComponentDTO.builder().productName(productName).build());
+        final ProductComponentDTO product = productsBuilder.getProductByFilters(input);
+        final String productName = product.getProductName();
         if (Objects.nonNull(product)) {
             logger.warn("Product {} already exists", productName);
             throw new ResponseStatusException(HttpStatus.CONFLICT, String.format("Product with name %s already exists", productName));
@@ -90,5 +106,38 @@ public class ProductsComponent {
 
     public GetInstallerOutputComponentDTO getInstaller() {
         return productsBuilder.getInstaller();
+    }
+
+    public List<ProductComponentDTO> getProductsByOwner(@NonNull String username) {
+        final List<ProductComponentDTO> products = productsBuilder.getProductsByOwner(username);
+        final List<String> fileNames = new ArrayList<>();
+        products.stream().forEach((product) -> {
+            fileNames.add(product.getThumbnail());
+        });
+        final GeneratePresignedUrlsComponentDTO generatePresignedUrlsInput = GeneratePresignedUrlsComponentDTO
+            .builder()
+            .fileNames(fileNames)
+            .method("GET")
+            .bucketName(gameS3BucketName)
+            .build();
+        final GeneratePresignedUrlsOutputComponentDTO generatePresignedUrlsOutput = utilityAPIsComponent.generatePresignedUrls(generatePresignedUrlsInput);
+        products.stream().forEach((product) -> {
+            product.setThumbnail(generatePresignedUrlsOutput.getPresignedUrls().get(product.getThumbnail()));
+        });
+        return products;
+    }
+
+    public void releaseProduct(@NonNull ProductComponentDTO input) {
+        final ProductComponentDTO product = productsBuilder.getProductByFilters(input);
+        final String productName = product.getProductName();
+        if (Objects.isNull(product)) {
+            logger.warn("Product {} does not exist", productName);
+            throw new ResponseStatusException(HttpStatus.CONFLICT, String.format("Product with name %s does not exist", productName));
+        }
+        if (product.getReleaseState().equals(Constants.RELEASE)) {
+            logger.warn("Product {} has already been released", productName);
+            throw new ResponseStatusException(HttpStatus.CONFLICT, String.format("Product with name %s has already been released", productName));
+        }
+        productsBuilder.releaseProduct(input);
     }
 }

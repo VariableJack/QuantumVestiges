@@ -19,6 +19,9 @@ public class ProductsBuilderConverter {
             .description(input.getDescription())
             .thumbnail(input.getThumbnail())
             .assets(input.getAssets())
+            .releaseDate(input.getReleaseDate())
+            .owner(input.getOwner())
+            .releaseState(input.getReleaseState())
             .price(input.getPrice())
             .build();
     }
@@ -34,6 +37,9 @@ public class ProductsBuilderConverter {
             .description(input.getDescription())
             .thumbnail(input.getThumbnail())
             .assets(input.getAssets())
+            .releaseDate(input.getReleaseDate())
+            .owner(input.getOwner())
+            .releaseState(input.getReleaseState())
             .price(input.getPrice())
             .build();
     }

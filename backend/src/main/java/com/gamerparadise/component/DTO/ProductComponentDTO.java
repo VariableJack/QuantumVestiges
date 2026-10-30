@@ -3,6 +3,8 @@ package com.gamerparadise.component.dto;
 import lombok.Builder;
 import lombok.Data;
 
+import java.sql.Timestamp;
+
 @Builder
 @Data
 public class ProductComponentDTO {
@@ -14,6 +16,9 @@ public class ProductComponentDTO {
     private String franchiseName;
     private String description;
     private String thumbnail;
-	private String assets;
+    private String assets;
+    private Timestamp releaseDate;
+    private String owner;
+    private String releaseState;
     private Integer price;
 }

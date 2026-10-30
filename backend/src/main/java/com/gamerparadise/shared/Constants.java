@@ -3,6 +3,7 @@ package com.gamerparadise.shared;
 import java.time.Duration;
 
 public class Constants {
+    // Time constants
     public final static long SECONDS_IN_MINUTE = 60;
     public final static long MINUTES_IN_HOUR = 60;
     public final static long HOURS_IN_DAY = 24;
@@ -13,11 +14,14 @@ public class Constants {
     public final static long SECONDS_IN_WEEK = SECONDS_IN_MINUTE * MINUTES_IN_HOUR * HOURS_IN_DAY * DAYS_IN_WEEK;
     public final static long MINUTES_IN_DAY = MINUTES_IN_HOUR * HOURS_IN_DAY;
     public final static long MINUTES_IN_WEEK = MINUTES_IN_HOUR * HOURS_IN_DAY * DAYS_IN_WEEK;
-
+    // S3 constants
     public final static int S3_MAX_KEYS = 1000;
     public final static Duration PRESIGNED_URL_DURATION = Duration.ofHours(1);
     public final static String INSTALLER_FILE_NAME = "GamerParadise-Installer.exe";
-
-	public final static String CLOSED_STATUS = "CLOSED";
-	public final static String OPEN_STATUS = "OPEN";
+    // Discussion status constants
+    public final static String CLOSED_STATUS = "CLOSED";
+    public final static String OPEN_STATUS = "OPEN";
+    // Product status constants
+    public final static String DEVELOPMENT = "DEVELOPMENT";
+    public final static String RELEASE = "RELEASE";
 }

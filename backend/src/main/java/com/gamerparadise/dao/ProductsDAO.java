@@ -60,4 +60,30 @@ public class ProductsDAO {
             logger.info("Finished running SQL query in {} ms", Utility.getElapsedTime(startDate));
         }
     }
+
+    public List<ProductDAODTO> getProductsByOwner(@NonNull String username) {
+        final Date startDate = new Date();
+        logger.info("Fetching products by username {}", username);
+        try {
+            return mapper.getProductsByOwner(username);
+        } catch (Exception e) {
+            logger.error("getProductsByOwner failed due to ", e);
+            throw e;
+        } finally {
+            logger.info("Finished running SQL query in {} ms", Utility.getElapsedTime(startDate));
+        }
+    }
+
+    public void releaseProduct(@NonNull ProductDAODTO input) {
+        final Date startDate = new Date();
+        logger.info("Releasing product {}", input);
+        try {
+            mapper.releaseProduct(input);
+        } catch (Exception e) {
+            logger.error("releaseProduct failed due to ", e);
+            throw e;
+        } finally {
+            logger.info("Finished running SQL query in {} ms", Utility.getElapsedTime(startDate));
+        }
+    }
 }

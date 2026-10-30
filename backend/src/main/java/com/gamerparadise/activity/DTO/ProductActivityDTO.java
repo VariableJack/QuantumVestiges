@@ -5,6 +5,8 @@ import lombok.Data;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
+import java.sql.Timestamp;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -19,5 +21,8 @@ public class ProductActivityDTO {
     private String description;
     private String thumbnail;
 	private String assets;
+    private Timestamp releaseDate;
+    private String owner;
+    private String releaseState;
     private Integer price;
 }

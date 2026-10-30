@@ -23,6 +23,9 @@ public class ProductsActivityConverter {
             .description(input.getDescription())
             .thumbnail(input.getThumbnail())
             .assets(input.getAssets())
+            .releaseDate(input.getReleaseDate())
+            .owner(input.getOwner())
+            .releaseState(input.getReleaseState())
             .price(input.getPrice())
             .build();
     }
@@ -37,6 +40,9 @@ public class ProductsActivityConverter {
             .description(input.getDescription())
             .thumbnail(input.getThumbnail())
             .assets(input.getAssets())
+            .releaseDate(input.getReleaseDate())
+            .owner(input.getOwner())
+            .releaseState(input.getReleaseState())
             .price(input.getPrice())
             .build();
     }

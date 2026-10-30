@@ -13,6 +13,9 @@
         <result property="description" column="description"/>
         <result property="thumbnail" column="thumbnail"/>
         <result property="assets" column="assets"/>
+        <result property="releaseDate" column="release_date"/>
+        <result property="owner" column="owner"/>
+        <result property="releaseState" column="release_state"/>
         <result property="price" column="price"/>
     </resultMap>
 
@@ -44,6 +47,11 @@
             description,
             thumbnail,
             assets,
+            <if test="product.releaseState != null">
+                release_date,
+                release_state,
+            </if>
+            owner,
             price
         )
         VALUES(
@@ -55,7 +63,20 @@
             #{product.description},
             #{product.thumbnail},
             #{product.assets},
+            <if test="product.releaseState != null">
+                CURRENT_TIMESTAMP(),
+                product.releaseState,
+            </if>
+            #{owner},
             #{product.price}
         );
     </insert>
+
+    <select id="getProductsByOwner" parameterType="String" resultMap="ProductResultMap">
+        SELECT * FROM products WHERE owner = #{username};
+    </select>
+
+    <update id="releaseProduct" parameterType="ProductDAODTO">
+        UPDATE products SET release_date = CURRENT_TIMESTAMP(), release_state = 'RELEASE' WHERE product_id = #{product.productId};
+    </update>
 </mapper>

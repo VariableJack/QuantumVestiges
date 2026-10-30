@@ -58,4 +58,15 @@ public class ProductsBuilder {
     public GetInstallerOutputComponentDTO getInstaller() {
         return GetInstallerOutputComponentDTO.builder().installer(s3Accessor.generatePresignedUrl(INSTALLER_FILE_NAME, "GET", gameS3BucketName)).build();
     }
+
+    public List<ProductComponentDTO> getProductsByOwner(@NonNull String username) {
+        return productsDAO.getProductsByOwner(username)
+            .stream()
+            .map((product) -> productsBuilderConverter.convertProductDAODTOToComponentDTO(product))
+            .toList();
+    }
+
+    public void releaseProduct(@NonNull ProductComponentDTO input) {
+        productsDAO.releaseProduct(productsBuilderConverter.convertProductComponentDTOToDAODTO(input, ""));
+    }
 }

@@ -3,6 +3,8 @@ package com.gamerparadise.dao.dto;
 import lombok.Builder;
 import lombok.Data;
 
+import java.sql.Timestamp;
+
 @Builder
 @Data
 public class ProductDAODTO {
@@ -15,5 +17,8 @@ public class ProductDAODTO {
     private String description;
     private String thumbnail;
 	private String assets;
+    private Timestamp releaseDate;
+    private String owner;
+    private String releaseState;
     private Integer price;
 }
