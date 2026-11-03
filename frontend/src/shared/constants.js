@@ -251,6 +251,9 @@ const ACCOUNT_MESSAGES = {
     },
 }
 
+const DEVELOPMENT = 'DEVELOPMENT'
+const RELEASE = 'RELEASE'
+
 export {
     menubarItems,
     ADMINISTRATOR_ITEMS,
@@ -262,4 +265,6 @@ export {
     FORUM_MESSAGE_PREFIXES,
     ACCOUNT_MESSAGE_TYPES,
     ACCOUNT_MESSAGES,
+    DEVELOPMENT,
+    RELEASE,
 }

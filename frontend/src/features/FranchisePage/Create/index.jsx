@@ -80,7 +80,7 @@ const FranchisePageCreate = () => {
                         <i>(*Required*)</i>
                     </b>
                 </div>
-                <textarea
+                <input
                     className={`title ${(error && 'error-text') || 'no-error-text'}`}
                     value={franchiseName}
                     onChange={event => {

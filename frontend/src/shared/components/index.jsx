@@ -8,6 +8,7 @@ import Select from './Select'
 import Sidebar from './Sidebar'
 import ThreadHeader from './ThreadHeader'
 import Toggle from './Toggle'
+import Wizard from './Wizard'
 
 export {
     Dropdown,
@@ -20,4 +21,5 @@ export {
     Sidebar,
     ThreadHeader,
     Toggle,
+    Wizard,
 }

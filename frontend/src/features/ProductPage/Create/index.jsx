@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { get, isUndefined } from 'lodash'
+import { isUndefined } from 'lodash'
 
 import {
     useLazyGetProductPresignedUrlsQuery,
@@ -12,22 +12,22 @@ import {
     removeInfoMessage,
     addErrorMessage,
 } from '../../../redux/api/globalSlice'
-import { Select } from '../../../shared/components'
+import { Select, Wizard } from '../../../shared/components'
 import { DEFAULT_FRANCHISE, CONNECTION_ERROR_MESSAGE } from '../../../shared/constants'
 import { createFlashbarMessages } from '../../../shared/utils'
 
 import '../../../styles/App.css'
 
-const getFileNamesFromFile = file => {
-    return file.map(file => file.name)
+import BasicInfo from './BasicInfo'
+import FileUpload from './FileUpload'
+import FinalizeAndSubmit from './FinalizeAndSubmit'
+
+const getFileNamesFromFiles = (franchiseName, productName, file) => {
+    return file.map(file => `${franchiseName}/${productName}/${file.name}`)
 }
 
-const generateSelectItems = items => {
-    return items.map(item => ({
-        id: item.franchiseId,
-        label: item.franchiseName,
-        disabled: item.disabled,
-    }))
+const validatePayload = payload => {
+    return payload.thumbnail && payload.assets && payload.franchise
 }
 
 const ProductPageCreate = () => {
@@ -53,16 +53,31 @@ const ProductPageCreate = () => {
         },
     ] = useCreateGameMutation()
     const [file, setFile] = useState(undefined)
-    const [productName, setProductName] = useState('')
-    const [price, setPrice] = useState(0)
+    const [payload, setPayload] = useState({
+        productName: '',
+        description: '',
+        price: 0,
+        thumbnail: '',
+        assets: '',
+        releaseState: 'DEVELOPMENT',
+    })
+    const [thumbnailFile, setThumbnailFile] = useState(undefined)
+    const [assetFiles, setAssetFiles] = useState(undefined)
     const [selectedFranchise, setSelectedFranchise] = useState(DEFAULT_FRANCHISE)
     const [isUploadingFile, setIsUploadingFile] = useState(false)
     const [isUploadingFileSuccess, setIsUploadingFileSuccess] = useState(false)
     const [errors, setErrors] = useState({
-        file: false,
-        productName: false,
-        franchise: false,
-        price: false,
+        pageOne: {
+            productName: false,
+            description: false,
+            franchise: false,
+            price: false,
+        },
+        pageTwo: {
+            file: false,
+            thumbnail: false,
+            assets: false,
+        },
     })
 
     const isLoadingArray = [
@@ -126,7 +141,11 @@ const ProductPageCreate = () => {
         setIsUploadingFileSuccess(false)
         try {
             const { presignedUrls } = await triggerGetProductPresignedUrls({
-                fileNames: getFileNamesFromFile([file]),
+                fileNames: getFileNamesFromFiles(selectedFranchise.franchiseName, productName, [
+                    file,
+                    thumbnailFile,
+                    ...assetFiles,
+                ]),
                 method: 'PUT',
             }).unwrap()
             try {
@@ -135,12 +154,49 @@ const ProductPageCreate = () => {
                     headers: { 'Content-Type': 'application/json' },
                     body: file,
                 })
+                await fetch(
+                    presignedUrls[
+                        getFileNamesFromFiles(selectedFranchise.franchiseName, productName, [
+                            thumbnailFile,
+                        ])
+                    ],
+                    {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: thumbnailFile,
+                    },
+                )
+                assetFiles.forEach(async assetFile => {
+                    await fetch(
+                        presignedUrls[
+                            getFileNamesFromFiles(selectedFranchise.franchiseName, productName, [
+                                assetFile,
+                            ])
+                        ],
+                        {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: assetFile,
+                        },
+                    )
+                })
+                setPayload({
+                    ...payload,
+                    thumbnail: getFileNamesFromFiles(selectedFranchise.franchiseName, productName, [
+                        thumbnailFile,
+                    ]),
+                    assets: getFileNamesFromFiles(
+                        selectedFranchise.franchiseName,
+                        productName,
+                        assetFiles,
+                    ).join(','),
+                })
                 setIsUploadingFileSuccess(true)
             } catch (e) {
                 dispatch(
                     addErrorMessage({
-                        title: 'Failed to upload file',
-                        description: 'File failed to be uploaded',
+                        title: 'Failed to upload files',
+                        description: 'Files failed to be uploaded',
                         id: 'uploadFileError',
                     }),
                 )
@@ -158,104 +214,58 @@ const ProductPageCreate = () => {
         if (isUploadingFileSuccess) {
             try {
                 createProduct({
-                    productName,
+                    //productName,
                     franchiseId: selectedFranchise.franchiseId,
-                    price,
+                    ...payload,
                 })
             } catch (e) {}
         }
     }, [isUploadingFileSuccess])
+
     return (
         (group !== 'admin' && (
             <div>
                 <h1>Unauthorized</h1>
             </div>
         )) || (
-            <div className="ph-xs">
-                <h1>Product creation</h1>
-                <h2>Upload files here</h2>
-                <input
-                    type="file"
-                    className={`${errors.file && 'error-text'}`}
-                    onChange={event => {
-                        const file = event.target.files[0]
-                        setErrors({
-                            ...errors,
-                            file: isUndefined(file),
-                        })
-                        setFile(file)
-                    }}
-                />
-                <br />
-                <h2>Product name</h2>
-                <input
-                    className={`${errors.productName && 'error-text'}`}
-                    value={productName}
-                    onChange={event => {
-                        setErrors({
-                            ...errors,
-                            productName: event.target.value === 0,
-                        })
-                        setProductName(event.target.value)
-                    }}
-                />
-                <h2>Select franchise to create product under</h2>
-                <Select
-                    items={generateSelectItems([
-                        { ...DEFAULT_FRANCHISE, disabled: true },
-                        ...franchises.map(franchise => ({ ...franchise, disabled: false })),
-                    ])}
-                    selectedItem={{
-                        id: selectedFranchise.franchiseId,
-                        label: selectedFranchise.franchiseName,
-                    }}
-                    onChange={item => {
-                        setSelectedFranchise({
-                            franchiseId: item.id,
-                            franchiseName: item.label,
-                        })
-                    }}
-                />
-                <h2>Input price</h2>
-                <input
-                    className={`${errors.price && 'error-text'}`}
-                    value={price}
-                    onChange={event => {
-                        const newPrice = parseInt(event.target.value)
-                        setErrors({
-                            ...errors,
-                            price: newPrice <= 0,
-                        })
-                        setPrice(newPrice)
-                    }}
-                />
-                <div>
-                    <button
-                        onClick={() => {
-                            console.debug(file)
-                            if (
-                                file &&
-                                productName &&
-                                selectedFranchise.franchiseId !== DEFAULT_FRANCHISE.franchiseId &&
-                                price > 0
-                            ) {
-                                handleUpload()
-                            } else {
-                                setErrors({
-                                    file: isUndefined(file),
-                                    productName: productName.length === 0,
-                                    franchise:
-                                        selectedFranchise.franchiseId ===
-                                        DEFAULT_FRANCHISE.franchiseId,
-                                    price: price <= 0,
-                                })
-                            }
-                        }}
-                    >
-                        Finalize and upload
-                    </button>
-                </div>
-            </div>
+            <Wizard
+                elements={[
+                    <BasicInfo
+                        payload={payload}
+                        setPayload={setPayload}
+                        errors={errors}
+                        setErrors={setErrors}
+                        franchises={franchises}
+                        selectedFranchise={selectedFranchise}
+                        setSelectedFranchise={setSelectedFranchise}
+                    />,
+                    <FileUpload
+                        payload={payload}
+                        setPayload={setPayload}
+                        errors={errors}
+                        setErrors={setErrors}
+                        file={file}
+                        setFile={setFile}
+                        thumbnailFile={thumbnailFile}
+                        setThumbnailFile={setThumbnailFile}
+                        assetFiles={assetFiles}
+                        setAssetFiles={setAssetFiles}
+                    />,
+                    <FinalizeAndSubmit errors={errors} setErrors={setErrors} />,
+                ]}
+                shouldAllowPrimaryButtons={[
+                    payload.productName && payload.description && selectedFranchise.franchiseName,
+                    file && payload.thumbnail && payload.assets,
+
+                    payload.productName &&
+                        payload.description &&
+                        selectedFranchise.franchiseName &&
+                        file &&
+                        payload.thumbnail &&
+                        payload.assets,
+                ]}
+                handleUpload={handleUpload}
+            />
         )
     )
 }
