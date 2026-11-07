@@ -13,7 +13,7 @@ import {
     addErrorMessage,
 } from '../../../redux/api/globalSlice'
 import { Select, Wizard } from '../../../shared/components'
-import { DEFAULT_FRANCHISE, CONNECTION_ERROR_MESSAGE } from '../../../shared/constants'
+import { DEFAULT_FRANCHISE, CONNECTION_ERROR_MESSAGE, DEVELOPMENT } from '../../../shared/constants'
 import { createFlashbarMessages } from '../../../shared/utils'
 
 import '../../../styles/App.css'
@@ -59,7 +59,8 @@ const ProductPageCreate = () => {
         price: 0,
         thumbnail: '',
         assets: '',
-        releaseState: 'DEVELOPMENT',
+        releaseState: DEVELOPMENT,
+        releaseDate: -1,
     })
     const [thumbnailFile, setThumbnailFile] = useState(undefined)
     const [assetFiles, setAssetFiles] = useState(undefined)
