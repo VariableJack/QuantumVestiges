@@ -64,7 +64,7 @@
             #{product.thumbnail},
             #{product.assets},
             <if test="product.releaseState != null">
-                CURRENT_TIMESTAMP(),
+                CURRENT_DATE(),
                 product.releaseState,
             </if>
             #{owner},
@@ -77,6 +77,6 @@
     </select>
 
     <update id="releaseProduct" parameterType="ProductDAODTO">
-        UPDATE products SET release_date = CURRENT_TIMESTAMP(), release_state = 'RELEASE' WHERE product_id = #{product.productId};
+        UPDATE products SET release_date = CURRENT_DATE(), release_state = 'RELEASE' WHERE product_id = #{product.productId};
     </update>
 </mapper>
